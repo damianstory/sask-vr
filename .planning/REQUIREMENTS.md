@@ -66,15 +66,15 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 ### Screen 6 — VR Prep
 
 - [x] **PREP-01**: Brief description of the carpentry VR simulation displayed
-- [ ] **PREP-02**: Two to three observation prompts displayed as visually distinct cards
-- [ ] **PREP-03**: Student can navigate back to any previous screen with all state preserved
-- [ ] **PREP-04**: No required interactions — read-and-absorb content only
+- [x] **PREP-02**: Two to three observation prompts displayed as visually distinct cards
+- [x] **PREP-03**: Student can navigate back to any previous screen with all state preserved
+- [x] **PREP-04**: No required interactions — read-and-absorb content only
 
 ### Post-VR Bridge
 
 - [x] **BRDG-01**: Congratulatory message acknowledging VR simulation completion
 - [x] **BRDG-02**: Six numbered checklist items displayed with checkable toggle state
-- [ ] **BRDG-03**: Checklist state is local and session-only
+- [x] **BRDG-03**: Checklist state is local and session-only
 - [x] **BRDG-04**: Progress indicator shows count of completed items (e.g., "2 of 6 complete")
 - [x] **BRDG-05**: Prominent button linking to myBlueprint that opens in a new tab
 
@@ -190,12 +190,12 @@ Deferred to post-pilot validation.
 | CARD-08 | Phase 3 | Pending |
 | CARD-09 | Phase 3 | Pending |
 | PREP-01 | Phase 2 | Complete |
-| PREP-02 | Phase 2 | Pending |
-| PREP-03 | Phase 2 | Pending |
-| PREP-04 | Phase 2 | Pending |
+| PREP-02 | Phase 2 | Complete |
+| PREP-03 | Phase 2 | Complete |
+| PREP-04 | Phase 2 | Complete |
 | BRDG-01 | Phase 2 | Complete |
 | BRDG-02 | Phase 2 | Complete |
-| BRDG-03 | Phase 2 | Pending |
+| BRDG-03 | Phase 2 | Complete |
 | BRDG-04 | Phase 2 | Complete |
 | BRDG-05 | Phase 2 | Complete |
 | ANLY-01 | Phase 4 | Pending |
