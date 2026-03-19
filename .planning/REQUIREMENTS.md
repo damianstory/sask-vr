@@ -30,7 +30,7 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 
 ### Screen 2 — Task Tiles
 
-- [ ] **TILE-01**: Six illustrated tiles displayed in a responsive grid (3x2 desktop, 2-column mobile)
+- [x] **TILE-01**: Six illustrated tiles displayed in a responsive grid (3x2 desktop, 2-column mobile)
 - [x] **TILE-02**: Student can select between 2 and 3 tiles with clear visual selected state (highlight + checkmark)
 - [x] **TILE-03**: Fourth selection is prevented with inline feedback message
 - [x] **TILE-04**: Continue button is disabled until minimum 2 tiles are selected
@@ -49,7 +49,7 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 - [x] **PATH-01**: Vertical timeline with 5 expandable steps starting at "You are here — Grade 7/8"
 - [x] **PATH-02**: Tapping a step expands it with course names, duration, earnings, and programs (Saskatchewan-specific)
 - [x] **PATH-03**: Only one step can be expanded at a time (accordion behavior)
-- [ ] **PATH-04**: Pathway content references Miller Collegiate, SaskPolytech, and Saskatchewan Youth Internship Program
+- [x] **PATH-04**: Pathway content references Miller Collegiate, SaskPolytech, and Saskatchewan Youth Internship Program
 
 ### Screen 5 — Card Builder
 
@@ -166,7 +166,7 @@ Deferred to post-pilot validation.
 | HOOK-02 | Phase 2 | Complete |
 | HOOK-03 | Phase 2 | Complete |
 | HOOK-04 | Phase 2 | Complete |
-| TILE-01 | Phase 2 | Pending |
+| TILE-01 | Phase 2 | Complete |
 | TILE-02 | Phase 2 | Complete |
 | TILE-03 | Phase 2 | Complete |
 | TILE-04 | Phase 2 | Complete |
@@ -179,7 +179,7 @@ Deferred to post-pilot validation.
 | PATH-01 | Phase 2 | Complete |
 | PATH-02 | Phase 2 | Complete |
 | PATH-03 | Phase 2 | Complete |
-| PATH-04 | Phase 2 | Pending |
+| PATH-04 | Phase 2 | Complete |
 | CARD-01 | Phase 3 | Pending |
 | CARD-02 | Phase 3 | Pending |
 | CARD-03 | Phase 3 | Pending |
