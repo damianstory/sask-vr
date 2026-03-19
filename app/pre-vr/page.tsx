@@ -13,15 +13,6 @@ import ScreenSix from './components/ScreenSix'
 
 type ScreenNumber = 1 | 2 | 3 | 4 | 5 | 6
 
-const screens: Record<ScreenNumber, React.ReactNode> = {
-  1: <ScreenOne />,
-  2: <ScreenTwo />,
-  3: <Suspense fallback={<div className="flex h-64 items-center justify-center"><p className="text-[14px] font-[300] text-[var(--myb-neutral-4)]">Loading map...</p></div>}><ScreenThree /></Suspense>,
-  4: <ScreenFour />,
-  5: <ScreenFive />,
-  6: <ScreenSix />,
-}
-
 export default function PreVRPage() {
   const [currentScreen, setCurrentScreen] = useState<ScreenNumber>(1)
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward')
@@ -41,6 +32,15 @@ export default function PreVRPage() {
       setCurrentScreen((prev) => (prev - 1) as ScreenNumber)
       setIsInitialMount(false)
     }
+  }
+
+  const screens: Record<ScreenNumber, React.ReactNode> = {
+    1: <ScreenOne />,
+    2: <ScreenTwo />,
+    3: <Suspense fallback={<div className="flex h-64 items-center justify-center"><p className="text-[14px] font-[300] text-[var(--myb-neutral-4)]">Loading map...</p></div>}><ScreenThree /></Suspense>,
+    4: <ScreenFour />,
+    5: <ScreenFive onNext={goNext} />,
+    6: <ScreenSix />,
   }
 
   return (
