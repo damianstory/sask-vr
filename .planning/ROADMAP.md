@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md — Project scaffold, content schema, brand tokens, and landing page with path cards
 - [x] 01-02-PLAN.md — Pre-VR flow with session state, progress bar, navigation, screen shells, and Post-VR page
-- [ ] 01-03-PLAN.md — Gap closure: centralize content loading for occupation-agnostic architecture (CONT-03)
+- [x] 01-03-PLAN.md — Gap closure: centralize content loading for occupation-agnostic architecture (CONT-03)
 
 ### Phase 2: Content Screens
 **Goal**: Students experience all six Pre-VR screens and the Post-VR checklist as interactive, content-rich pages that build context for the VR simulation and guide post-VR reflection
@@ -43,16 +43,17 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Screen 1 displays an animated salary counter that ticks up to the Saskatchewan carpenter salary, with supporting stat cards
   2. Screen 2 presents six task tiles where the student can select 2-3 (no more), and those selections persist when navigating away and back
-  3. Screen 3 shows an SVG map of Regina with tappable employer pins that open and close company cards
+  3. Screen 3 shows a MapLibre GL map of Regina with tappable employer pins that open and close company cards
   4. Screen 4 displays a career pathway timeline with expandable accordion steps referencing Saskatchewan programs
   5. Screen 6 shows VR prep content with observation prompts and no required interactions
   6. Post-VR page displays a 6-item checkable checklist with progress count and a prominent myBlueprint link that opens in a new tab
-**Plans**: TBD
+**Plans:** 4 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
-- [ ] 02-03: TBD
+- [ ] 02-01-PLAN.md — Content schema updates (types, JSON, CSS keyframes) and Screen 1 salary counter hook
+- [ ] 02-02-PLAN.md — Screen 2 task tile grid with selection logic and Screen 4 career pathway timeline
+- [ ] 02-03-PLAN.md — Screen 3 employer map with mapcn/MapLibre GL, pins, and bottom sheet cards
+- [ ] 02-04-PLAN.md — Screen 6 VR prep prompt cards and Post-VR interactive checklist
 
 ### Phase 3: Card Builder
 **Goal**: Students create a personalized Carpenter Card by entering their name and choosing an icon, then download it as a tangible PNG artifact they keep
@@ -91,7 +92,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Shell | 2/3 | Gap closure | - |
-| 2. Content Screens | 0/3 | Not started | - |
+| 1. Foundation + Shell | 3/3 | Complete | 2026-03-19 |
+| 2. Content Screens | 0/4 | Planning complete | - |
 | 3. Card Builder | 0/1 | Not started | - |
 | 4. Analytics + Polish | 0/2 | Not started | - |
