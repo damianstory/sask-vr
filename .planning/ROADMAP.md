@@ -66,10 +66,11 @@ Plans:
   2. Task selections from Screen 2 appear as non-editable tag chips on the card builder and on the card itself
   3. Download button produces a 1200x675px PNG file with the student's name, icon, task labels, and a background variant determined by their selections
   4. Download button is disabled until both name and icon are provided; student name never leaves the browser
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md — Content schema update, gradient/card utilities, and test scaffolds
+- [ ] 03-02-PLAN.md — Card builder UI: IconPicker, TaskTagChips, CardPreview, and ScreenFive with download flow
 
 ### Phase 4: Analytics + Polish
 **Goal**: The complete micro-site is instrumented with GA4 analytics, meets WCAG AA accessibility standards, and performs within budget on school Chromebooks
@@ -96,5 +97,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation + Shell | 3/3 | Complete | 2026-03-19 |
 | 2. Content Screens | 6/6 | Complete   | 2026-03-19 |
-| 3. Card Builder | 0/1 | Not started | - |
+| 3. Card Builder | 0/2 | Not started | - |
 | 4. Analytics + Polish | 0/2 | Not started | - |
