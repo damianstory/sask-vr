@@ -24,8 +24,8 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 ### Screen 1 — Hook
 
 - [x] **HOOK-01**: Animated counter ticks up to average Saskatchewan carpenter salary with ease-out easing over 2 seconds
-- [ ] **HOOK-02**: Two to three additional headline stats displayed as visual data cards (job count, demand growth)
-- [ ] **HOOK-03**: All career data is Saskatchewan-specific and hardcoded as placeholder content
+- [x] **HOOK-02**: Two to three additional headline stats displayed as visual data cards (job count, demand growth)
+- [x] **HOOK-03**: All career data is Saskatchewan-specific and hardcoded as placeholder content
 - [x] **HOOK-04**: Counter animation disabled when prefers-reduced-motion is active (shows final number immediately)
 
 ### Screen 2 — Task Tiles
@@ -163,8 +163,8 @@ Deferred to post-pilot validation.
 | FLOW-03 | Phase 1 | Complete |
 | FLOW-04 | Phase 1 | Complete |
 | HOOK-01 | Phase 2 | Complete |
-| HOOK-02 | Phase 2 | Pending |
-| HOOK-03 | Phase 2 | Pending |
+| HOOK-02 | Phase 2 | Complete |
+| HOOK-03 | Phase 2 | Complete |
 | HOOK-04 | Phase 2 | Complete |
 | TILE-01 | Phase 2 | Pending |
 | TILE-02 | Phase 2 | Complete |
