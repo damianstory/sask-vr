@@ -1,0 +1,206 @@
+{
+  "meta": {
+    "occupationId": "carpentry",
+    "occupationTitle": "Carpentry Career Explorer",
+    "displayName": "Carpentry",
+    "landingDescription": "Explore what carpentry in Saskatchewan is really like"
+  },
+  "screenOne": {
+    "hookQuestion": "How much does a carpenter in Saskatchewan actually make?",
+    "salary": {
+      "amount": 99999,
+      "label": "Average Annual Salary",
+      "source": "Saskatchewan Labour Market Information, 2025"
+    },
+    "stats": [
+      { "value": "9,999", "label": "Jobs in Saskatchewan" },
+      { "value": "99%", "label": "Demand Growth" },
+      { "value": "999+", "label": "Employers Hiring" }
+    ]
+  },
+  "screenTwo": {
+    "heading": "What do carpenters actually do?",
+    "subtext": "Tap the tasks that sound most interesting to you.",
+    "instruction": "Select 2 to 3 tasks",
+    "minSelections": 2,
+    "maxSelections": 3,
+    "tiles": [
+      {
+        "id": "task-1",
+        "title": "Task 1",
+        "description": "Description for task 1",
+        "illustrationPath": "/illustrations/task-1.svg"
+      },
+      {
+        "id": "task-2",
+        "title": "Task 2",
+        "description": "Description for task 2",
+        "illustrationPath": "/illustrations/task-2.svg"
+      },
+      {
+        "id": "task-3",
+        "title": "Task 3",
+        "description": "Description for task 3",
+        "illustrationPath": "/illustrations/task-3.svg"
+      },
+      {
+        "id": "task-4",
+        "title": "Task 4",
+        "description": "Description for task 4",
+        "illustrationPath": "/illustrations/task-4.svg"
+      },
+      {
+        "id": "task-5",
+        "title": "Task 5",
+        "description": "Description for task 5",
+        "illustrationPath": "/illustrations/task-5.svg"
+      },
+      {
+        "id": "task-6",
+        "title": "Task 6",
+        "description": "Description for task 6",
+        "illustrationPath": "/illustrations/task-6.svg"
+      }
+    ]
+  },
+  "screenThree": {
+    "heading": "Who hires carpenters near you?",
+    "subtext": "Tap a pin to learn about real employers in the Regina area.",
+    "employers": [
+      {
+        "id": "employer-a",
+        "name": "Company A",
+        "description": "Description for Company A",
+        "employeeCount": 99,
+        "quote": "We love hiring apprentices!",
+        "pinPosition": { "x": 20, "y": 30 }
+      },
+      {
+        "id": "employer-b",
+        "name": "Company B",
+        "description": "Description for Company B",
+        "employeeCount": 75,
+        "quote": "Carpentry is a growing field.",
+        "pinPosition": { "x": 50, "y": 45 }
+      },
+      {
+        "id": "employer-c",
+        "name": "Company C",
+        "description": "Description for Company C",
+        "employeeCount": 120,
+        "pinPosition": { "x": 35, "y": 60 }
+      },
+      {
+        "id": "employer-d",
+        "name": "Company D",
+        "description": "Description for Company D",
+        "employeeCount": 45,
+        "pinPosition": { "x": 70, "y": 25 }
+      },
+      {
+        "id": "employer-e",
+        "name": "Company E",
+        "description": "Description for Company E",
+        "employeeCount": 200,
+        "quote": "We train the next generation of builders.",
+        "pinPosition": { "x": 80, "y": 70 }
+      }
+    ]
+  },
+  "screenFour": {
+    "heading": "How do you become a carpenter?",
+    "subtext": "Tap each step to see what comes next.",
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "You are here - Grade 7/8",
+        "subtitle": "Middle School",
+        "details": {
+          "courses": ["Industrial Arts", "Math", "Science"],
+          "description": "Start exploring trades and hands-on projects in your current classes."
+        }
+      },
+      {
+        "id": "step-2",
+        "title": "High School",
+        "subtitle": "Grades 9-12",
+        "details": {
+          "courses": ["Construction 10/20/30", "PAA", "Math"],
+          "duration": "4 years",
+          "description": "Take practical and applied arts courses to build foundational skills."
+        }
+      },
+      {
+        "id": "step-3",
+        "title": "Post-Secondary",
+        "subtitle": "Technical Training",
+        "details": {
+          "programs": ["Saskatchewan Polytechnic", "SIIT"],
+          "duration": "8 weeks per level",
+          "description": "Complete technical training levels at an approved institution."
+        }
+      },
+      {
+        "id": "step-4",
+        "title": "Apprenticeship",
+        "subtitle": "On-the-Job Training",
+        "details": {
+          "duration": "4 years (4 levels)",
+          "earnings": "$18-28/hour during training",
+          "description": "Work alongside a journeyperson carpenter while earning a wage."
+        }
+      },
+      {
+        "id": "step-5",
+        "title": "Journeyperson",
+        "subtitle": "Certified Carpenter",
+        "details": {
+          "earnings": "$28-45+/hour",
+          "description": "Pass the journeyperson exam and become a fully certified carpenter."
+        }
+      }
+    ]
+  },
+  "screenFive": {
+    "heading": "Make it yours",
+    "subtext": "Create your personal carpenter card to take with you.",
+    "nameInputLabel": "Your first name",
+    "nameInputPlaceholder": "Enter your first name",
+    "iconSelectionLabel": "Pick your favourite tool",
+    "icons": [
+      { "id": "icon-hammer", "label": "Hammer", "svgPath": "/icons/hammer.svg" },
+      { "id": "icon-saw", "label": "Saw", "svgPath": "/icons/saw.svg" },
+      { "id": "icon-hardhat", "label": "Hard Hat", "svgPath": "/icons/hardhat.svg" },
+      { "id": "icon-tape", "label": "Tape Measure", "svgPath": "/icons/tape.svg" },
+      { "id": "icon-goggles", "label": "Goggles", "svgPath": "/icons/goggles.svg" },
+      { "id": "icon-level", "label": "Level", "svgPath": "/icons/level.svg" }
+    ],
+    "downloadButtonLabel": "Download Your Card"
+  },
+  "screenSix": {
+    "heading": "Get ready for VR",
+    "subtext": "Keep these questions in mind while you explore.",
+    "prompts": [
+      { "id": "prompt-1", "text": "What tools do you notice being used?" },
+      { "id": "prompt-2", "text": "What safety equipment can you spot?" },
+      { "id": "prompt-3", "text": "What part of the job looks most interesting to you?" }
+    ]
+  },
+  "postVr": {
+    "congratsHeading": "Nice work, explorer!",
+    "congratsSubtext": "You just experienced what it's like to be a carpenter. Here are some next steps.",
+    "checklistHeading": "Your next steps",
+    "checklist": [
+      { "id": "check-1", "label": "Checklist item 1" },
+      { "id": "check-2", "label": "Checklist item 2" },
+      { "id": "check-3", "label": "Checklist item 3" },
+      { "id": "check-4", "label": "Checklist item 4" },
+      { "id": "check-5", "label": "Checklist item 5" },
+      { "id": "check-6", "label": "Checklist item 6" }
+    ],
+    "myblueprintLink": {
+      "url": "https://www.myblueprint.ca",
+      "label": "Open myBlueprint"
+    }
+  }
+}
