@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-open-sans);
+
+  --color-myb-primary-blue: #0092FF;
+  --color-myb-navy: #22224C;
+  --color-myb-light-blue: #C6E7FF;
+  --color-myb-off-white: #F6F6FF;
+  --color-myb-neutral-1: #E5E9F1;
+  --color-myb-neutral-2: #D9DFEA;
+  --color-myb-neutral-3: #AAB7CB;
+  --color-myb-neutral-4: #65738B;
+  --color-myb-neutral-5: #485163;
+  --color-myb-neutral-6: #252A33;
+  --color-myb-blue-dark: #0070CC;
+  --color-myb-blue-vivid: #3DA8FF;
+  --color-myb-navy-light: #3A3A6B;
+  --color-myb-light-blue-soft: #E0F0FF;
+}
+
+:root {
+  --background: #F6F6FF;
+  --foreground: #485163;
+
+  --myb-primary-blue: #0092FF;
+  --myb-navy: #22224C;
+  --myb-light-blue: #C6E7FF;
+  --myb-off-white: #F6F6FF;
+  --myb-neutral-1: #E5E9F1;
+  --myb-neutral-2: #D9DFEA;
+  --myb-neutral-3: #AAB7CB;
+  --myb-neutral-4: #65738B;
+  --myb-neutral-5: #485163;
+  --myb-neutral-6: #252A33;
+  --myb-blue-dark: #0070CC;
+  --myb-blue-vivid: #3DA8FF;
+  --myb-navy-light: #3A3A6B;
+  --myb-light-blue-soft: #E0F0FF;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+}
+
+body {
+  background: var(--myb-off-white);
+  color: var(--myb-neutral-5);
+  font-family: var(--font-open-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes slide-left-enter {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-right-enter {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.animate-slide-left {
+  animation: slide-left-enter 400ms ease-out;
+}
+
+.animate-slide-right {
+  animation: slide-right-enter 400ms ease-out;
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2000ms ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-left,
+  .animate-slide-right,
+  .animate-pulse-dot {
+    animation: none;
+  }
+}
