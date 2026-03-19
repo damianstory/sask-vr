@@ -47,7 +47,7 @@ Plans:
   4. Screen 4 displays a career pathway timeline with expandable accordion steps referencing Saskatchewan programs
   5. Screen 6 shows VR prep content with observation prompts and no required interactions
   6. Post-VR page displays a 6-item checkable checklist with progress count and a prominent myBlueprint link that opens in a new tab
-**Plans:** 4/5 plans executed
+**Plans:** 6 plans
 
 Plans:
 - [ ] 02-00-PLAN.md — Wave 0 test scaffolds: six stub test files for Nyquist compliance
@@ -55,6 +55,7 @@ Plans:
 - [ ] 02-02-PLAN.md — Screen 2 task tile grid with selection logic and Screen 4 career pathway timeline
 - [ ] 02-03-PLAN.md — Screen 3 employer map with mapcn/MapLibre GL, pins, and bottom sheet cards
 - [ ] 02-04-PLAN.md — Screen 6 VR prep prompt cards and Post-VR interactive checklist
+- [ ] 02-05-PLAN.md — Gap closure: vitest matchMedia mock + PATH-04 content fixes
 
 ### Phase 3: Card Builder
 **Goal**: Students create a personalized Carpenter Card by entering their name and choosing an icon, then download it as a tangible PNG artifact they keep
@@ -94,6 +95,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation + Shell | 3/3 | Complete | 2026-03-19 |
-| 2. Content Screens | 4/5 | In Progress|  |
+| 2. Content Screens | 4/6 | In Progress|  |
 | 3. Card Builder | 0/1 | Not started | - |
 | 4. Analytics + Polish | 0/2 | Not started | - |
