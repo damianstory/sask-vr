@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { SessionProvider } from '@/context/SessionContext'
 import ProgressBar from '@/components/ProgressBar'
 import Navigation from '@/components/Navigation'
 import ScreenOne from './components/ScreenOne'
 import ScreenTwo from './components/ScreenTwo'
-import ScreenThree from './components/ScreenThree'
+const ScreenThree = lazy(() => import('./components/ScreenThree'))
 import ScreenFour from './components/ScreenFour'
 import ScreenFive from './components/ScreenFive'
 import ScreenSix from './components/ScreenSix'
@@ -16,7 +16,7 @@ type ScreenNumber = 1 | 2 | 3 | 4 | 5 | 6
 const screens: Record<ScreenNumber, React.ReactNode> = {
   1: <ScreenOne />,
   2: <ScreenTwo />,
-  3: <ScreenThree />,
+  3: <Suspense fallback={<div className="flex h-64 items-center justify-center"><p className="text-[14px] font-[300] text-[var(--myb-neutral-4)]">Loading map...</p></div>}><ScreenThree /></Suspense>,
   4: <ScreenFour />,
   5: <ScreenFive />,
   6: <ScreenSix />,
