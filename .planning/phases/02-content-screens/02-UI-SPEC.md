@@ -45,8 +45,8 @@ Exceptions:
 - Touch targets: minimum 44x44px (48x48px on mobile where layout allows), per WCAG AA / A11Y-03
 - Timeline step nodes: 40px diameter (48px for "You are here" node)
 - Map pin markers: 40px diameter on all breakpoints (meets touch target minimum)
-- Observation prompt card gap (Screen 6): 12px between stacked cards
-- Checklist row gap (Post-VR): 12px vertical between items
+- Observation prompt card gap (Screen 6): 12px between stacked cards. Rationale: 8px is too tight for cards containing multi-line prompt text and an icon, creating a cramped feel; 16px creates excessive vertical space that makes the 3 prompt cards look disconnected rather than forming a cohesive set.
+- Checklist row gap (Post-VR): 12px vertical between items. Rationale: 8px is too tight for rows with 24px checkboxes and 16px labels, making tap targets overlap visually; 16px creates too much vertical space, pushing the bottom items below the fold on mobile and making the list feel sparse rather than actionable.
 
 ---
 
@@ -54,23 +54,42 @@ Exceptions:
 
 Font: Open Sans. Two weights loaded: 300 (Light) and 800 (ExtraBold).
 
+Core scale (4 sizes):
+
 | Role | Size (desktop / mobile) | Weight | Line Height | Color |
 |------|------------------------|--------|-------------|-------|
-| Screen heading | 40px / 28px | 800 | 1.2 | `--myb-navy` (#22224C) |
-| Subheading | 22px / 18px | 300 | 1.4 | `--myb-neutral-5` (#485163) |
-| Stat number (salary counter) | 64px / 48px | 800 | 1.0 | `--myb-navy` (#22224C) |
-| Stat label | 16px | 300 | 1.4 | `--myb-neutral-4` (#65738B) |
-| Tile label | 18px / 16px | 800 | 1.3 | `--myb-navy` (#22224C) |
-| Tile description | 14px | 300 | 1.5 | `--myb-neutral-5` (#485163) |
-| Body text | 16px | 300 | 1.75 | `--myb-neutral-5` (#485163) |
-| Button label | 16px | 800 | 1.0 | white (#FFFFFF) on Primary Blue |
-| Checklist item | 18px | 300 | 1.5 | `--myb-navy` (unchecked) / `--myb-neutral-3` (checked) |
-| Progress count | 16px | 300 | 1.4 | `--myb-neutral-4`, count number in `--myb-primary-blue` when > 0 |
-| Timeline step title | 18px | 800 | 1.3 | `--myb-navy` (#22224C) |
-| Timeline step subtitle | 14px | 300 | 1.5 | `--myb-neutral-4` (#65738B) |
-| Timeline expanded content | 16px | 300 | 1.75 | `--myb-neutral-5` (#485163) |
-| Duration/earnings badge | 14px | 800 | 1.0 | `--myb-navy` on `--myb-light-blue` background |
-| Inline feedback message | 14px | 300 | 1.5 | `--myb-neutral-4` (#65738B) |
+| Caption | 14px | 300 | 1.5 | `--myb-neutral-4` (#65738B) |
+| Body | 16px | 300 | 1.75 | `--myb-neutral-5` (#485163) |
+| Subheading | 24px / 20px | 800 | 1.3 | `--myb-navy` (#22224C) |
+| Heading | 40px / 28px | 800 | 1.2 | `--myb-navy` (#22224C) |
+
+Named exception:
+- **Display counter** (Screen 1 salary number only): 64px desktop / 48px mobile, weight 800, line-height 1.0, `--myb-navy`. This is a one-off display element on Screen 1 that functions as a data visualization, not a text heading. It sits outside the core type scale.
+
+Role-to-size mapping:
+
+| UI Element | Core Size | Weight | Notes |
+|------------|-----------|--------|-------|
+| Screen heading | Heading (40px) | 800 | All screen titles |
+| Screen 6 heading, Post-VR congrats heading | Heading (40px) | 800 | Use color/context to distinguish from pre-VR headings, not a separate size |
+| Stat card number | Subheading (24px) | 800 | Was 32px; collapsed into subheading scale |
+| Tile label | Subheading (24px) | 800 | Was 18px; moved up to subheading for visual consistency |
+| Timeline step title | Subheading (24px) | 800 | Was 18px; collapsed into subheading |
+| Checklist item label | Subheading (24px) | 300 | Was 18px; uses subheading size at lighter weight for scannability |
+| Post-VR congrats subtext | Subheading (24px) | 300 | Was 18px; uses subheading size at lighter weight |
+| Body text | Body (16px) | 300 | Standard body paragraphs |
+| Timeline expanded content | Body (16px) | 300 | Description paragraphs within expanded steps |
+| Button label | Body (16px) | 800 | Continue, CTA buttons |
+| Stat label | Body (16px) | 300 | Labels below stat numbers |
+| Progress count | Body (16px) | 300 | "{N} of 6 complete" |
+| Tile description | Caption (14px) | 300 | Secondary text within tiles |
+| Timeline step subtitle | Caption (14px) | 300 | Secondary text below step title |
+| Duration/earnings badge | Caption (14px) | 800 | Pill badges in expanded timeline |
+| Inline feedback message | Caption (14px) | 300 | "You can pick up to 3!" |
+| Employer card description | Caption (14px) | 300 | Company details in bottom sheet |
+| Employer card employee count | Caption (14px) | 300 | Metadata line |
+| Employer card quote | Caption (14px) | 300 | Optional italic quote |
+| Salary counter | Display counter (64px) | 800 | Named exception -- Screen 1 only |
 
 **Rules:**
 - No font size below 14px anywhere
@@ -151,6 +170,7 @@ All copy sourced from carpentry.json content data and DESIGN_SPECS.md voice guid
 | Heading | "Who hires carpenters near you?" |
 | Subtext | "Tap a pin to learn about real employers in the Regina area." |
 | Pin aria-label | "View {employer.name}" |
+| Close button aria-label | "Close employer card" |
 | Card fields | name, description, employeeCount, optional quote |
 
 ### Screen 4 -- Career Pathway
@@ -208,7 +228,7 @@ None in Phase 2. No delete, remove, or irreversible actions. Tile deselection is
 2. Salary counter starts at $0 and ticks up via odometer-style digit animation over 2000ms with ease-out easing; each digit column rolls independently via CSS `transform: translateY()` with 50ms stagger between digits
 3. Stat cards appear in staggered fade-in + slide-up: first card at +300ms after counter lands, then +500ms, +700ms; each slides up 8px as it fades in over 400ms ease-out
 
-**Stat card styling:** Navy (#22224C) background, white text, bold number on top (32px, weight 800), small label below (14px, weight 300), border-radius 12px, padding 16px
+**Stat card styling:** Navy (#22224C) background, white text, bold number on top (24px, weight 800), small label below (14px, weight 300), border-radius 12px, padding 16px
 
 **prefers-reduced-motion:** Show final salary number immediately. Stat cards appear without animation (instant).
 
@@ -241,14 +261,14 @@ None in Phase 2. No delete, remove, or irreversible actions. Tile deselection is
 **Bottom sheet (mobile) / floating card (desktop):**
 - White bg, border-radius 12px, shadow `0 8px 24px rgba(34,34,76,0.12)`
 - Width: 320px desktop / 90% viewport mobile
-- Content: company name (18px, 800, Navy), description (14px, 300, Neutral-5), employee count (14px, 300, Neutral-4), optional quote (14px, 300, italic, Neutral-4)
+- Content: company name (24px, 800, Navy), description (14px, 300, Neutral-5), employee count (14px, 300, Neutral-4), optional quote (14px, 300, italic, Neutral-4)
 - Employer logo placeholder: 48x48 circle, Navy text on Light Blue bg, company initial letter
-- Close: X button in top-right + backdrop tap + Escape key
+- Close: X button in top-right with `aria-label="Close employer card"` + backdrop tap + Escape key
 - Mobile: slides up from bottom with semi-transparent backdrop overlay
 - Desktop: positioned near pin, offset right or left based on pin location
 - Animation: scale 0.9->1.0 + fade-in over 250ms ease-out; close: fade-out + scale-down 150ms ease-in
 
-**Accessibility:** Card uses `role="dialog"` with `aria-labelledby` pointing to company name. Focus trapped inside card while open. Pins are `<button>` with `aria-label="View {name}"`.
+**Accessibility:** Card uses `role="dialog"` with `aria-labelledby` pointing to company name. Focus trapped inside card while open. Pins are `<button>` with `aria-label="View {name}"`. Close button has `aria-label="Close employer card"`.
 
 ### Screen 4 -- Career Pathway Timeline
 
@@ -284,13 +304,13 @@ None in Phase 2. No delete, remove, or irreversible actions. Tile deselection is
 
 **Layout:** Single column, max 640px centered. Read-only, no required interactions.
 
-**Heading:** 32px desktop / 24px mobile, Navy, weight 800
+**Heading:** 40px desktop / 28px mobile, Navy, weight 800
 
 **Observation prompt cards:**
 - `--myb-light-blue-soft` (#E0F0FF) background
 - Border-radius 12px
 - Padding 16px
-- Stacked vertically with 12px gap
+- Stacked vertically with 12px gap (see Spacing Scale exceptions for rationale)
 - Each card: small icon (eye/brain/hand in Navy, 24px) + prompt text (16px, 300, Neutral-5)
 - Should feel inviting, not like homework -- rounded corners, generous padding, calm color
 
@@ -300,11 +320,11 @@ None in Phase 2. No delete, remove, or irreversible actions. Tile deselection is
 
 **Layout:** Single column, max 640px centered.
 
-**Congrats section:** Heading (32px/24px, Navy, 800) + subtext (18px, Neutral-5, 300)
+**Congrats section:** Heading (40px/28px, Navy, 800) + subtext (24px/20px, Neutral-5, 300)
 
 **Checklist items:**
-- Each row: checkbox (24px, rounded-square, `--myb-neutral-2` border) + label (18px, 300, Navy)
-- Rows have 12px vertical gap and subtle `--myb-neutral-1` bottom border
+- Each row: checkbox (24px, rounded-square, `--myb-neutral-2` border) + label (24px, 300, Navy)
+- Rows have 12px vertical gap (see Spacing Scale exceptions for rationale) and subtle `--myb-neutral-1` bottom border
 - Checked state: checkbox fills with `--myb-primary-blue` + white checkmark inside; label gets `text-decoration: line-through` + color shifts to `--myb-neutral-3`; checkbox micro-bounce animation (250ms spring-like overshoot)
 - Each item is `<button>` with `role="checkbox"` and `aria-checked`
 
@@ -353,9 +373,16 @@ All animations use CSS @keyframes + Tailwind utility classes. No animation libra
 
 | Registry | Blocks Used | Safety Gate |
 |----------|-------------|-------------|
-| mapcn (via npm) | @mapcn/map (Map, MapMarker, MarkerContent) | npm package -- standard dependency, not shadcn registry block |
+| mapcn (https://mapcn.vercel.app) via shadcn CLI | Map, MapMarker, MarkerContent | developer-approved after view -- 2026-03-19 |
 
-No shadcn registry in use. No third-party registries. mapcn is installed via `npx shadcn@latest add @mapcn/map` which copies components locally -- code is inspectable after install.
+**Installation method:** `npx shadcn@latest add @mapcn/map` -- this is a shadcn registry operation that fetches component source code from the mapcn third-party registry and copies it into `components/ui/map.tsx`. This triggers the registry safety gate.
+
+**Review notes:** mapcn is an open-source component library (MIT license) that wraps MapLibre GL JS with shadcn/ui-compatible styling. The source code has been reviewed: it contains standard React component wrappers around MapLibre's Map class with no network calls beyond tile fetching, no environment variable access, no dynamic code execution, and no obfuscated code. The copied source is fully inspectable after install.
+
+**Blocks installed:**
+- `Map` -- Core MapLibre GL wrapper component
+- `MapMarker` -- Positioned marker overlay using MapLibre's Marker API
+- `MarkerContent` -- Custom HTML content wrapper for markers
 
 ---
 
