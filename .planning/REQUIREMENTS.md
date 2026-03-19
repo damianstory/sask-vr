@@ -154,80 +154,80 @@ Deferred to post-pilot validation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LAND-01 | — | Pending |
-| LAND-02 | — | Pending |
-| LAND-03 | — | Pending |
-| LAND-04 | — | Pending |
-| FLOW-01 | — | Pending |
-| FLOW-02 | — | Pending |
-| FLOW-03 | — | Pending |
-| FLOW-04 | — | Pending |
-| HOOK-01 | — | Pending |
-| HOOK-02 | — | Pending |
-| HOOK-03 | — | Pending |
-| HOOK-04 | — | Pending |
-| TILE-01 | — | Pending |
-| TILE-02 | — | Pending |
-| TILE-03 | — | Pending |
-| TILE-04 | — | Pending |
-| TILE-05 | — | Pending |
-| MAP-01 | — | Pending |
-| MAP-02 | — | Pending |
-| MAP-03 | — | Pending |
-| MAP-04 | — | Pending |
-| MAP-05 | — | Pending |
-| PATH-01 | — | Pending |
-| PATH-02 | — | Pending |
-| PATH-03 | — | Pending |
-| PATH-04 | — | Pending |
-| CARD-01 | — | Pending |
-| CARD-02 | — | Pending |
-| CARD-03 | — | Pending |
-| CARD-04 | — | Pending |
-| CARD-05 | — | Pending |
-| CARD-06 | — | Pending |
-| CARD-07 | — | Pending |
-| CARD-08 | — | Pending |
-| CARD-09 | — | Pending |
-| PREP-01 | — | Pending |
-| PREP-02 | — | Pending |
-| PREP-03 | — | Pending |
-| PREP-04 | — | Pending |
-| BRDG-01 | — | Pending |
-| BRDG-02 | — | Pending |
-| BRDG-03 | — | Pending |
-| BRDG-04 | — | Pending |
-| BRDG-05 | — | Pending |
-| ANLY-01 | — | Pending |
-| ANLY-02 | — | Pending |
-| ANLY-03 | — | Pending |
-| ANLY-04 | — | Pending |
-| ANLY-05 | — | Pending |
-| ANLY-06 | — | Pending |
-| ANLY-07 | — | Pending |
-| ANLY-08 | — | Pending |
-| ANLY-09 | — | Pending |
-| A11Y-01 | — | Pending |
-| A11Y-02 | — | Pending |
-| A11Y-03 | — | Pending |
-| A11Y-04 | — | Pending |
-| A11Y-05 | — | Pending |
-| PERF-01 | — | Pending |
-| PERF-02 | — | Pending |
-| PERF-03 | — | Pending |
-| PERF-04 | — | Pending |
-| PERF-05 | — | Pending |
-| PERF-06 | — | Pending |
-| CONT-01 | — | Pending |
-| CONT-02 | — | Pending |
-| CONT-03 | — | Pending |
-| CONT-04 | — | Pending |
+| LAND-01 | Phase 1 | Pending |
+| LAND-02 | Phase 1 | Pending |
+| LAND-03 | Phase 1 | Pending |
+| LAND-04 | Phase 1 | Pending |
+| FLOW-01 | Phase 1 | Pending |
+| FLOW-02 | Phase 1 | Pending |
+| FLOW-03 | Phase 1 | Pending |
+| FLOW-04 | Phase 1 | Pending |
+| HOOK-01 | Phase 2 | Pending |
+| HOOK-02 | Phase 2 | Pending |
+| HOOK-03 | Phase 2 | Pending |
+| HOOK-04 | Phase 2 | Pending |
+| TILE-01 | Phase 2 | Pending |
+| TILE-02 | Phase 2 | Pending |
+| TILE-03 | Phase 2 | Pending |
+| TILE-04 | Phase 2 | Pending |
+| TILE-05 | Phase 2 | Pending |
+| MAP-01 | Phase 2 | Pending |
+| MAP-02 | Phase 2 | Pending |
+| MAP-03 | Phase 2 | Pending |
+| MAP-04 | Phase 2 | Pending |
+| MAP-05 | Phase 2 | Pending |
+| PATH-01 | Phase 2 | Pending |
+| PATH-02 | Phase 2 | Pending |
+| PATH-03 | Phase 2 | Pending |
+| PATH-04 | Phase 2 | Pending |
+| CARD-01 | Phase 3 | Pending |
+| CARD-02 | Phase 3 | Pending |
+| CARD-03 | Phase 3 | Pending |
+| CARD-04 | Phase 3 | Pending |
+| CARD-05 | Phase 3 | Pending |
+| CARD-06 | Phase 3 | Pending |
+| CARD-07 | Phase 3 | Pending |
+| CARD-08 | Phase 3 | Pending |
+| CARD-09 | Phase 3 | Pending |
+| PREP-01 | Phase 2 | Pending |
+| PREP-02 | Phase 2 | Pending |
+| PREP-03 | Phase 2 | Pending |
+| PREP-04 | Phase 2 | Pending |
+| BRDG-01 | Phase 2 | Pending |
+| BRDG-02 | Phase 2 | Pending |
+| BRDG-03 | Phase 2 | Pending |
+| BRDG-04 | Phase 2 | Pending |
+| BRDG-05 | Phase 2 | Pending |
+| ANLY-01 | Phase 4 | Pending |
+| ANLY-02 | Phase 4 | Pending |
+| ANLY-03 | Phase 4 | Pending |
+| ANLY-04 | Phase 4 | Pending |
+| ANLY-05 | Phase 4 | Pending |
+| ANLY-06 | Phase 4 | Pending |
+| ANLY-07 | Phase 4 | Pending |
+| ANLY-08 | Phase 4 | Pending |
+| ANLY-09 | Phase 4 | Pending |
+| A11Y-01 | Phase 4 | Pending |
+| A11Y-02 | Phase 4 | Pending |
+| A11Y-03 | Phase 4 | Pending |
+| A11Y-04 | Phase 4 | Pending |
+| A11Y-05 | Phase 4 | Pending |
+| PERF-01 | Phase 4 | Pending |
+| PERF-02 | Phase 4 | Pending |
+| PERF-03 | Phase 3 | Pending |
+| PERF-04 | Phase 4 | Pending |
+| PERF-05 | Phase 1 | Pending |
+| PERF-06 | Phase 4 | Pending |
+| CONT-01 | Phase 1 | Pending |
+| CONT-02 | Phase 1 | Pending |
+| CONT-03 | Phase 1 | Pending |
+| CONT-04 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 58 total
-- Mapped to phases: 0
-- Unmapped: 58 ⚠️
+- Mapped to phases: 58
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-19*
-*Last updated: 2026-03-19 after initial definition*
+*Last updated: 2026-03-19 after roadmap creation*
