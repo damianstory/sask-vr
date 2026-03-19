@@ -57,11 +57,11 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 - [ ] **CARD-02**: Six icon options displayed in a grid — student selects exactly one
 - [ ] **CARD-03**: Task selections from Screen 2 displayed as non-editable tag chips on the builder
 - [ ] **CARD-04**: Live card preview updates in real time as student enters name, selects icon
-- [ ] **CARD-05**: Card uses pre-generated background variant mapped to selections via deterministic hash
-- [ ] **CARD-06**: Card renders at 1200x675px with name, icon, task labels, and career stats
+- [x] **CARD-05**: Card uses pre-generated background variant mapped to selections via deterministic hash
+- [x] **CARD-06**: Card renders at 1200x675px with name, icon, task labels, and career stats
 - [ ] **CARD-07**: Download button saves card as PNG to device (filename: carpenter-card.png)
 - [ ] **CARD-08**: Download button is disabled until name is entered and icon is selected
-- [ ] **CARD-09**: Student's first name is never transmitted to any server — used only for client-side rendering
+- [x] **CARD-09**: Student's first name is never transmitted to any server — used only for client-side rendering
 
 ### Screen 6 — VR Prep
 
@@ -102,7 +102,7 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 
 - [ ] **PERF-01**: Landing page LCP under 3 seconds on school Chromebook (standard WiFi)
 - [ ] **PERF-02**: Screen-to-screen transitions under 500ms perceived
-- [ ] **PERF-03**: Card generation under 1 second (fallback path with pre-generated backgrounds)
+- [x] **PERF-03**: Card generation under 1 second (fallback path with pre-generated backgrounds)
 - [ ] **PERF-04**: Total JS bundle under 150KB gzipped
 - [x] **PERF-05**: Deployed on Vercel with static generation (SSG)
 - [ ] **PERF-06**: Responsive at 320px (mobile), 768px (tablet), 1024px+ (Chromebook/laptop)
@@ -184,11 +184,11 @@ Deferred to post-pilot validation.
 | CARD-02 | Phase 3 | Pending |
 | CARD-03 | Phase 3 | Pending |
 | CARD-04 | Phase 3 | Pending |
-| CARD-05 | Phase 3 | Pending |
-| CARD-06 | Phase 3 | Pending |
+| CARD-05 | Phase 3 | Complete |
+| CARD-06 | Phase 3 | Complete |
 | CARD-07 | Phase 3 | Pending |
 | CARD-08 | Phase 3 | Pending |
-| CARD-09 | Phase 3 | Pending |
+| CARD-09 | Phase 3 | Complete |
 | PREP-01 | Phase 2 | Complete |
 | PREP-02 | Phase 2 | Complete |
 | PREP-03 | Phase 2 | Complete |
@@ -214,7 +214,7 @@ Deferred to post-pilot validation.
 | A11Y-05 | Phase 4 | Pending |
 | PERF-01 | Phase 4 | Pending |
 | PERF-02 | Phase 4 | Pending |
-| PERF-03 | Phase 3 | Pending |
+| PERF-03 | Phase 3 | Complete |
 | PERF-04 | Phase 4 | Pending |
 | PERF-05 | Phase 1 | Complete |
 | PERF-06 | Phase 4 | Pending |
