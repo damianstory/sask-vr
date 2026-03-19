@@ -29,11 +29,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Progress bar visually reflects current screen position (1 of 6 through 6 of 6)
   4. All screen content is driven by a typed JSON file (carpentry.json) with placeholder data populated for every screen
   5. Post-VR route (/post-vr) is directly accessible via URL for QR code entry
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Project scaffold, content schema, brand tokens, and landing page with path cards
+- [ ] 01-02-PLAN.md — Pre-VR flow with session state, progress bar, navigation, screen shells, and Post-VR page
 
 ### Phase 2: Content Screens
 **Goal**: Students experience all six Pre-VR screens and the Post-VR checklist as interactive, content-rich pages that build context for the VR simulation and guide post-VR reflection
