@@ -53,17 +53,20 @@ Font: Open Sans (fallback: -apple-system, BlinkMacSystemFont, sans-serif)
 
 | Role | Size (desktop / mobile) | Weight | Line Height | Color |
 |------|------------------------|--------|-------------|-------|
-| Display (stat numbers) | 64px / 48px | 900 (Black) | 1.0 | Navy `#22224C` or Primary Blue `#0092FF` |
 | Screen heading | 40px / 28px | 900 (Black) | 1.2 | Navy `#22224C` |
-| Subheading | 22px / 18px | 500 (Medium) | 1.4 | Neutral-5 `#485163` |
+| Subheading | 22px / 18px | 300 (Light) | 1.4 | Neutral-5 `#485163` |
 | Body | 16px / 16px | 300 (Light) | 1.75 | Neutral-5 `#485163` |
-| Button label | 16px / 16px | 700 (Bold) | 1.0 | White `#FFFFFF` (on blue) |
-| Label / caption | 14px / 14px | 500 (Medium) | 1.5 | Neutral-4 `#65738B` |
+| Button label | 16px / 16px | 900 (Black) | 1.0 | White `#FFFFFF` (on blue) |
+| Label / caption | 14px / 14px | 300 (Light) | 1.5 | Neutral-4 `#65738B` |
 
-**Phase 1 usage:** Only Screen heading, Subheading, Body, Button label, and Label roles are used in Phase 1. Display and stat-specific roles appear in Phase 2 when content screens get real interactivity.
+**Phase 2+ type scale extension:** Display role (64px/48px, weight 900) will be introduced in Phase 2 when stat numbers and large display text are needed.
+
+**Declared weights (2 total):**
+- **900 (Black):** Screen headings, button labels
+- **300 (Light):** Subheadings, body text, labels/captions
 
 **Rules:**
-- Maximum two font weights per screen (e.g., 900 for heading + 300 for body)
+- Maximum two font weights per screen: 900 for headings/actions + 300 for body/supporting
 - No font size below 14px anywhere
 - Headings always Navy; body text always Neutral-5 or Neutral-6
 
@@ -134,8 +137,8 @@ Components built in this phase that establish visual contracts for later phases:
 | Component | Visual Contract |
 |-----------|----------------|
 | **Path Card (Landing)** | 400x280px desktop, full-width 180px mobile. Light Blue bg `#C6E7FF`. Heading 24px/900/Navy. Subtext 16px/300/Neutral-5. Hover: shadow lift `0 8px 24px rgba(34,34,76,0.1)`, border shifts to Primary Blue. Focus: Primary Blue 3px outline, 3px offset. Semantic `<button>` element. |
-| **Progress Bar** | Six dots, 12px diameter each, 8px gap. Filled: Primary Blue `#0092FF`. Hollow: Neutral-3 `#AAB7CB`. Current dot: subtle pulse animation (scale 1.0-1.2, 2s loop). Text label below: "{N} of 6" in 14px/500/Neutral-4. Centered top of screen content area. `role="progressbar"` with `aria-valuenow`. |
-| **Navigation** | Back + Next buttons. Next: Primary Blue bg, white text, 16px/700. Back: secondary style (outlined or text-only). Disabled state: Neutral-3 bg, Neutral-4 text. Positioned at bottom of screen content. |
+| **Progress Bar** | Six dots, 12px diameter each, 8px gap. Filled: Primary Blue `#0092FF`. Hollow: Neutral-3 `#AAB7CB`. Current dot: subtle pulse animation (scale 1.0-1.2, 2s loop). Text label below: "{N} of 6" in 14px/300/Neutral-4. Centered top of screen content area. `role="progressbar"` with `aria-valuenow`. |
+| **Navigation** | Back + Next buttons. Next: Primary Blue bg, white text, 16px/900. Back: secondary style (outlined or text-only). Disabled state: Neutral-3 bg, Neutral-4 text. Positioned at bottom of screen content. |
 | **Screen Shell (placeholder)** | Correct layout grids and section containers per DESIGN_SPECS screen specs. Placeholder shapes: Neutral-1 `#E5E9F1` background, Neutral-2 `#D9DFEA` borders, `border-radius: 12px`. Structure driven by `carpentry.json` data (number of tiles, steps, pins, etc.). |
 | **Slide Transition** | Forward: slide-left (translateX 100% to 0, opacity 0 to 1). Backward: slide-right (translateX -100% to 0, opacity 0 to 1). Duration: 400ms. Easing: ease-out. Skip animation on initial mount. `prefers-reduced-motion`: instant, no animation. |
 
