@@ -16,10 +16,10 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 
 ### Pre-VR Flow
 
-- [ ] **FLOW-01**: Pre-VR experience is a single route (/pre-vr) with six screens managed by internal React state
-- [ ] **FLOW-02**: Student can navigate forward and backward through all six screens without losing session state
-- [ ] **FLOW-03**: Visual progress bar shows current position in the six-screen flow
-- [ ] **FLOW-04**: Screen transitions use smooth slide animations (respecting prefers-reduced-motion)
+- [x] **FLOW-01**: Pre-VR experience is a single route (/pre-vr) with six screens managed by internal React state
+- [x] **FLOW-02**: Student can navigate forward and backward through all six screens without losing session state
+- [x] **FLOW-03**: Visual progress bar shows current position in the six-screen flow
+- [x] **FLOW-04**: Screen transitions use smooth slide animations (respecting prefers-reduced-motion)
 
 ### Screen 1 — Hook
 
@@ -158,10 +158,10 @@ Deferred to post-pilot validation.
 | LAND-02 | Phase 1 | Complete |
 | LAND-03 | Phase 1 | Complete |
 | LAND-04 | Phase 1 | Complete |
-| FLOW-01 | Phase 1 | Pending |
-| FLOW-02 | Phase 1 | Pending |
-| FLOW-03 | Phase 1 | Pending |
-| FLOW-04 | Phase 1 | Pending |
+| FLOW-01 | Phase 1 | Complete |
+| FLOW-02 | Phase 1 | Complete |
+| FLOW-03 | Phase 1 | Complete |
+| FLOW-04 | Phase 1 | Complete |
 | HOOK-01 | Phase 2 | Pending |
 | HOOK-02 | Phase 2 | Pending |
 | HOOK-03 | Phase 2 | Pending |
