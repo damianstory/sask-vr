@@ -56,6 +56,7 @@ Progress: [██████████] 100%
 | Phase 02 P01 | 3 | 2 tasks | 4 files |
 | Phase 02 P04 | 1min | 2 tasks | 2 files |
 | Phase 02 P02 | 2 | 2 tasks | 2 files |
+| Phase 02 P03 | 3min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,9 @@ Recent decisions affecting current work:
 - [Phase 02-04]: Post-VR uses session-only useState -- no localStorage or context persistence
 - [Phase 02]: Used grid-template-rows 0fr/1fr for accordion animation -- smoother, no hardcoded height
 - [Phase 02]: Tile selections stored in SessionContext (not local state) -- survives screen navigation for Card Builder
+- [Phase 02-03]: Used maplibre-gl directly instead of mapcn -- no components.json/shadcn setup in project
+- [Phase 02-03]: Programmatic markers via maplibregl.Marker with custom DOM button elements for pin interactivity
+- [Phase 02-03]: Code-split Screen 3 with React.lazy to keep ~200KB maplibre-gl out of initial bundle
 
 ### Pending Todos
 
@@ -96,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T20:05:34.951Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-03-19T20:05:10Z
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None

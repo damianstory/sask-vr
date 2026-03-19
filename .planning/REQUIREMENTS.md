@@ -38,11 +38,11 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 
 ### Screen 3 — Employer Map
 
-- [ ] **MAP-01**: Static SVG illustrated map of Regina area displayed with 4-6 employer pins
+- [x] **MAP-01**: Static SVG illustrated map of Regina area displayed with 4-6 employer pins
 - [x] **MAP-02**: Tapping a pin opens a company card with name, description, employee count, and optional logo/quote
 - [x] **MAP-03**: Company card closes when tapping outside it, tapping close button, or pressing Escape
-- [ ] **MAP-04**: Map is not zoomable or pannable — pins are the only interactive elements
-- [ ] **MAP-05**: Employer data is structured as JSON for easy future replacement
+- [x] **MAP-04**: Map is not zoomable or pannable — pins are the only interactive elements
+- [x] **MAP-05**: Employer data is structured as JSON for easy future replacement
 
 ### Screen 4 — Career Pathway
 
@@ -171,11 +171,11 @@ Deferred to post-pilot validation.
 | TILE-03 | Phase 2 | Complete |
 | TILE-04 | Phase 2 | Complete |
 | TILE-05 | Phase 2 | Complete |
-| MAP-01 | Phase 2 | Pending |
+| MAP-01 | Phase 2 | Complete |
 | MAP-02 | Phase 2 | Complete |
 | MAP-03 | Phase 2 | Complete |
-| MAP-04 | Phase 2 | Pending |
-| MAP-05 | Phase 2 | Pending |
+| MAP-04 | Phase 2 | Complete |
+| MAP-05 | Phase 2 | Complete |
 | PATH-01 | Phase 2 | Complete |
 | PATH-02 | Phase 2 | Complete |
 | PATH-03 | Phase 2 | Complete |
