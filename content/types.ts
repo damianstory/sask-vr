@@ -27,6 +27,7 @@ export interface OccupationContent {
       id: string
       title: string
       description: string
+      emoji: string
       illustrationPath: string
     }>
   }
@@ -40,7 +41,7 @@ export interface OccupationContent {
       employeeCount: number
       quote?: string
       logoPath?: string
-      pinPosition: { x: number; y: number }
+      pinPosition: { lng: number; lat: number }
     }>
   }
   screenFour: {

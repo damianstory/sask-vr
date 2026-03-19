@@ -8,14 +8,14 @@
   "screenOne": {
     "hookQuestion": "How much does a carpenter in Saskatchewan actually make?",
     "salary": {
-      "amount": 99999,
+      "amount": 72000,
       "label": "Average Annual Salary",
       "source": "Saskatchewan Labour Market Information, 2025"
     },
     "stats": [
-      { "value": "9,999", "label": "Jobs in Saskatchewan" },
-      { "value": "99%", "label": "Demand Growth" },
-      { "value": "999+", "label": "Employers Hiring" }
+      { "value": "4,200+", "label": "Jobs in Saskatchewan" },
+      { "value": "12%", "label": "Demand Growth" },
+      { "value": "350+", "label": "Employers Hiring" }
     ]
   },
   "screenTwo": {
@@ -26,40 +26,46 @@
     "maxSelections": 3,
     "tiles": [
       {
-        "id": "task-1",
-        "title": "Task 1",
-        "description": "Description for task 1",
-        "illustrationPath": "/illustrations/task-1.svg"
+        "id": "task-framing",
+        "title": "Framing",
+        "description": "Build the skeleton of houses and buildings",
+        "emoji": "🔨",
+        "illustrationPath": ""
       },
       {
-        "id": "task-2",
-        "title": "Task 2",
-        "description": "Description for task 2",
-        "illustrationPath": "/illustrations/task-2.svg"
+        "id": "task-measuring",
+        "title": "Measuring & Layout",
+        "description": "Measure twice, cut once — precision matters",
+        "emoji": "📏",
+        "illustrationPath": ""
       },
       {
-        "id": "task-3",
-        "title": "Task 3",
-        "description": "Description for task 3",
-        "illustrationPath": "/illustrations/task-3.svg"
+        "id": "task-finishing",
+        "title": "Finishing Work",
+        "description": "Install trim, cabinets, and the details people see",
+        "emoji": "🪚",
+        "illustrationPath": ""
       },
       {
-        "id": "task-4",
-        "title": "Task 4",
-        "description": "Description for task 4",
-        "illustrationPath": "/illustrations/task-4.svg"
+        "id": "task-concrete",
+        "title": "Concrete & Foundations",
+        "description": "Pour and shape the base everything stands on",
+        "emoji": "🧱",
+        "illustrationPath": ""
       },
       {
-        "id": "task-5",
-        "title": "Task 5",
-        "description": "Description for task 5",
-        "illustrationPath": "/illustrations/task-5.svg"
+        "id": "task-roofing",
+        "title": "Roofing",
+        "description": "Keep buildings protected from Saskatchewan weather",
+        "emoji": "🏠",
+        "illustrationPath": ""
       },
       {
-        "id": "task-6",
-        "title": "Task 6",
-        "description": "Description for task 6",
-        "illustrationPath": "/illustrations/task-6.svg"
+        "id": "task-renovation",
+        "title": "Renovation",
+        "description": "Transform old spaces into something new",
+        "emoji": "🔧",
+        "illustrationPath": ""
       }
     ]
   },
@@ -73,7 +79,7 @@
         "description": "Description for Company A",
         "employeeCount": 99,
         "quote": "We love hiring apprentices!",
-        "pinPosition": { "x": 20, "y": 30 }
+        "pinPosition": { "lng": -104.5917, "lat": 50.4509 }
       },
       {
         "id": "employer-b",
@@ -81,21 +87,21 @@
         "description": "Description for Company B",
         "employeeCount": 75,
         "quote": "Carpentry is a growing field.",
-        "pinPosition": { "x": 50, "y": 45 }
+        "pinPosition": { "lng": -104.6167, "lat": 50.4452 }
       },
       {
         "id": "employer-c",
         "name": "Company C",
         "description": "Description for Company C",
         "employeeCount": 120,
-        "pinPosition": { "x": 35, "y": 60 }
+        "pinPosition": { "lng": -104.5734, "lat": 50.4288 }
       },
       {
         "id": "employer-d",
         "name": "Company D",
         "description": "Description for Company D",
         "employeeCount": 45,
-        "pinPosition": { "x": 70, "y": 25 }
+        "pinPosition": { "lng": -104.6503, "lat": 50.4631 }
       },
       {
         "id": "employer-e",
@@ -103,7 +109,7 @@
         "description": "Description for Company E",
         "employeeCount": 200,
         "quote": "We train the next generation of builders.",
-        "pinPosition": { "x": 80, "y": 70 }
+        "pinPosition": { "lng": -104.6389, "lat": 50.4180 }
       }
     ]
   },
