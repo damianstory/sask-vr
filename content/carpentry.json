@@ -129,7 +129,7 @@
       {
         "id": "step-2",
         "title": "High School",
-        "subtitle": "Grades 9-12",
+        "subtitle": "e.g. Miller Collegiate, Grades 9-12",
         "details": {
           "courses": ["Construction 10/20/30", "PAA", "Math"],
           "duration": "4 years",
@@ -153,6 +153,7 @@
         "details": {
           "duration": "4 years (4 levels)",
           "earnings": "$18-28/hour during training",
+          "programs": ["Saskatchewan Youth Internship Program"],
           "description": "Work alongside a journeyperson carpenter while earning a wage."
         }
       },
