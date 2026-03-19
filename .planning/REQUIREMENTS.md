@@ -23,32 +23,32 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 
 ### Screen 1 — Hook
 
-- [ ] **HOOK-01**: Animated counter ticks up to average Saskatchewan carpenter salary with ease-out easing over 2 seconds
+- [x] **HOOK-01**: Animated counter ticks up to average Saskatchewan carpenter salary with ease-out easing over 2 seconds
 - [ ] **HOOK-02**: Two to three additional headline stats displayed as visual data cards (job count, demand growth)
 - [ ] **HOOK-03**: All career data is Saskatchewan-specific and hardcoded as placeholder content
-- [ ] **HOOK-04**: Counter animation disabled when prefers-reduced-motion is active (shows final number immediately)
+- [x] **HOOK-04**: Counter animation disabled when prefers-reduced-motion is active (shows final number immediately)
 
 ### Screen 2 — Task Tiles
 
 - [ ] **TILE-01**: Six illustrated tiles displayed in a responsive grid (3x2 desktop, 2-column mobile)
-- [ ] **TILE-02**: Student can select between 2 and 3 tiles with clear visual selected state (highlight + checkmark)
-- [ ] **TILE-03**: Fourth selection is prevented with inline feedback message
-- [ ] **TILE-04**: Continue button is disabled until minimum 2 tiles are selected
-- [ ] **TILE-05**: Tile selections are persisted in session state and available on Screen 5 (Card Builder)
+- [x] **TILE-02**: Student can select between 2 and 3 tiles with clear visual selected state (highlight + checkmark)
+- [x] **TILE-03**: Fourth selection is prevented with inline feedback message
+- [x] **TILE-04**: Continue button is disabled until minimum 2 tiles are selected
+- [x] **TILE-05**: Tile selections are persisted in session state and available on Screen 5 (Card Builder)
 
 ### Screen 3 — Employer Map
 
 - [ ] **MAP-01**: Static SVG illustrated map of Regina area displayed with 4-6 employer pins
-- [ ] **MAP-02**: Tapping a pin opens a company card with name, description, employee count, and optional logo/quote
-- [ ] **MAP-03**: Company card closes when tapping outside it, tapping close button, or pressing Escape
+- [x] **MAP-02**: Tapping a pin opens a company card with name, description, employee count, and optional logo/quote
+- [x] **MAP-03**: Company card closes when tapping outside it, tapping close button, or pressing Escape
 - [ ] **MAP-04**: Map is not zoomable or pannable — pins are the only interactive elements
 - [ ] **MAP-05**: Employer data is structured as JSON for easy future replacement
 
 ### Screen 4 — Career Pathway
 
-- [ ] **PATH-01**: Vertical timeline with 5 expandable steps starting at "You are here — Grade 7/8"
-- [ ] **PATH-02**: Tapping a step expands it with course names, duration, earnings, and programs (Saskatchewan-specific)
-- [ ] **PATH-03**: Only one step can be expanded at a time (accordion behavior)
+- [x] **PATH-01**: Vertical timeline with 5 expandable steps starting at "You are here — Grade 7/8"
+- [x] **PATH-02**: Tapping a step expands it with course names, duration, earnings, and programs (Saskatchewan-specific)
+- [x] **PATH-03**: Only one step can be expanded at a time (accordion behavior)
 - [ ] **PATH-04**: Pathway content references Miller Collegiate, SaskPolytech, and Saskatchewan Youth Internship Program
 
 ### Screen 5 — Card Builder
@@ -65,18 +65,18 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 
 ### Screen 6 — VR Prep
 
-- [ ] **PREP-01**: Brief description of the carpentry VR simulation displayed
+- [x] **PREP-01**: Brief description of the carpentry VR simulation displayed
 - [ ] **PREP-02**: Two to three observation prompts displayed as visually distinct cards
 - [ ] **PREP-03**: Student can navigate back to any previous screen with all state preserved
 - [ ] **PREP-04**: No required interactions — read-and-absorb content only
 
 ### Post-VR Bridge
 
-- [ ] **BRDG-01**: Congratulatory message acknowledging VR simulation completion
-- [ ] **BRDG-02**: Six numbered checklist items displayed with checkable toggle state
+- [x] **BRDG-01**: Congratulatory message acknowledging VR simulation completion
+- [x] **BRDG-02**: Six numbered checklist items displayed with checkable toggle state
 - [ ] **BRDG-03**: Checklist state is local and session-only
-- [ ] **BRDG-04**: Progress indicator shows count of completed items (e.g., "2 of 6 complete")
-- [ ] **BRDG-05**: Prominent button linking to myBlueprint that opens in a new tab
+- [x] **BRDG-04**: Progress indicator shows count of completed items (e.g., "2 of 6 complete")
+- [x] **BRDG-05**: Prominent button linking to myBlueprint that opens in a new tab
 
 ### Analytics
 
@@ -162,23 +162,23 @@ Deferred to post-pilot validation.
 | FLOW-02 | Phase 1 | Complete |
 | FLOW-03 | Phase 1 | Complete |
 | FLOW-04 | Phase 1 | Complete |
-| HOOK-01 | Phase 2 | Pending |
+| HOOK-01 | Phase 2 | Complete |
 | HOOK-02 | Phase 2 | Pending |
 | HOOK-03 | Phase 2 | Pending |
-| HOOK-04 | Phase 2 | Pending |
+| HOOK-04 | Phase 2 | Complete |
 | TILE-01 | Phase 2 | Pending |
-| TILE-02 | Phase 2 | Pending |
-| TILE-03 | Phase 2 | Pending |
-| TILE-04 | Phase 2 | Pending |
-| TILE-05 | Phase 2 | Pending |
+| TILE-02 | Phase 2 | Complete |
+| TILE-03 | Phase 2 | Complete |
+| TILE-04 | Phase 2 | Complete |
+| TILE-05 | Phase 2 | Complete |
 | MAP-01 | Phase 2 | Pending |
-| MAP-02 | Phase 2 | Pending |
-| MAP-03 | Phase 2 | Pending |
+| MAP-02 | Phase 2 | Complete |
+| MAP-03 | Phase 2 | Complete |
 | MAP-04 | Phase 2 | Pending |
 | MAP-05 | Phase 2 | Pending |
-| PATH-01 | Phase 2 | Pending |
-| PATH-02 | Phase 2 | Pending |
-| PATH-03 | Phase 2 | Pending |
+| PATH-01 | Phase 2 | Complete |
+| PATH-02 | Phase 2 | Complete |
+| PATH-03 | Phase 2 | Complete |
 | PATH-04 | Phase 2 | Pending |
 | CARD-01 | Phase 3 | Pending |
 | CARD-02 | Phase 3 | Pending |
@@ -189,15 +189,15 @@ Deferred to post-pilot validation.
 | CARD-07 | Phase 3 | Pending |
 | CARD-08 | Phase 3 | Pending |
 | CARD-09 | Phase 3 | Pending |
-| PREP-01 | Phase 2 | Pending |
+| PREP-01 | Phase 2 | Complete |
 | PREP-02 | Phase 2 | Pending |
 | PREP-03 | Phase 2 | Pending |
 | PREP-04 | Phase 2 | Pending |
-| BRDG-01 | Phase 2 | Pending |
-| BRDG-02 | Phase 2 | Pending |
+| BRDG-01 | Phase 2 | Complete |
+| BRDG-02 | Phase 2 | Complete |
 | BRDG-03 | Phase 2 | Pending |
-| BRDG-04 | Phase 2 | Pending |
-| BRDG-05 | Phase 2 | Pending |
+| BRDG-04 | Phase 2 | Complete |
+| BRDG-05 | Phase 2 | Complete |
 | ANLY-01 | Phase 4 | Pending |
 | ANLY-02 | Phase 4 | Pending |
 | ANLY-03 | Phase 4 | Pending |
