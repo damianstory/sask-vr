@@ -1,7 +1,6 @@
-import content from '@/content/carpentry.json'
-import type { OccupationContent } from '@/content/types'
+import { content } from '@/content/config'
 
-const data = (content as OccupationContent).screenThree
+const data = content.screenThree
 
 export default function ScreenThree() {
   return (

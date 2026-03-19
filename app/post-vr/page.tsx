@@ -1,7 +1,6 @@
-import content from '@/content/carpentry.json'
-import type { OccupationContent } from '@/content/types'
+import { content } from '@/content/config'
 
-const data = (content as OccupationContent).postVr
+const data = content.postVr
 
 export default function PostVRPage() {
   return (
