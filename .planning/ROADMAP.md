@@ -13,7 +13,7 @@ This roadmap delivers a complete VR-bookend micro-site for the Saint Luke School
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Foundation + Shell** - Project scaffold, content architecture, session state, routing, and page skeletons
-- [ ] **Phase 2: Content Screens** - Screens 1-4, Screen 6, and Post-VR checklist with full interactivity
+- [x] **Phase 2: Content Screens** - Screens 1-4, Screen 6, and Post-VR checklist with full interactivity (completed 2026-03-19)
 - [ ] **Phase 3: Card Builder** - Screen 5 with name input, icon picker, live preview, Canvas compositing, and PNG download
 - [ ] **Phase 4: Analytics + Polish** - GA4 event tracking, accessibility audit, performance verification, and deployment validation
 
@@ -47,7 +47,7 @@ Plans:
   4. Screen 4 displays a career pathway timeline with expandable accordion steps referencing Saskatchewan programs
   5. Screen 6 shows VR prep content with observation prompts and no required interactions
   6. Post-VR page displays a 6-item checkable checklist with progress count and a prominent myBlueprint link that opens in a new tab
-**Plans:** 6 plans
+**Plans:** 6/6 plans complete
 
 Plans:
 - [ ] 02-00-PLAN.md — Wave 0 test scaffolds: six stub test files for Nyquist compliance
@@ -95,6 +95,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation + Shell | 3/3 | Complete | 2026-03-19 |
-| 2. Content Screens | 4/6 | In Progress|  |
+| 2. Content Screens | 6/6 | Complete   | 2026-03-19 |
 | 3. Card Builder | 0/1 | Not started | - |
 | 4. Analytics + Polish | 0/2 | Not started | - |

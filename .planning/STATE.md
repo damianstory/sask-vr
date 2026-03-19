@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-03-19T20:06:01.755Z"
+stopped_at: Completed 02-05-PLAN.md
+last_updated: "2026-03-19T20:19:36.632Z"
 last_activity: 2026-03-19 — Plan 02-02 executed (Screen 2 task tiles + Screen 4 career pathway)
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
+  total_plans: 9
+  completed_plans: 9
   percent: 100
 ---
 
@@ -57,6 +57,7 @@ Progress: [██████████] 100%
 | Phase 02 P04 | 1min | 2 tasks | 2 files |
 | Phase 02 P02 | 2 | 2 tasks | 2 files |
 | Phase 02 P03 | 3min | 2 tasks | 5 files |
+| Phase 02 P05 | 1min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -85,6 +86,7 @@ Recent decisions affecting current work:
 - [Phase 02-03]: Used maplibre-gl directly instead of mapcn -- no components.json/shadcn setup in project
 - [Phase 02-03]: Programmatic markers via maplibregl.Marker with custom DOM button elements for pin interactivity
 - [Phase 02-03]: Code-split Screen 3 with React.lazy to keep ~200KB maplibre-gl out of initial bundle
+- [Phase 02-05]: Global matchMedia mock in vitest setup file rather than per-component mocks
 
 ### Pending Todos
 
@@ -100,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T20:05:10Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-03-19T20:19:36.630Z
+Stopped at: Completed 02-05-PLAN.md
 Resume file: None
