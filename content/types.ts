@@ -70,6 +70,7 @@ export interface OccupationContent {
       id: string
       label: string
       svgPath: string
+      emoji: string
     }>
     downloadButtonLabel: string
   }

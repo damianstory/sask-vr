@@ -175,12 +175,12 @@
     "nameInputPlaceholder": "Enter your first name",
     "iconSelectionLabel": "Pick your favourite tool",
     "icons": [
-      { "id": "icon-hammer", "label": "Hammer", "svgPath": "/icons/hammer.svg" },
-      { "id": "icon-saw", "label": "Saw", "svgPath": "/icons/saw.svg" },
-      { "id": "icon-hardhat", "label": "Hard Hat", "svgPath": "/icons/hardhat.svg" },
-      { "id": "icon-tape", "label": "Tape Measure", "svgPath": "/icons/tape.svg" },
-      { "id": "icon-goggles", "label": "Goggles", "svgPath": "/icons/goggles.svg" },
-      { "id": "icon-level", "label": "Level", "svgPath": "/icons/level.svg" }
+      { "id": "icon-hammer", "label": "Hammer", "svgPath": "/icons/hammer.svg", "emoji": "🔨" },
+      { "id": "icon-saw", "label": "Saw", "svgPath": "/icons/saw.svg", "emoji": "🪚" },
+      { "id": "icon-hardhat", "label": "Hard Hat", "svgPath": "/icons/hardhat.svg", "emoji": "⛑️" },
+      { "id": "icon-tape", "label": "Tape Measure", "svgPath": "/icons/tape.svg", "emoji": "📏" },
+      { "id": "icon-goggles", "label": "Goggles", "svgPath": "/icons/goggles.svg", "emoji": "🥽" },
+      { "id": "icon-level", "label": "Level", "svgPath": "/icons/level.svg", "emoji": "📐" }
     ],
     "downloadButtonLabel": "Download Your Card"
   },
