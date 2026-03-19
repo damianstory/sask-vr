@@ -9,10 +9,10 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 
 ### Landing & Routing
 
-- [ ] **LAND-01**: Student can select Pre-VR or Post-VR path from two large, visually distinct tap targets on the landing page
-- [ ] **LAND-02**: Landing page loads and is fully interactive within 3 seconds on a school Chromebook
-- [ ] **LAND-03**: Post-VR bridge page is directly accessible via URL (/post-vr) for QR code entry
-- [ ] **LAND-04**: Landing page adapts to single-column layout on mobile with minimum 44x44px touch targets
+- [x] **LAND-01**: Student can select Pre-VR or Post-VR path from two large, visually distinct tap targets on the landing page
+- [x] **LAND-02**: Landing page loads and is fully interactive within 3 seconds on a school Chromebook
+- [x] **LAND-03**: Post-VR bridge page is directly accessible via URL (/post-vr) for QR code entry
+- [x] **LAND-04**: Landing page adapts to single-column layout on mobile with minimum 44x44px touch targets
 
 ### Pre-VR Flow
 
@@ -104,15 +104,15 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 - [ ] **PERF-02**: Screen-to-screen transitions under 500ms perceived
 - [ ] **PERF-03**: Card generation under 1 second (fallback path with pre-generated backgrounds)
 - [ ] **PERF-04**: Total JS bundle under 150KB gzipped
-- [ ] **PERF-05**: Deployed on Vercel with static generation (SSG)
+- [x] **PERF-05**: Deployed on Vercel with static generation (SSG)
 - [ ] **PERF-06**: Responsive at 320px (mobile), 768px (tablet), 1024px+ (Chromebook/laptop)
 
 ### Content Architecture
 
-- [ ] **CONT-01**: All screen content stored in a single JSON file per occupation (carpentry.json)
-- [ ] **CONT-02**: TypeScript interfaces define the content schema
-- [ ] **CONT-03**: Adding a new occupation requires only a new JSON file — no code changes
-- [ ] **CONT-04**: Placeholder content populated for all screens (salary, tasks, employers, pathway, checklist)
+- [x] **CONT-01**: All screen content stored in a single JSON file per occupation (carpentry.json)
+- [x] **CONT-02**: TypeScript interfaces define the content schema
+- [x] **CONT-03**: Adding a new occupation requires only a new JSON file — no code changes
+- [x] **CONT-04**: Placeholder content populated for all screens (salary, tasks, employers, pathway, checklist)
 
 ## v2 Requirements
 
@@ -154,10 +154,10 @@ Deferred to post-pilot validation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LAND-01 | Phase 1 | Pending |
-| LAND-02 | Phase 1 | Pending |
-| LAND-03 | Phase 1 | Pending |
-| LAND-04 | Phase 1 | Pending |
+| LAND-01 | Phase 1 | Complete |
+| LAND-02 | Phase 1 | Complete |
+| LAND-03 | Phase 1 | Complete |
+| LAND-04 | Phase 1 | Complete |
 | FLOW-01 | Phase 1 | Pending |
 | FLOW-02 | Phase 1 | Pending |
 | FLOW-03 | Phase 1 | Pending |
@@ -216,12 +216,12 @@ Deferred to post-pilot validation.
 | PERF-02 | Phase 4 | Pending |
 | PERF-03 | Phase 3 | Pending |
 | PERF-04 | Phase 4 | Pending |
-| PERF-05 | Phase 1 | Pending |
+| PERF-05 | Phase 1 | Complete |
 | PERF-06 | Phase 4 | Pending |
-| CONT-01 | Phase 1 | Pending |
-| CONT-02 | Phase 1 | Pending |
-| CONT-03 | Phase 1 | Pending |
-| CONT-04 | Phase 1 | Pending |
+| CONT-01 | Phase 1 | Complete |
+| CONT-02 | Phase 1 | Complete |
+| CONT-03 | Phase 1 | Complete |
+| CONT-04 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 58 total

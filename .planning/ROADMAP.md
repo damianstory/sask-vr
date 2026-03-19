@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Project scaffold, content schema, brand tokens, and landing page with path cards
+- [x] 01-01-PLAN.md — Project scaffold, content schema, brand tokens, and landing page with path cards
 - [ ] 01-02-PLAN.md — Pre-VR flow with session state, progress bar, navigation, screen shells, and Post-VR page
 
 ### Phase 2: Content Screens
