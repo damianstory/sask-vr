@@ -82,11 +82,12 @@ Plans:
   3. All text meets WCAG AA contrast ratios (4.5:1 text, 3:1 UI) and all touch targets are minimum 44x44px
   4. Landing page LCP is under 3 seconds on a school Chromebook, screen transitions are under 500ms, and total JS bundle is under 150KB gzipped
   5. Site is responsive from 320px mobile through 1366x768 Chromebook, deployed on Vercel with static generation
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — GA4 setup, centralized analytics module, and integration into all interactive components
+- [ ] 04-02-PLAN.md — WCAG AA accessibility remediation: skip link, focus management, focus trap, axe tests
+- [ ] 04-03-PLAN.md — Performance validation: bundle analyzer, build verification, responsive and full-flow checkpoint
 
 ## Progress
 
@@ -98,4 +99,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Foundation + Shell | 3/3 | Complete | 2026-03-19 |
 | 2. Content Screens | 6/6 | Complete   | 2026-03-19 |
 | 3. Card Builder | 1/2 | In Progress|  |
-| 4. Analytics + Polish | 0/2 | Not started | - |
+| 4. Analytics + Polish | 0/3 | Not started | - |
