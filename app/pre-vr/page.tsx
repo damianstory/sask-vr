@@ -52,7 +52,7 @@ export default function PreVRPage() {
 
   const screens: Record<ScreenNumber, React.ReactNode> = {
     1: <ScreenOne />,
-    2: <ScreenTwo />,
+    2: <ScreenTwo onNext={goNext} />,
     3: <Suspense fallback={<div className="flex h-64 items-center justify-center"><p className="text-[14px] font-[300] text-[var(--myb-neutral-4)]">Loading map...</p></div>}><ScreenThree /></Suspense>,
     4: <ScreenFour />,
     5: <ScreenFive onNext={goNext} />,

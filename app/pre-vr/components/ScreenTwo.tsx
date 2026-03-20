@@ -8,7 +8,7 @@ import { trackTileSelect } from '@/lib/analytics'
 
 const data = content.screenTwo
 
-export default function ScreenTwo() {
+export default function ScreenTwo({ onNext }: { onNext?: () => void }) {
   const { selectedTiles, setSelectedTiles } = useSession()
   const [shakeId, setShakeId] = useState<string | null>(null)
   const [overflowMessage, setOverflowMessage] = useState(false)
@@ -124,6 +124,7 @@ export default function ScreenTwo() {
       {/* Status button */}
       <button
         disabled={isDisabled}
+        onClick={isDisabled ? undefined : onNext}
         className={cn(
           'mt-6 w-full max-w-lg min-h-[44px] rounded-lg text-[16px] font-[800]',
           isDisabled
