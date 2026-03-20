@@ -8,7 +8,7 @@ export default function LandingPage() {
   const router = useRouter()
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-4">
+    <main id="main-content" className="flex min-h-screen flex-col items-center justify-center px-4">
       {/* Logo placeholder */}
       <img
         src="/logos/myblueprint-logo.svg"

@@ -79,7 +79,7 @@ export default function ScreenOne() {
   return (
     <section className="flex flex-col items-center px-4 py-8">
       {/* Hook question heading */}
-      <h2 className="text-center text-[28px] font-[800] leading-[1.2] text-[var(--myb-navy)] md:text-[40px]">
+      <h2 data-screen-heading className="text-center text-[28px] font-[800] leading-[1.2] text-[var(--myb-navy)] md:text-[40px]">
         {data.hookQuestion}
       </h2>
 

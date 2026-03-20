@@ -7,7 +7,7 @@ const promptIcons = ['\uD83D\uDD0D', '\uD83D\uDC40', '\uD83D\uDCA1']
 export default function ScreenSix() {
   return (
     <section className="mx-auto max-w-[640px] px-4 py-8">
-      <h2 className="text-center text-[28px] font-[800] leading-[1.2] text-[var(--myb-navy)] md:text-[40px]">
+      <h2 data-screen-heading className="text-center text-[28px] font-[800] leading-[1.2] text-[var(--myb-navy)] md:text-[40px]">
         {data.heading}
       </h2>
       <p className="mt-2 text-center text-[16px] font-[300] leading-[1.75] text-[var(--myb-neutral-5)]">

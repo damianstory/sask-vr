@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { SessionProvider } from '@/context/SessionContext'
 import ProgressBar from '@/components/ProgressBar'
 import Navigation from '@/components/Navigation'
@@ -21,6 +21,17 @@ export default function PreVRPage() {
 
   useEffect(() => {
     trackScreenView(`screen_${currentScreen}`)
+  }, [currentScreen])
+
+  // Move focus to the screen heading after each transition
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      const heading = document.querySelector('[data-screen-heading]')
+      if (heading instanceof HTMLElement) {
+        heading.setAttribute('tabindex', '-1')
+        heading.focus({ preventScroll: false })
+      }
+    })
   }, [currentScreen])
 
   const goNext = () => {
@@ -50,7 +61,7 @@ export default function PreVRPage() {
 
   return (
     <SessionProvider>
-      <div className="flex min-h-screen flex-col">
+      <div id="main-content" className="flex min-h-screen flex-col">
         <ProgressBar current={currentScreen} total={6} />
         <div className="relative flex-1 overflow-hidden">
           <div
