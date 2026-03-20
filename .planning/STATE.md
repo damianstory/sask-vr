@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-20T00:19:17.599Z"
-last_activity: 2026-03-19 — Plan 03-02 executed (Card builder UI with download flow)
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-20T00:43:20.306Z"
+last_activity: 2026-03-19 — Plan 04-01 executed (GA4 analytics instrumentation)
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 11
-  completed_plans: 11
-  percent: 91
+  total_plans: 14
+  completed_plans: 12
+  percent: 86
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-19)
 
 **Core value:** Students arrive at VR with real-world context and leave with a tangible, personal artifact and a clear path into myBlueprint.
-**Current focus:** Phase 3: Card Builder
+**Current focus:** Phase 4: Analytics & Polish
 
 ## Current Position
 
-Phase: 3 of 4 (Card Builder)
-Plan: 2 of 2 in current phase
-Status: Phase Complete
-Last activity: 2026-03-19 — Plan 03-02 executed (Card builder UI with download flow)
+Phase: 4 of 4 (Analytics & Polish)
+Plan: 1 of 3 in current phase
+Status: Plan 04-01 Complete
+Last activity: 2026-03-19 — Plan 04-01 executed (GA4 analytics instrumentation)
 
-Progress: [█████████░] 91%
+Progress: [█████████░] 86%
 
 ## Performance Metrics
 
@@ -60,6 +60,7 @@ Progress: [█████████░] 91%
 | Phase 02 P05 | 1min | 2 tasks | 3 files |
 | Phase 03 P01 | 2min | 2 tasks | 7 files |
 | Phase 03 P02 | 2min | 2 tasks | 5 files |
+| Phase 04 P01 | 4min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -92,6 +93,8 @@ Recent decisions affecting current work:
 - [Phase 03]: Used actual emoji characters for icon picker (goggles as safety goggles, level as triangular ruler)
 - [Phase 03]: Canvas compositing isolated as pure async function with typed CardParams for testability
 - [Phase 03]: Moved screens Record inside PreVRPage component body to access goNext for ScreenFive onNext prop
+- [Phase 04]: Used @next/third-parties sendGAEvent wrapper for GA4 -- official Next.js integration, no raw gtag
+- [Phase 04]: Analytics fires on expand/check only (not collapse/uncheck) to reduce noise
 
 ### Pending Todos
 
@@ -107,6 +110,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T00:19:17.596Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-analytics-polish/04-CONTEXT.md
+Last session: 2026-03-20T00:43:20.304Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None

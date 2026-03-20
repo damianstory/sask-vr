@@ -80,15 +80,15 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 
 ### Analytics
 
-- [ ] **ANLY-01**: GA4 page view events fire for each screen transition (screen_1 through screen_6, bridge)
-- [ ] **ANLY-02**: Path selection tracked (pre_vr / post_vr)
-- [ ] **ANLY-03**: Tile selections tracked (tile_id, select/deselect action)
-- [ ] **ANLY-04**: Employer pin taps tracked (employer_id, employer_name)
-- [ ] **ANLY-05**: Pathway step expansions tracked (step_id, step_label)
-- [ ] **ANLY-06**: Card interactions tracked (icon_select, name_entered, card_download)
-- [ ] **ANLY-07**: Checklist item checks tracked (item_id, item_label)
-- [ ] **ANLY-08**: No PII sent to analytics — student name is never included in any event
-- [ ] **ANLY-09**: Screen-to-screen funnel is configurable in GA4 dashboard
+- [x] **ANLY-01**: GA4 page view events fire for each screen transition (screen_1 through screen_6, bridge)
+- [x] **ANLY-02**: Path selection tracked (pre_vr / post_vr)
+- [x] **ANLY-03**: Tile selections tracked (tile_id, select/deselect action)
+- [x] **ANLY-04**: Employer pin taps tracked (employer_id, employer_name)
+- [x] **ANLY-05**: Pathway step expansions tracked (step_id, step_label)
+- [x] **ANLY-06**: Card interactions tracked (icon_select, name_entered, card_download)
+- [x] **ANLY-07**: Checklist item checks tracked (item_id, item_label)
+- [x] **ANLY-08**: No PII sent to analytics — student name is never included in any event
+- [x] **ANLY-09**: Screen-to-screen funnel is configurable in GA4 dashboard
 
 ### Accessibility
 
@@ -198,15 +198,15 @@ Deferred to post-pilot validation.
 | BRDG-03 | Phase 2 | Complete |
 | BRDG-04 | Phase 2 | Complete |
 | BRDG-05 | Phase 2 | Complete |
-| ANLY-01 | Phase 4 | Pending |
-| ANLY-02 | Phase 4 | Pending |
-| ANLY-03 | Phase 4 | Pending |
-| ANLY-04 | Phase 4 | Pending |
-| ANLY-05 | Phase 4 | Pending |
-| ANLY-06 | Phase 4 | Pending |
-| ANLY-07 | Phase 4 | Pending |
-| ANLY-08 | Phase 4 | Pending |
-| ANLY-09 | Phase 4 | Pending |
+| ANLY-01 | Phase 4 | Complete |
+| ANLY-02 | Phase 4 | Complete |
+| ANLY-03 | Phase 4 | Complete |
+| ANLY-04 | Phase 4 | Complete |
+| ANLY-05 | Phase 4 | Complete |
+| ANLY-06 | Phase 4 | Complete |
+| ANLY-07 | Phase 4 | Complete |
+| ANLY-08 | Phase 4 | Complete |
+| ANLY-09 | Phase 4 | Complete |
 | A11Y-01 | Phase 4 | Pending |
 | A11Y-02 | Phase 4 | Pending |
 | A11Y-03 | Phase 4 | Pending |
