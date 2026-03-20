@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, lazy, Suspense } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { SessionProvider } from '@/context/SessionContext'
 import ProgressBar from '@/components/ProgressBar'
 import Navigation from '@/components/Navigation'
@@ -10,6 +10,7 @@ const ScreenThree = lazy(() => import('./components/ScreenThree'))
 import ScreenFour from './components/ScreenFour'
 import ScreenFive from './components/ScreenFive'
 import ScreenSix from './components/ScreenSix'
+import { trackScreenView } from '@/lib/analytics'
 
 type ScreenNumber = 1 | 2 | 3 | 4 | 5 | 6
 
@@ -17,6 +18,10 @@ export default function PreVRPage() {
   const [currentScreen, setCurrentScreen] = useState<ScreenNumber>(1)
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward')
   const [isInitialMount, setIsInitialMount] = useState(true)
+
+  useEffect(() => {
+    trackScreenView(`screen_${currentScreen}`)
+  }, [currentScreen])
 
   const goNext = () => {
     if (currentScreen < 6) {

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { content } from '@/content/config'
 import { useSession } from '@/context/SessionContext'
 import { cn } from '@/lib/utils'
+import { trackTileSelect } from '@/lib/analytics'
 
 const data = content.screenTwo
 
@@ -15,6 +16,7 @@ export default function ScreenTwo() {
   const handleTileToggle = (tileId: string) => {
     if (selectedTiles.includes(tileId)) {
       setSelectedTiles(selectedTiles.filter((id) => id !== tileId))
+      trackTileSelect(tileId, 'deselect')
     } else if (selectedTiles.length >= data.maxSelections) {
       setShakeId(tileId)
       setOverflowMessage(true)
@@ -22,6 +24,7 @@ export default function ScreenTwo() {
       setTimeout(() => setOverflowMessage(false), 3000)
     } else {
       setSelectedTiles([...selectedTiles, tileId])
+      trackTileSelect(tileId, 'select')
     }
   }
 

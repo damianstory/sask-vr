@@ -7,7 +7,7 @@ function track(eventName: string, params?: Record<string, string>) {
     console.log('[Analytics]', eventName, params)
     return
   }
-  sendGAEvent('event', eventName, params)
+  sendGAEvent('event', eventName, params as Record<string, string>)
 }
 
 export function trackScreenView(screenName: string) {

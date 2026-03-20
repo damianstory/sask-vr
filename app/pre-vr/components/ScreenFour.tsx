@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { content } from '@/content/config'
 import { cn } from '@/lib/utils'
+import { trackPathwayExpand } from '@/lib/analytics'
 
 const data = content.screenFour
 
@@ -12,7 +13,12 @@ export default function ScreenFour() {
   )
 
   const toggleStep = (stepId: string) => {
+    const isExpanding = expandedStepId !== stepId
     setExpandedStepId((prev) => (prev === stepId ? null : stepId))
+    if (isExpanding) {
+      const step = data.steps.find((s) => s.id === stepId)
+      if (step) trackPathwayExpand(step.id, step.title)
+    }
   }
 
   return (

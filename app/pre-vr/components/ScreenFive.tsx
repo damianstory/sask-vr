@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { content } from '@/content/config'
 import { useSession } from '@/context/SessionContext'
 import { generateCardPng } from '@/lib/generate-card'
 import { getGradientVariant } from '@/lib/card-gradients'
 import { cn } from '@/lib/utils'
+import { trackIconSelect, trackNameEntered, trackCardDownload } from '@/lib/analytics'
 import IconPicker from './IconPicker'
 import TaskTagChips from './TaskTagChips'
 import CardPreview from './CardPreview'
@@ -27,6 +28,7 @@ export default function ScreenFive({ onNext }: ScreenFiveProps) {
   const [nameError, setNameError] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
   const [isDownloaded, setIsDownloaded] = useState(false)
+  const nameEnteredRef = useRef(false)
 
   const data = content.screenFive
   const trimmedName = firstName.trim()
@@ -57,6 +59,7 @@ export default function ScreenFive({ onNext }: ScreenFiveProps) {
       URL.revokeObjectURL(url)
       setGeneratedCardUrl(url)
       setIsDownloaded(true)
+      trackCardDownload()
     } finally {
       setIsDownloading(false)
     }
@@ -91,8 +94,13 @@ export default function ScreenFive({ onNext }: ScreenFiveProps) {
               value={firstName}
               placeholder={data.nameInputPlaceholder}
               onChange={(e) => {
-                setFirstName(e.target.value)
+                const val = e.target.value
+                setFirstName(val)
                 setNameError(false)
+                if (val.trim().length > 0 && !nameEnteredRef.current) {
+                  nameEnteredRef.current = true
+                  trackNameEntered()
+                }
               }}
               onBlur={() => {
                 if (firstName.trim().length === 0 && firstName.length > 0)
@@ -115,7 +123,7 @@ export default function ScreenFive({ onNext }: ScreenFiveProps) {
             <IconPicker
               icons={data.icons}
               selectedIcon={selectedIcon}
-              onSelect={setSelectedIcon}
+              onSelect={(iconId) => { trackIconSelect(iconId); setSelectedIcon(iconId) }}
             />
           </div>
 

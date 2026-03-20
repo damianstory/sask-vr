@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { content } from '@/content/config'
+import { trackPathSelect } from '@/lib/analytics'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -22,7 +23,7 @@ export default function LandingPage() {
       <div className="mt-8 flex w-full max-w-[824px] flex-col gap-4 md:flex-row md:gap-6">
         {/* Pre-VR Card */}
         <button
-          onClick={() => router.push('/pre-vr')}
+          onClick={() => { trackPathSelect('pre_vr'); router.push('/pre-vr') }}
           className="flex min-h-[180px] flex-1 flex-col items-start rounded-xl border-2 border-transparent bg-[var(--myb-light-blue)] p-6 text-left transition-all hover:border-[var(--myb-primary-blue)] hover:shadow-[0_8px_24px_rgba(34,34,76,0.1)] focus:outline-none focus:ring-[3px] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[3px] md:min-h-[280px]"
           aria-label={`Start Pre-VR experience: ${content.meta.landingDescription}`}
         >
@@ -36,7 +37,7 @@ export default function LandingPage() {
 
         {/* Post-VR Card */}
         <button
-          onClick={() => router.push('/post-vr')}
+          onClick={() => { trackPathSelect('post_vr'); router.push('/post-vr') }}
           className="flex min-h-[180px] flex-1 flex-col items-start rounded-xl border-2 border-transparent bg-[var(--myb-light-blue)] p-6 text-left transition-all hover:border-[var(--myb-primary-blue)] hover:shadow-[0_8px_24px_rgba(34,34,76,0.1)] focus:outline-none focus:ring-[3px] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[3px] md:min-h-[280px]"
           aria-label={`Go to Post-VR reflection: Reflect on your VR ${content.meta.displayName.toLowerCase()} experience`}
         >

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { content } from '@/content/config'
 import { cn } from '@/lib/utils'
+import { trackChecklistCheck } from '@/lib/analytics'
 
 const data = content.postVr
 
@@ -10,9 +11,14 @@ export default function PostVRPage() {
   const [checkedItems, setCheckedItems] = useState<string[]>([])
 
   const toggleItem = (id: string) => {
+    const isChecking = !checkedItems.includes(id)
     setCheckedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     )
+    if (isChecking) {
+      const item = data.checklist.find((c) => c.id === id)
+      if (item) trackChecklistCheck(item.id, item.label)
+    }
   }
 
   return (
