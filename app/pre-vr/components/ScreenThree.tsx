@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import FocusTrap from 'focus-trap-react'
 import { content } from '@/content/config'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -17,9 +16,56 @@ export default function ScreenThree() {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const pinRefs = useRef<Map<string, HTMLElement>>(new Map())
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const lastPinRef = useRef<string | null>(null)
   const [selectedEmployer, setSelectedEmployer] = useState<string | null>(null)
 
   const closeCard = useCallback(() => setSelectedEmployer(null), [])
+
+  // Focus close button when card opens
+  useEffect(() => {
+    if (selectedEmployer && closeButtonRef.current) {
+      closeButtonRef.current.focus()
+    }
+  }, [selectedEmployer])
+
+  // Escape key to close
+  useEffect(() => {
+    if (!selectedEmployer) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeCard()
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [selectedEmployer, closeCard])
+
+  // Click-outside to close (rAF delay skips the opening click)
+  useEffect(() => {
+    if (!selectedEmployer) return
+    let listening = false
+    const rafId = requestAnimationFrame(() => { listening = true })
+    const handler = (e: MouseEvent) => {
+      if (!listening) return
+      const card = document.getElementById('employer-card')
+      if (card && !card.contains(e.target as Node)) {
+        closeCard()
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => {
+      cancelAnimationFrame(rafId)
+      document.removeEventListener('mousedown', handler)
+    }
+  }, [selectedEmployer, closeCard])
+
+  // Return focus to pin on close
+  useEffect(() => {
+    if (!selectedEmployer && lastPinRef.current) {
+      const pin = pinRefs.current.get(lastPinRef.current)
+      if (pin) pin.focus()
+      lastPinRef.current = null
+    }
+  }, [selectedEmployer])
 
   // Initialize map
   useEffect(() => {
@@ -45,7 +91,7 @@ export default function ScreenThree() {
     data.employers.forEach((employer) => {
       const el = document.createElement('button')
       el.className =
-        'flex h-10 w-10 items-center justify-center rounded-full bg-[var(--myb-primary-blue)] text-white shadow-md transition-transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-[3px] focus:ring-[var(--myb-primary-blue)]'
+        'flex h-10 w-10 items-center justify-center rounded-full bg-[var(--myb-primary-blue)] text-white shadow-md transition-shadow hover:shadow-lg focus:outline-none focus:ring-[3px] focus:ring-[var(--myb-primary-blue)]'
       el.style.border = 'none'
       el.style.cursor = 'pointer'
       el.style.padding = '0'
@@ -63,6 +109,7 @@ export default function ScreenThree() {
 
       el.addEventListener('click', () => {
         trackEmployerTap(employer.id, employer.name)
+        lastPinRef.current = employer.id
         setSelectedEmployer(employer.id)
       })
 
@@ -102,26 +149,16 @@ export default function ScreenThree() {
 
         {/* Employer card */}
         {employer && (
-          <FocusTrap
-            active={true}
-            focusTrapOptions={{
-              onDeactivate: closeCard,
-              escapeDeactivates: true,
-              clickOutsideDeactivates: true,
-              returnFocusOnDeactivate: true,
-              setReturnFocus: () => pinRefs.current.get(selectedEmployer!) || document.body,
-            }}
-          >
-            <div>
+            <>
               {/* Backdrop overlay */}
               <div
                 className="fixed inset-0 z-40 bg-black/20"
-                onClick={closeCard}
                 aria-hidden="true"
               />
 
               {/* Card */}
               <div
+                id="employer-card"
                 role="dialog"
                 aria-labelledby="employer-card-name"
                 aria-modal="true"
@@ -129,6 +166,7 @@ export default function ScreenThree() {
               >
                 {/* Close button */}
                 <button
+                  ref={closeButtonRef}
                   onClick={closeCard}
                   aria-label="Close employer card"
                   className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full hover:bg-[var(--myb-neutral-1)] focus:outline-none focus:ring-[3px] focus:ring-[var(--myb-primary-blue)]"
@@ -180,8 +218,7 @@ export default function ScreenThree() {
                   </p>
                 )}
               </div>
-            </div>
-          </FocusTrap>
+            </>
         )}
       </div>
     </section>
