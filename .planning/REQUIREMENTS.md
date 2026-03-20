@@ -92,11 +92,11 @@ Requirements for pilot launch (week of April 6, 2026). Each maps to roadmap phas
 
 ### Accessibility
 
-- [ ] **A11Y-01**: All interactive elements are keyboard-focusable and operable via keyboard
-- [ ] **A11Y-02**: All text meets WCAG AA contrast ratios (4.5:1 for text, 3:1 for UI elements)
-- [ ] **A11Y-03**: All touch targets are minimum 44x44px with adequate spacing
-- [ ] **A11Y-04**: Screen reader support via semantic HTML, aria-pressed on tiles, aria-expanded on accordion, role="dialog" on employer cards
-- [ ] **A11Y-05**: prefers-reduced-motion respected — animations replaced with instant state changes
+- [x] **A11Y-01**: All interactive elements are keyboard-focusable and operable via keyboard
+- [x] **A11Y-02**: All text meets WCAG AA contrast ratios (4.5:1 for text, 3:1 for UI elements)
+- [x] **A11Y-03**: All touch targets are minimum 44x44px with adequate spacing
+- [x] **A11Y-04**: Screen reader support via semantic HTML, aria-pressed on tiles, aria-expanded on accordion, role="dialog" on employer cards
+- [x] **A11Y-05**: prefers-reduced-motion respected — animations replaced with instant state changes
 
 ### Performance & Infrastructure
 
@@ -207,11 +207,11 @@ Deferred to post-pilot validation.
 | ANLY-07 | Phase 4 | Complete |
 | ANLY-08 | Phase 4 | Complete |
 | ANLY-09 | Phase 4 | Complete |
-| A11Y-01 | Phase 4 | Pending |
-| A11Y-02 | Phase 4 | Pending |
-| A11Y-03 | Phase 4 | Pending |
-| A11Y-04 | Phase 4 | Pending |
-| A11Y-05 | Phase 4 | Pending |
+| A11Y-01 | Phase 4 | Complete |
+| A11Y-02 | Phase 4 | Complete |
+| A11Y-03 | Phase 4 | Complete |
+| A11Y-04 | Phase 4 | Complete |
+| A11Y-05 | Phase 4 | Complete |
 | PERF-01 | Phase 4 | Pending |
 | PERF-02 | Phase 4 | Pending |
 | PERF-03 | Phase 3 | Complete |
