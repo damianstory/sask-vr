@@ -8,6 +8,7 @@ vi.mock('maplibre-gl', () => {
     on: vi.fn(),
     remove: vi.fn(),
     addControl: vi.fn(),
+    fitBounds: vi.fn(),
     scrollZoom: { disable: vi.fn() },
     dragPan: { disable: vi.fn() },
     doubleClickZoom: { disable: vi.fn() },
@@ -20,7 +21,10 @@ vi.mock('maplibre-gl', () => {
     setDOMContent: vi.fn().mockReturnThis(),
     getElement: vi.fn(() => document.createElement('div')),
   }))
-  return { default: { Map, Marker }, Map, Marker }
+  const LngLatBounds = vi.fn().mockImplementation(() => ({
+    extend: vi.fn().mockReturnThis(),
+  }))
+  return { default: { Map, Marker, LngLatBounds }, Map, Marker, LngLatBounds }
 })
 
 // Mock content
@@ -30,8 +34,8 @@ vi.mock('@/content/config', () => ({
       heading: 'Who hires carpenters near you?',
       subtext: 'Tap a pin to learn about real employers.',
       employers: [
-        { id: 'employer-a', name: 'Company A', description: 'A construction company', employeeCount: 50, pinPosition: { lng: -104.5917, lat: 50.4509 } },
-        { id: 'employer-b', name: 'Company B', description: 'A renovation firm', employeeCount: 30, pinPosition: { lng: -104.6167, lat: 50.4452 } },
+        { id: 'employer-pcl', name: 'PCL Construction', description: 'One of the largest construction companies in North America.', employeeCount: 4500, specialty: 'Commercial & Institutional', pinPosition: { lng: -104.6025, lat: 50.4671 } },
+        { id: 'employer-graham', name: 'Graham Construction', description: 'An employee-owned company specializing in industrial projects.', employeeCount: 2200, specialty: 'Industrial', pinPosition: { lng: -104.5546, lat: 50.4773 } },
       ],
     },
   },

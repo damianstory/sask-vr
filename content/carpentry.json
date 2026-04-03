@@ -8,14 +8,16 @@
   "screenOne": {
     "hookQuestion": "How much does a carpenter in Saskatchewan actually make?",
     "salary": {
-      "amount": 72000,
+      "amount": 67000,
       "label": "Average Annual Salary",
-      "source": "Saskatchewan Labour Market Information, 2025"
+      "source": "Government of Canada Job Bank, NOC 72310 — Regina Region",
+      "seasonalityNote": "53% work year-round  ·  Average 41 weeks/year even for seasonal workers"
     },
     "stats": [
-      { "value": "4,200+", "label": "Jobs in Saskatchewan" },
-      { "value": "12%", "label": "Demand Growth" },
-      { "value": "350+", "label": "Employers Hiring" }
+      { "value": "1,590", "label": "Job Openings by 2029", "eyebrow": "Opportunity" },
+      { "value": "23%", "label": "Retiring by 2034", "eyebrow": "Demand" },
+      { "value": "37%", "label": "Run Their Own Business", "eyebrow": "Entrepreneurship" },
+      { "value": "12.4%", "label": "Indigenous Workers in SK Construction", "eyebrow": "Representation" }
     ]
   },
   "screenTwo": {
@@ -28,44 +30,50 @@
       {
         "id": "task-framing",
         "title": "Framing",
-        "description": "Build the skeleton of houses and buildings",
+        "description": "Build walls, floors, and roof structures — the skeleton of every building",
         "emoji": "🔨",
-        "illustrationPath": ""
+        "illustrationPath": "",
+        "weight": 20
       },
       {
         "id": "task-measuring",
         "title": "Measuring & Layout",
-        "description": "Measure twice, cut once — precision matters",
+        "description": "Read blueprints and use lasers and levels to lay out exactly where things go",
         "emoji": "📏",
-        "illustrationPath": ""
+        "illustrationPath": "",
+        "weight": 14
       },
       {
         "id": "task-finishing",
         "title": "Finishing Work",
-        "description": "Install trim, cabinets, and the details people see",
+        "description": "Install trim, cabinets, stairs, and flooring — the details everyone notices",
         "emoji": "🪚",
-        "illustrationPath": ""
+        "illustrationPath": "",
+        "weight": 14
       },
       {
         "id": "task-concrete",
         "title": "Concrete & Foundations",
-        "description": "Pour and shape the base everything stands on",
+        "description": "Build forms, place rebar, and pour the concrete base everything stands on",
         "emoji": "🧱",
-        "illustrationPath": ""
+        "illustrationPath": "",
+        "weight": 16
       },
       {
         "id": "task-roofing",
         "title": "Roofing",
-        "description": "Keep buildings protected from Saskatchewan weather",
+        "description": "Install trusses, shingles, and insulation to handle Saskatchewan winters",
         "emoji": "🏠",
-        "illustrationPath": ""
+        "illustrationPath": "",
+        "weight": 14
       },
       {
         "id": "task-renovation",
         "title": "Renovation",
-        "description": "Transform old spaces into something new",
+        "description": "Carefully take apart old structures and rebuild them into something better",
         "emoji": "🔧",
-        "illustrationPath": ""
+        "illustrationPath": "",
+        "weight": 10
       }
     ]
   },
@@ -74,42 +82,94 @@
     "subtext": "Tap a pin to learn about real employers in the Regina area.",
     "employers": [
       {
-        "id": "employer-a",
-        "name": "Company A",
-        "description": "Description for Company A",
-        "employeeCount": 99,
-        "quote": "We love hiring apprentices!",
-        "pinPosition": { "lng": -104.5917, "lat": 50.4509 }
+        "id": "employer-pcl",
+        "name": "PCL Construction",
+        "description": "One of the largest construction companies in North America. They build hospitals, schools, and major public buildings across Saskatchewan.",
+        "employeeCount": 4500,
+        "specialty": "Commercial & Institutional",
+        "quote": "We handle billion-dollar projects — from hospitals to high-rises.",
+        "pinPosition": { "lng": -104.6025, "lat": 50.4671 }
       },
       {
-        "id": "employer-b",
-        "name": "Company B",
-        "description": "Description for Company B",
-        "employeeCount": 75,
-        "quote": "Carpentry is a growing field.",
-        "pinPosition": { "lng": -104.6167, "lat": 50.4452 }
+        "id": "employer-graham",
+        "name": "Graham Construction",
+        "description": "An employee-owned company specializing in industrial projects like mining facilities, power plants, and large commercial buildings.",
+        "employeeCount": 2200,
+        "specialty": "Industrial",
+        "quote": "Every employee is an owner — that's what makes us different.",
+        "pinPosition": { "lng": -104.5546, "lat": 50.4773 }
       },
       {
-        "id": "employer-c",
-        "name": "Company C",
-        "description": "Description for Company C",
-        "employeeCount": 120,
-        "pinPosition": { "lng": -104.5734, "lat": 50.4288 }
+        "id": "employer-crawford",
+        "name": "Crawford Homes",
+        "description": "A Regina favourite since 1980, building energy-efficient custom homes and new subdivisions across the city.",
+        "employeeCount": 85,
+        "specialty": "Residential",
+        "quote": "We build homes families grow up in.",
+        "pinPosition": { "lng": -104.6327, "lat": 50.4760 }
       },
       {
-        "id": "employer-d",
-        "name": "Company D",
-        "description": "Description for Company D",
+        "id": "employer-hipperson",
+        "name": "Hipperson Construction",
+        "description": "Over 100 years of building Saskatchewan — from commercial buildings to civil infrastructure and public facilities.",
+        "employeeCount": 150,
+        "specialty": "Commercial & Civil",
+        "quote": "We've been building this province for over a century.",
+        "pinPosition": { "lng": -104.6104, "lat": 50.4444 }
+      },
+      {
+        "id": "employer-schneiders",
+        "name": "Schneider's Millwork",
+        "description": "A specialized woodworking shop since 1954. They create custom cabinets, reception desks, and fine wood finishes for homes and businesses.",
+        "employeeCount": 30,
+        "specialty": "Custom Millwork",
+        "quote": "Precision down to the millimetre — that's our standard.",
+        "pinPosition": { "lng": -104.5575, "lat": 50.4342 }
+      },
+      {
+        "id": "employer-alair",
+        "name": "Alair Homes Regina",
+        "description": "A premium renovation and custom build firm focused on client transparency and high-quality craftsmanship.",
+        "employeeCount": 25,
+        "specialty": "Premium Renovations",
+        "quote": "Every project starts with listening to what you actually want.",
+        "pinPosition": { "lng": -104.5890, "lat": 50.4531 }
+      },
+      {
+        "id": "employer-fiorante",
+        "name": "Fiorante Homes",
+        "description": "A family-driven builder since 1974, creating bespoke custom homes from foundations to final finishes.",
+        "employeeCount": 40,
+        "specialty": "Custom Residential",
+        "quote": "Three generations of building homes people love.",
+        "pinPosition": { "lng": -104.5369, "lat": 50.4445 }
+      },
+      {
+        "id": "employer-munro",
+        "name": "Munro Homes",
+        "description": "Award-winning luxury home builder known for architectural precision and premium craftsmanship in Regina.",
+        "employeeCount": 35,
+        "specialty": "Luxury Residential",
+        "quote": "Platinum-level quality on every build.",
+        "pinPosition": { "lng": -104.5838, "lat": 50.4744 }
+      },
+      {
+        "id": "employer-ledcor",
+        "name": "Ledcor Construction",
+        "description": "A diversified contractor working across building construction, civil engineering, and telecommunications infrastructure.",
+        "employeeCount": 1800,
+        "specialty": "Diversified Commercial",
+        "quote": "From buildings to bridges to telecom towers — we build it all.",
+        "pinPosition": { "lng": -104.5711, "lat": 50.4761 }
+      },
+      {
+        "id": "employer-winmar",
+        "name": "Winmar Property Restoration",
+        "description": "Disaster recovery specialists who rebuild homes and businesses damaged by fire, flood, and storms.",
         "employeeCount": 45,
-        "pinPosition": { "lng": -104.6503, "lat": 50.4631 }
-      },
-      {
-        "id": "employer-e",
-        "name": "Company E",
-        "description": "Description for Company E",
-        "employeeCount": 200,
-        "quote": "We train the next generation of builders.",
-        "pinPosition": { "lng": -104.6389, "lat": 50.4180 }
+        "specialty": "Disaster Recovery",
+        "quote": "When disaster strikes, we rebuild what matters most.",
+        "pinPosition": { "lng": -104.6300, "lat": 50.4600 }
       }
     ]
   },
@@ -129,11 +189,16 @@
       {
         "id": "step-2",
         "title": "High School",
-        "subtitle": "e.g. Miller Collegiate, Grades 9-12",
+        "subtitle": "Grades 9-12",
         "details": {
-          "courses": ["Construction 10/20/30", "PAA", "Math"],
+          "courses": ["Construction 10/20/30", "Practical & Applied Arts (PAA)", "Grade 10 Math", "Grade 10 Science"],
           "duration": "4 years",
-          "description": "Take practical and applied arts courses to build foundational skills."
+          "description": "Take shop and PAA classes to build skills. Join the Saskatchewan Youth Apprenticeship (SYA) for a huge head start — earn 300 free hours, free Level 1 tuition, and a shot at a $1,000 scholarship.",
+          "programs": ["Saskatchewan Youth Apprenticeship (SYA)", "TASCAP / HCAP construction programs"],
+          "headStart": [
+            { "program": "SYA Program", "hours": 300 },
+            { "program": "HCAP Program", "hours": 640 }
+          ]
         }
       },
       {
@@ -141,29 +206,39 @@
         "title": "Post-Secondary",
         "subtitle": "Technical Training",
         "details": {
-          "programs": ["Saskatchewan Polytechnic", "SIIT"],
-          "duration": "8 weeks per level",
-          "description": "Complete technical training levels at an approved institution."
+          "programs": ["Saskatchewan Polytechnic (Moose Jaw, Prince Albert, Saskatoon)"],
+          "duration": "32-week certificate",
+          "description": "A hands-on program covering blueprints, concrete, framing, finishing, and trade math. Includes a 2-week work placement with a real employer."
         }
       },
       {
         "id": "step-4",
         "title": "Apprenticeship",
-        "subtitle": "On-the-Job Training",
+        "subtitle": "Earn While You Learn",
         "details": {
-          "duration": "4 years (4 levels)",
-          "earnings": "$18-28/hour during training",
-          "programs": ["Saskatchewan Youth Internship Program"],
-          "description": "Work alongside a journeyperson carpenter while earning a wage."
+          "duration": "4 years — 7,200 hours on the job",
+          "earnings": "Starts at 60% of journeyperson pay, rises to 90%",
+          "description": "Work full-time alongside a certified carpenter and get paid while learning. Attend 7-8 weeks of classroom training per year at Sask Polytech."
         }
       },
       {
         "id": "step-5",
-        "title": "Journeyperson",
+        "title": "Red Seal Journeyperson",
         "subtitle": "Certified Carpenter",
         "details": {
           "earnings": "$28-45+/hour",
-          "description": "Pass the journeyperson exam and become a fully certified carpenter."
+          "description": "Pass the Red Seal exam — the gold standard in Canadian trades. Your certification is recognized in every province and territory, so you can work anywhere in Canada."
+        }
+      },
+      {
+        "id": "step-6",
+        "title": "Bachelor's Degree",
+        "subtitle": "Optional — Management Pathway",
+        "details": {
+          "programs": ["Saskatchewan Polytechnic"],
+          "duration": "2 additional years",
+          "earnings": "Management and supervisory roles",
+          "description": "Your Red Seal counts as 2 years of university credit. Top up to a full Bachelor of Applied Management degree at Sask Polytech — from the job site to the boardroom."
         }
       }
     ]
@@ -189,8 +264,8 @@
     "subtext": "Keep these questions in mind while you explore.",
     "prompts": [
       { "id": "prompt-1", "text": "What tools do you notice being used?" },
-      { "id": "prompt-2", "text": "What safety equipment can you spot?" },
-      { "id": "prompt-3", "text": "What part of the job looks most interesting to you?" }
+      { "id": "prompt-2", "text": "What safety gear and equipment can you spot?" },
+      { "id": "prompt-3", "text": "Which task — framing, finishing, concrete — looks most interesting to you?" }
     ]
   },
   "postVr": {
@@ -198,12 +273,12 @@
     "congratsSubtext": "You just experienced what it's like to be a carpenter. Here are some next steps.",
     "checklistHeading": "Your next steps",
     "checklist": [
-      { "id": "check-1", "label": "Checklist item 1" },
-      { "id": "check-2", "label": "Checklist item 2" },
-      { "id": "check-3", "label": "Checklist item 3" },
-      { "id": "check-4", "label": "Checklist item 4" },
-      { "id": "check-5", "label": "Checklist item 5" },
-      { "id": "check-6", "label": "Checklist item 6" }
+      { "id": "check-1", "label": "Talk to your teacher about PAA or shop classes for next year" },
+      { "id": "check-2", "label": "Ask your school counsellor about the Saskatchewan Youth Apprenticeship (SYA)" },
+      { "id": "check-3", "label": "Look up TASCAP or HCAP summer construction programs" },
+      { "id": "check-4", "label": "Open myBlueprint and explore the Carpentry career profile" },
+      { "id": "check-5", "label": "Ask a family member or friend if they know a carpenter you could talk to" },
+      { "id": "check-6", "label": "Check out Saskatchewan Polytechnic's carpentry program online" }
     ],
     "myblueprintLink": {
       "url": "https://www.myblueprint.ca",

@@ -11,10 +11,12 @@ export interface OccupationContent {
       amount: number
       label: string
       source: string
+      seasonalityNote?: string
     }
     stats: Array<{
       value: string
       label: string
+      eyebrow?: string
     }>
   }
   screenTwo: {
@@ -29,6 +31,7 @@ export interface OccupationContent {
       description: string
       emoji: string
       illustrationPath: string
+      weight?: number
     }>
   }
   screenThree: {
@@ -39,6 +42,7 @@ export interface OccupationContent {
       name: string
       description: string
       employeeCount: number
+      specialty?: string
       quote?: string
       logoPath?: string
       pinPosition: { lng: number; lat: number }
@@ -57,6 +61,10 @@ export interface OccupationContent {
         earnings?: string
         programs?: string[]
         description: string
+        headStart?: Array<{
+          program: string
+          hours: number
+        }>
       }
     }>
   }

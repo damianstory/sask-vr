@@ -6,12 +6,13 @@ import ScreenOne from '@/app/pre-vr/components/ScreenOne'
 vi.mock('@/content/config', () => ({
   content: {
     screenOne: {
-      hookQuestion: 'Ever wonder what a carpenter earns?',
-      salary: { amount: 72000, label: 'Average Annual Salary', source: 'Saskatchewan Labour Market Information, 2025' },
+      hookQuestion: 'How much does a carpenter in Saskatchewan actually make?',
+      salary: { amount: 67000, label: 'Average Annual Salary', source: 'Government of Canada Job Bank, NOC 72310 — Regina Region', seasonalityNote: '53% work year-round  ·  Average 41 weeks/year even for seasonal workers' },
       stats: [
-        { value: '4,200+', label: 'Jobs in Saskatchewan' },
-        { value: '12%', label: 'Demand Growth' },
-        { value: '350+', label: 'Employers Hiring' },
+        { value: '1,590', label: 'Job Openings by 2029', eyebrow: 'Opportunity' },
+        { value: '23%', label: 'Retiring by 2034', eyebrow: 'Demand' },
+        { value: '37%', label: 'Run Their Own Business', eyebrow: 'Entrepreneurship' },
+        { value: '12.4%', label: 'Indigenous Workers in SK Construction', eyebrow: 'Representation' },
       ],
     },
   },
