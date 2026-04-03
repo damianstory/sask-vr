@@ -1,277 +1,154 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-03-19
-
-## Project Status
-
-This is a **pre-implementation specification**. The codebase does not yet exist. These conventions are prescribed by `TECH_SPECS.md` and should guide the engineering team during implementation.
+**Analysis Date:** 2026-04-03
 
 ## Naming Patterns
 
 **Files:**
-- Use PascalCase for React component files matching the default export (e.g., `ScreenOne.tsx`, `Navigation.tsx`, `CardPreview.tsx`)
-- Use kebab-case for utility/library files (e.g., `card-generator.ts`, `image-gen.ts`, `analytics.ts`)
-- JSON data files use kebab-case (e.g., `carpentry.json`)
-- Type definition files are `types.ts` or `[feature].types.ts`
+- Page entry points use lowercase `page.tsx` (Next.js App Router convention)
+- Screen components use PascalCase: `ScreenOne.tsx`, `ScreenTwo.tsx`, `ScreenFive.tsx`
+- Shared components use PascalCase: `Navigation.tsx`, `ProgressBar.tsx`, `CardPreview.tsx`
+- Library modules use kebab-case: `generate-card.ts`, `card-gradients.ts`, `analytics.ts`
+- Context files use PascalCase with `Context` suffix: `SessionContext.tsx`
+- Config/content files use kebab-case: `content/config.ts`
 
 **Functions:**
-- Use camelCase for all functions: `trackEvent()`, `generateCard()`, `downloadCard()`
-- Event handler functions follow the pattern `handle[Action]` (e.g., `handleTileSelect()`, `handleNameEnter()`)
-- Analytics functions prefixed with `track` (e.g., `trackEvent()`, `trackPathwayExpand()`)
+- Exported functions use camelCase: `generateCardPng`, `getGradientVariant`, `trackScreenView`
+- Event handlers use `handle` prefix: `handleTileToggle`, `handleDownload`
+- Navigation callbacks use `go` prefix: `goNext`, `goPrev`
+- Custom hooks use `use` prefix: `useSession`, `useReducedMotion`
+- Boolean state variables use descriptive names: `isDownloading`, `isDownloaded`, `canDownload`
 
-**Variables & Constants:**
-- Use camelCase for variables: `currentScreen`, `selectedTiles`, `firstName`
-- Use UPPER_SNAKE_CASE for constants: `NANOBANANA_ENDPOINT`, `CARD_WIDTH`, `CARD_HEIGHT`
-- React state variables use `[state, setState]` pattern via `useState`
+**Variables:**
+- Boolean state variables use `is` or `can` prefix: `isVisible`, `isDisabled`, `canDownload`
+- Content data is destructured into a module-level `const data = content.screenX` constant per screen component
+- Type aliases use PascalCase: `ScreenNumber`, `CardParams`, `SessionState`
+- CSS custom properties referenced inline as `var(--myb-*)` strings
 
-**Types & Interfaces:**
-- Use PascalCase for type names: `OccupationContent`, `SessionState`, `CardInputs`
-- Prefix interfaces with `I` only if necessary for disambiguation; otherwise use simple PascalCase
-- Use `type` for unions and simple aliases; use `interface` for object contracts
-- Type files live in `lib/types.ts` or co-located as `[feature].types.ts` in feature directories
+**Types/Interfaces:**
+- Props interfaces are named with `Props` suffix: `NavigationProps`, `ScreenFiveProps`
+- Session shape split into `SessionState` (data) and `SessionContextValue` (data + setters)
+- Union types use inline literals: `type ScreenNumber = 1 | 2 | 3 | 4 | 5 | 6`
+- Prop types for simple components are inlined: `{ onNext?: () => void }`
 
 ## Code Style
 
 **Formatting:**
-- Prettier configured to format TS, TSX, JS, JSX, JSON, CSS, MD
-- Line length: 80 characters (not enforced, but preferred for readability)
-- Indentation: 2 spaces
-- No semicolons required (Prettier removes them)
-- Use single quotes for strings (Prettier enforces)
+- Prettier is configured (`prettier` in devDependencies, `eslint-config-prettier` for conflict resolution)
+- No `.prettierrc` file found — defaults apply (likely single quotes, trailing commas, 2-space indent)
+- Tailwind classes use inline template literals with `cn()` for conditional merging
 
 **Linting:**
-- ESLint with Next.js recommended config
-- No custom override rules yet; follow defaults
-- Fix all lint warnings before committing
-
-**TypeScript:**
-- Strict mode enabled (`strict: true` in tsconfig.json)
-- Always type function parameters and return values
-- Avoid `any` — use `unknown` if needed and narrow with type guards
+- ESLint 9 flat config at `eslint.config.mjs`
+- Extends `eslint-config-next/core-web-vitals` and `eslint-config-next/typescript`
+- TypeScript strict mode enabled in `tsconfig.json`
 
 ## Import Organization
 
-**Order (enforce via ESLint):**
-1. External dependencies (React, Next.js, third-party packages)
-2. Internal lib utilities (`@/lib/...`)
-3. Components (`@/components/...`)
-4. Relative imports (last resort)
-
-**Example:**
-```typescript
-import React, { useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { trackEvent } from '@/lib/analytics'
-import { Navigation } from '@/components/Navigation'
-import { ScreenOne } from './ScreenOne'
-```
+**Order (observed pattern):**
+1. React and Next.js core imports (`'use client'` directive at top, then `react`, `next/*`)
+2. Context and shared providers (`@/context/SessionContext`)
+3. Local component imports (`@/components/*`, `./components/ScreenX`)
+4. Library/util imports (`@/lib/generate-card`, `@/lib/analytics`, `@/lib/utils`)
+5. Content/config imports (`@/content/config`)
 
 **Path Aliases:**
-- Always use `@/` alias mapping to `./src/` — never use relative paths like `../../lib/`
-- This applies to all imports except parent directory relative imports within feature trees
+- `@/` maps to the project root (`./*` in `tsconfig.json`)
+- Always use `@/` for cross-directory imports; use relative paths (`./components/ScreenX`) for sibling files within the same route segment
+
+**Directive Placement:**
+- `'use client'` is placed as the very first line in all interactive components
+- Server components (e.g., `app/layout.tsx`) omit the directive entirely
 
 ## Error Handling
 
 **Patterns:**
-- Use try/catch for async operations; always handle Promise rejections
-- For API failures (e.g., NanoBanana timeout): catch, log to console, trigger graceful fallback
-- Example from card generation (TECH_SPECS section 7.5):
-  ```typescript
-  try {
-    const response = await fetch('/api/generate-card', {
-      method: 'POST',
-      body: JSON.stringify({ prompt, parameters })
-    })
-    const imageData = await response.arrayBuffer()
-    return imageData
-  } catch (error) {
-    console.error('Card generation failed, falling back to static background', error)
-    return selectFallbackBackground(selectionHash)
-  }
-  ```
-- Do not expose internal error details to users; show user-friendly fallback UI
-- Always log failures to console for debugging on school Chromebooks
-
-**Validation:**
-- Use Zod for runtime validation of form inputs and content JSON schema
-- Validate `OccupationContent` JSON on load to catch data errors early
-- Handle validation errors gracefully (show toast notification, disable action)
-
-## Logging
-
-**Framework:** `console` (no external logging library for MVP)
-
-**Patterns:**
-- Use `console.error()` for failures: API timeouts, validation errors, generation failures
-- Use `console.warn()` for non-critical issues: missing optional fields in content JSON
-- Use `console.log()` only for development; remove before production deployment
-- Never log sensitive data: `firstName`, user selections should not be logged
-- Always include context: `console.error('Card generation failed after 8s timeout', { prompt, error })`
+- Async operations (Canvas PNG generation) are wrapped in `try/finally` blocks — `setIsDownloading` is always reset in `finally`
+- Context consumers throw a descriptive error if used outside the provider: `throw new Error('useSession must be used within a SessionProvider')`
+- Validation errors (name input) are surfaced via co-located `useState` boolean flags (`nameError`) and inline error `<p>` elements
+- No global error boundary is implemented; Next.js default error handling applies
 
 **Example:**
 ```typescript
-catch (error) {
-  console.error('NanoBanana API timeout after 8000ms', {
-    occupationId: 'carpentry',
-    promptLength: prompt.length
-  })
+// lib/generate-card.ts
+async function handleDownload() {
+  if (!canDownload || !selectedIconData) return
+  setIsDownloading(true)
+  try {
+    const blob = await generateCardPng({ ... })
+    // ... success path
+  } finally {
+    setIsDownloading(false)
+  }
 }
 ```
+
+## Logging
+
+**Framework:** None (no logging library)
+
+**Patterns:**
+- All production analytics go through named functions in `lib/analytics.ts`
+- Development mode gates GA calls: `if (IS_DEV) { console.log('[Analytics]', ...) }`
+- The `[Analytics]` prefix is used consistently for dev log identification
+- No `console.error` or `console.warn` calls observed in source
 
 ## Comments
 
 **When to Comment:**
-- Document non-obvious algorithmic decisions (e.g., why selection hash uses specific algorithm)
-- Explain browser-specific quirks (e.g., "ChromeOS download behavior differs from Chrome desktop")
-- Document test-specific details and assertions
-- Do not comment obvious code: `const name = 'John' // Set name to John` is redundant
-
-**JSDoc/TSDoc:**
-- Use JSDoc comments on all exported functions and React components
-- Include `@param`, `@returns`, and `@throws` tags
-- Optional: `@example` for complex utilities
+- JSDoc-style block comments on exported functions and hooks with non-obvious behavior
+- Inline comments explain non-obvious implementation decisions (e.g., `requestAnimationFrame` retry logic, odometer stagger delays)
+- Numbered step comments used in procedural Canvas drawing code (`// 1. Draw gradient`, `// 2. Draw title`)
 
 **Example:**
 ```typescript
 /**
- * Composites a carpenter card using Canvas API
- * @param inputs - Card inputs including background, name, icon, stats
- * @returns Data URL (image/png) at 1200×675 px
- * @throws Error if canvas context unavailable
- * @example
- * const dataUrl = await generateCardImage({
- *   backgroundImage: img,
- *   firstName: 'Alex',
- *   iconAsset: '/icons/hammer.svg'
- * })
+ * Composites a 1200x675 carpenter card PNG entirely client-side using Canvas API.
+ * Returns a Blob of the resulting PNG image.
  */
-export function generateCardImage(inputs: CardInputs): Promise<string>
+export async function generateCardPng(params: CardParams): Promise<Blob> {
 ```
 
 ## Function Design
 
-**Size:** Keep functions under 50 lines. If a function exceeds this, break it into smaller utilities.
+**Size:** Screen components are moderately long (100–220 lines) as they contain both logic and JSX. Helper functions are extracted when reusable (e.g., `drawTagChips` in `generate-card.ts`, `OdometerDigit` sub-component in `ScreenOne.tsx`).
 
-**Parameters:**
-- Prefer objects over multiple parameters for 3+ arguments
-- Example: `generateCard({ name, icon, tiles, stats })` not `generateCard(name, icon, tiles, stats)`
-- Use destructuring in function signatures
+**Parameters:** Props passed as named destructured parameters. Simple components inline the type; complex components use a named `Props` interface.
 
-**Return Values:**
-- Always explicitly type return values
-- Return `null` only for optional fields; use `undefined` for missing values in most cases
-- Async functions return `Promise<T>`, never raw promises
-- For operations that may fail, return union types: `string | null`, never throw unexpectedly in normal cases
-
-**Naming:**
-- Function names should reflect what they return: `getSelectedTiles()`, `isValidCard()`, `generateCard()`
-- Functions that return booleans start with `is` or `should`: `isValidInput()`, `shouldShowFallback()`
+**Return Values:** Functions return early on guard conditions (`if (!canDownload || !selectedIconData) return`). Async functions return typed Promises (`Promise<Blob>`).
 
 ## Module Design
 
 **Exports:**
-- Each component file exports a single default export (the React component)
-- Utility modules export named functions and types
-- Example structure:
-  ```typescript
-  // components/Navigation.tsx (default export)
-  export default function Navigation({ onNext, onPrev }: NavigationProps) { ... }
+- Page and screen components use `export default`
+- Library functions use named exports: `export function trackScreenView(...)`
+- Context exports: provider as named export (`SessionProvider`), hook as named export (`useSession`)
+- Interfaces/types exported only when consumed externally (e.g., `export interface CardParams`)
 
-  // lib/analytics.ts (named exports)
-  export function trackEvent(name: string, params?: Record<string, string>) { ... }
-  export function trackScreenView(screenId: string) { ... }
-  ```
+**Barrel Files:** Not used. Each module is imported directly by path.
 
-**Barrel Files (index.ts):**
-- Do not use barrel files (`index.ts` exports) in `components/` — import directly from component file
-- Do use barrel files in `lib/` for grouping related utilities
-- Example: `lib/card/index.ts` exports `{ generateImage, composite, download }`
+**Content Separation:**
+- All user-visible copy and structured data lives in `content/config.ts` (single source of truth)
+- Components import `content` and extract their slice at module scope: `const data = content.screenTwo`
 
-**File Organization:**
-- All content lives under `app/` (Next.js App Router convention)
-- Pre-VR flow components in `app/pre-vr/components/`
-- Shared components in `components/`
-- Utilities in `lib/`
-- Content JSON in `content/`
-- Public assets in `public/` (SVGs, backgrounds, icons)
+## Accessibility Conventions
 
-## Props & Component Interfaces
+- All interactive buttons set `type="button"` explicitly to prevent form submission side-effects
+- Decorative SVG icons carry `aria-hidden="true"`
+- Touch targets are enforced at `min-h-[44px] min-w-[44px]` (Apple HIG minimum)
+- Focus management uses `data-screen-heading` attribute as a stable selector for programmatic focus after screen transitions
+- Skip link is present in `app/layout.tsx` targeting `#main-content`
+- Reduced-motion is respected via a `useReducedMotion` hook that reads `window.matchMedia('(prefers-reduced-motion: reduce)')`
+- CSS animations are globally disabled under `@media (prefers-reduced-motion: reduce)` in `styles/globals.css`
 
-**Props Definition:**
-- Define props interface directly above the component
-- Use JSDoc on the interface
-- Example:
-  ```typescript
-  /**
-   * Navigation between pre-VR screens
-   */
-  interface NavigationProps {
-    /** Current screen number (1-6) */
-    currentScreen: number
-    /** Callback when user clicks next */
-    onNext: () => void
-    /** Callback when user clicks previous; disabled on screen 1 */
-    onPrev?: () => void
-  }
+## CSS / Tailwind Conventions
 
-  export default function Navigation(props: NavigationProps) { ... }
-  ```
-
-## Responsive Design
-
-**Mobile-first approach:**
-- Always start CSS with base (mobile) styles
-- Use Tailwind's `md:` breakpoint (768px) for tablet/desktop overrides
-- Breakpoints from TECH_SPECS:
-  - `< 640px` — Mobile
-  - `640px–1023px` — Tablet
-  - `≥ 1024px` — Chromebook/Laptop
-
-**Example:**
-```tsx
-export default function TileGrid({ tiles }: TileGridProps) {
-  return (
-    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-      {/* Tiles stack 1-wide on mobile, 2-wide on tablet, 3-wide on desktop */}
-    </div>
-  )
-}
-```
-
-## Analytics Naming Convention
-
-**Event Names:** Use snake_case, prefixed by context. Examples from TECH_SPECS section 6.2:
-- `path_select`, `screen_view`, `tile_select`, `employer_tap`, `pathway_expand`, `icon_select`, `name_entered`, `card_generated`, `card_download`, `checklist_check`, `myblueprint_link`
-
-**Event Parameters:** Use snake_case for parameter names.
-
-**Privacy Rule:** Never include `firstName` or other PII in any event payload. The `name_entered` event signals completion only, with no content.
-
-## Accessibility
-
-**Semantic HTML:**
-- Use `<main>`, `<nav>`, `<section>`, `<h1>`–`<h4>`, `<button>`, `<ul>`/`<li>` appropriately
-- Avoid `<div>` for interactive content — use `<button>` for tappable elements
-- Use `aria-pressed` for tile selections
-- Use `role='dialog'` and `aria-labelledby` for employer card popups
-- Use `aria-expanded` for accordion steps
-
-**Alt Text:**
-- All images have descriptive `alt` text
-- SVG illustrations use `<title>` elements or `aria-label`
-
-**Focus & Keyboard Navigation:**
-- All interactive elements are tappable via `Tab` key
-- Focus indicators visible (use Primary Blue outline, `outline-2 outline-offset-2 outline-blue-500` in Tailwind)
-- Tab order follows visual flow left-to-right, top-to-bottom
-
-**Touch Targets:**
-- All tappable elements minimum 44×44px with adequate spacing (per WCAG AA)
-
-**Motion:**
-- Respect `prefers-reduced-motion` media query
-- Disable salary counter animation and screen transitions for users who request it
+- Design tokens are defined as CSS custom properties in `styles/globals.css` and referenced inline via `var(--myb-*)` in className strings
+- Tailwind v4 `@theme inline` block maps CSS variables to Tailwind color tokens
+- Conditional class composition always uses the `cn()` helper from `lib/utils.ts` (clsx + tailwind-merge)
+- Animation utility classes are defined manually in `styles/globals.css` (e.g., `animate-slide-left`, `animate-shake`, `animate-pulse-dot`)
+- Responsive breakpoints use Tailwind prefixes: `md:` for tablet (768px), `lg:` for desktop
 
 ---
 
-*Convention specification: based on TECH_SPECS.md, ready for implementation*
+*Convention analysis: 2026-04-03*

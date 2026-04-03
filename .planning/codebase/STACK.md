@@ -1,141 +1,82 @@
 # Technology Stack
 
-**Analysis Date:** 2026-03-19
+**Analysis Date:** 2026-04-03
 
 ## Languages
 
 **Primary:**
-- TypeScript — Application logic and React components
-- JavaScript — Runtime scripting
+- TypeScript 5.x - All source files under `app/`, `components/`, `lib/`, `context/`, `tests/`
 
 **Secondary:**
-- CSS — Styling (via Tailwind CSS with custom properties for brand tokens)
-- HTML — Semantic markup (via React/Next.js)
+- CSS - Global styles in `styles/globals.css` (Tailwind v4 via PostCSS)
+- JSON - Content data files under `content/`
 
 ## Runtime
 
 **Environment:**
-- Node.js (latest LTS version recommended for development)
+- Node.js 24.12.0 (detected from active runtime; no `.nvmrc` present)
 
 **Package Manager:**
-- npm (or yarn/pnpm as preferred by team)
+- npm
+- Lockfile: `package-lock.json` present
 
 ## Frameworks
 
 **Core:**
-- Next.js (App Router) — Server-side rendering, static site generation, API routes, edge deployment
-- React 18 — UI component library and state management
+- Next.js 16.2.0 - App Router; SSG-oriented (no server-side data fetching); entry at `app/layout.tsx`
+- React 19.2.4 - UI layer; client components predominate (`'use client'` directive on all screen components)
+- React DOM 19.2.4 - Browser rendering
 
-**Styling:**
-- Tailwind CSS — Utility-first CSS framework with custom configuration for brand tokens
-- CSS custom properties — Brand token management (colors, typography scale, spacing)
+**Testing:**
+- Vitest 4.1.0 - Test runner; config at `vitest.config.ts`; jsdom environment
+- @testing-library/react 16.3.2 - Component rendering and interaction assertions
+- @testing-library/user-event 14.6.1 - Simulated user events
+- @testing-library/jest-dom 6.9.1 - DOM assertion matchers (vitest integration)
+- vitest-axe 0.1.0 - Accessibility (axe-core) assertions within Vitest
 
-**Image Generation:**
-- NanoBanana Pro 2 (external API) — Client-side image background generation for Carpenter Card
-
-**Canvas Rendering:**
-- HTML Canvas API (native browser) — Client-side image compositing for card assembly and download
-
-**Analytics:**
-- Google Analytics 4 (gtag.js) — Event tracking for funnel analysis and user interaction patterns
-
-**Fonts:**
-- Google Fonts (Open Sans) — Primary body/UI font via `@font-face` with `display=swap`
-- Museo Sans (self-hosted, if available) — Brand-preferred font; falls back to Open Sans
+**Build/Dev:**
+- Turbopack - Bundler via `next dev` (Next.js 16 default)
+- @next/bundle-analyzer 16.2.0 - Bundle analysis; enabled via `ANALYZE=true` env var; configured in `next.config.ts`
+- @vitejs/plugin-react 6.0.1 - React plugin for Vitest (separate from Next.js build)
 
 ## Key Dependencies
 
 **Critical:**
-- next — Next.js framework for routing, SSG, and API routes
-- react — React 18 for component-based UI
-- react-dom — DOM rendering for React
-- typescript — Type safety and development experience
+- `maplibre-gl` 5.20.2 - Interactive employer map on Screen 3 (`app/pre-vr/components/ScreenThree.tsx`); loads map tiles from CARTO CDN
+- `focus-trap-react` 12.0.0 - Keyboard focus trapping for accessibility modals/cards
+- `clsx` 2.1.1 - Conditional class merging utility (used in `lib/utils.ts`)
+- `tailwind-merge` 3.5.0 - Tailwind class deduplication (used in `lib/utils.ts`)
+- `@next/third-parties` 16.2.0 - Google Analytics 4 integration via `GoogleAnalytics` component (`app/layout.tsx`)
 
-**UI & Styling:**
-- tailwindcss — Utility-first CSS framework
-- autoprefixer — CSS vendor prefixing for cross-browser support
-- class-variance-authority (CVA) — Type-safe component variant patterns (if used for complex components)
-
-**Forms & Validation:**
-- react-hook-form — Lightweight form state and validation (optional, for name input on Screen 5)
-- zod — Runtime schema validation for form inputs (optional, pairs with react-hook-form)
-
-**Analytics:**
-- gtag.js — Google Analytics 4 client library (loaded via `<Script>` in root layout)
-
-**Development:**
-- eslint — Linting for code quality
-- prettier — Code formatting
-- @types/react — React TypeScript definitions
-- @types/node — Node.js TypeScript definitions
-- @types/react-dom — React DOM TypeScript definitions
+**Infrastructure:**
+- `tailwindcss` 4.x - CSS utility framework; configured via `@tailwindcss/postcss` PostCSS plugin
+- `@tailwindcss/postcss` 4.x - PostCSS integration for Tailwind v4; config at `postcss.config.mjs`
+- `typescript` 5.x - Type checking; config at `tsconfig.json`; strict mode enabled
 
 ## Configuration
 
 **Environment:**
-- Development: `npm run dev` starts Vite dev server with hot reload
-- Production: `npm run build` generates optimized static exports via `next build`
-- Deployment: Vercel (zero-config deployment from Git repository)
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID` - Google Analytics measurement ID; if absent, GA script is not injected (graceful fallback in `app/layout.tsx`)
+- `NODE_ENV` - Standard Next.js/Node env var; used in `lib/analytics.ts` to skip real GA calls in development
+- `ANALYZE=true` - Enables bundle analyzer output on build
 
-**Environment Variables:**
-```
-NEXT_PUBLIC_GA_MEASUREMENT_ID  # Google Analytics 4 measurement ID (public, safe for client-side)
-NANOBANANA_API_KEY            # Image generation API key (server-side only, via .env.local)
-NANOBANANA_ENDPOINT           # Image generation API endpoint URL (server-side only)
-```
-
-**Build Configuration:**
-- `next.config.ts` — Next.js build and runtime settings
-- `tsconfig.json` — TypeScript compilation options
-- `tailwind.config.ts` — Tailwind CSS theme and custom tokens
-- `tailwind.config.ts` — Postprocessor (autoprefixer) configuration
-- `components.json` — (If using shadcn-ui or component library registry)
-
-**ESLint & Prettier:**
-- `.eslintrc.json` or `eslint.config.js` — Linting rules
-- `.prettierrc.json` — Code formatting rules (recommended: `{ "singleQuote": true, "trailingComma": "es5" }`)
+**Build:**
+- `next.config.ts` - Next.js configuration; wraps build with bundle analyzer
+- `tsconfig.json` - TypeScript; target ES2017; strict mode; path alias `@/` maps to project root
+- `postcss.config.mjs` - PostCSS with `@tailwindcss/postcss` plugin
+- `eslint.config.mjs` - ESLint flat config using `eslint-config-next` core-web-vitals + TypeScript rulesets
+- `vitest.config.ts` - Vitest config; test files matched from `tests/**/*.test.{ts,tsx}`; `@/` alias resolves to project root
 
 ## Platform Requirements
 
 **Development:**
-- Node.js LTS (18.x or newer)
-- npm 8+ or yarn 3+ or pnpm 7+
-- Git for version control
-- Optional: Docker for consistent development environment
+- Node.js (v20+ recommended; v24.12.0 in use)
+- npm
 
 **Production:**
-- Vercel hosting (serverless functions for `/api/generate-card` route)
-- Edge CDN for static asset distribution
-- No database required (stateless, session-only state in browser)
-- No external server infrastructure required
-
-**Browser Support:**
-- Chrome (latest 2 versions) — Primary target for school Chromebooks
-- Safari (latest 2 versions) — Secondary, for iOS devices
-- Edge (latest version) — Supported as Chromium-based alternative
-- Firefox (latest version) — Supported
-- Minimum: ES2020 JavaScript support (no IE11 support)
-
-## Key Performance & Optimization Targets
-
-**Build Size:**
-- Total JS bundle: < 150 KB gzipped
-- Code splitting: Pre-VR and Post-VR flows split automatically by Next.js route-based code splitting
-
-**Runtime Performance:**
-- Landing page LCP (Largest Contentful Paint): < 3 seconds on Chromebook at 25 Mbps
-- Screen-to-screen transitions: < 500 ms (client-side state change)
-- Card generation (API path): < 5 seconds (NanoBanana API call + Canvas compositing)
-- Card generation (fallback): < 1 second (local assets + Canvas compositing)
-
-**Asset Optimization:**
-- Images: All illustrations and icons are SVG (resolution-independent, < 50 KB each)
-- Icons: Carpenter card icon set stored as SVG in `public/icons/`
-- Illustrations: Task tile illustrations in `public/illustrations/`
-- Maps: Screen 3 employer map is SVG in `public/map/`
-- Pre-generated card backgrounds: Optimized PNG format, max 200 KB each, stored in `public/card-backgrounds/`
-- Fonts: Open Sans loaded with `display=swap` to prevent invisible text flash
+- Vercel (zero-config deployment; static/SSG output via edge CDN per `TECH_SPECS.md`)
+- No server-side runtime required; application is stateless with no backend
 
 ---
 
-*Stack analysis: 2026-03-19*
+*Stack analysis: 2026-04-03*

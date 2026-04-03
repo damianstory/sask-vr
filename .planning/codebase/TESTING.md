@@ -1,663 +1,340 @@
 # Testing Patterns
 
-**Analysis Date:** 2026-03-19
+**Analysis Date:** 2026-04-03
 
-## Project Status
+## Test Framework
 
-This is a **pre-implementation specification**. No test framework has been configured yet. The testing strategy is prescribed by `TECH_SPECS.md` section 12 and should guide test setup and execution.
+**Runner:**
+- Vitest 4.x
+- Config: `vitest.config.ts`
+- Environment: `jsdom` (browser DOM simulation)
+- Globals enabled (`globals: true`) — `describe`, `it`, `expect`, `vi` available without imports, though files also import them explicitly
 
-## Test Framework Setup
+**Assertion Library:**
+- `@testing-library/jest-dom` (via `@testing-library/jest-dom/vitest` import in setup)
+- `vitest-axe` for WCAG accessibility assertions
 
-**Runner:** Jest (recommended in TECH_SPECS section 12.1)
-
-**Assertion Library:** Expect (Jest built-in)
-
-**React Testing:** React Testing Library (RTL)
-
-**End-to-End Testing:** Playwright (for browser automation)
-
-**Accessibility Testing:** axe-core (automated) + manual ChromeVox/VoiceOver
-
-**Configuration Files (to be created):**
-- `jest.config.js` — Unit/component test runner configuration
-- `playwright.config.ts` — E2E test configuration
-- `.eslintrc.json` — Already mentioned in TECH_SPECS as implemented
-
-**Run Commands (planned):**
+**Run Commands:**
 ```bash
-npm run test              # Run Jest unit and component tests
-npm run test:watch       # Watch mode for development
-npm run test:coverage    # Generate coverage report
-npm run test:e2e         # Run Playwright E2E tests
-npm run test:a11y        # Run accessibility tests (axe-core)
+# No test script in package.json — run directly via npx:
+npx vitest                  # Run all tests (watch mode)
+npx vitest run              # Run all tests once (CI mode)
+npx vitest run --coverage   # Coverage (no provider configured yet)
 ```
 
 ## Test File Organization
 
-**Location:** Co-located with source
+**Location:**
+- All tests are co-located in a top-level `tests/` directory, separate from source
+- Accessibility tests are in a subdirectory: `tests/a11y/screens.a11y.test.tsx`
 
-**Naming Convention:**
-- Unit/component tests: `[ComponentName].test.tsx` or `[utility].test.ts`
-- E2E tests: `e2e/[feature].spec.ts` in a top-level `e2e/` directory
-- Example structure:
-  ```
-  app/pre-vr/components/
-  ├── ScreenOne.tsx
-  ├── ScreenOne.test.tsx
-  ├── Navigation.tsx
-  └── Navigation.test.tsx
+**Naming:**
+- Component tests: `<component-name>.test.tsx` — e.g., `screen-two.test.tsx`, `progress-bar.test.tsx`
+- Module/utility tests: `<module-name>.test.ts` — e.g., `analytics.test.ts`, `generate-card.test.ts`
+- Integration/flow tests: `<feature>-flow.test.tsx` — e.g., `pre-vr-flow.test.tsx`
+- Accessibility tests: `screens.a11y.test.tsx`
 
-  lib/
-  ├── analytics.ts
-  ├── analytics.test.ts
-  ├── card-generator.ts
-  └── card-generator.test.ts
+**Include pattern** (from `vitest.config.ts`):
+```
+tests/**/*.test.{ts,tsx}
+```
 
-  e2e/
-  ├── pre-vr-flow.spec.ts
-  ├── card-generation.spec.ts
-  └── accessibility.spec.ts
-  ```
+**Structure:**
+```
+tests/
+├── a11y/
+│   └── screens.a11y.test.tsx     # axe-core WCAG tests + ARIA attribute checks
+├── analytics.test.ts              # lib/analytics unit tests (prod vs dev mode)
+├── card-gradients.test.ts         # lib/card-gradients unit tests
+├── content-schema.test.ts         # content/config schema validation
+├── generate-card.test.ts          # Canvas API integration test
+├── landing.test.tsx               # Landing page component tests
+├── post-vr.test.tsx               # Post-VR page tests
+├── pre-vr-flow.test.tsx           # Full flow integration: screen navigation
+├── progress-bar.test.tsx          # ProgressBar component tests
+├── screen-five.test.tsx           # ScreenFive unit tests (detailed)
+├── screen-four.test.tsx           # ScreenFour unit tests
+├── screen-one.test.tsx            # ScreenOne (mostly it.todo stubs)
+├── screen-six.test.tsx            # ScreenSix unit tests
+├── screen-three.test.tsx          # ScreenThree unit tests
+├── screen-two.test.tsx            # ScreenTwo unit tests (detailed)
+├── vitest-axe.d.ts                # Type augmentation for vitest-axe matchers
+└── vitest.setup.ts                # Global setup: jest-dom, vitest-axe, matchMedia mock
+```
 
 ## Test Structure
 
-**Suite Organization (Jest + RTL Pattern):**
-
+**Suite Organization:**
 ```typescript
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import ScreenTwo from '@/app/pre-vr/components/ScreenTwo'
-
-describe('ScreenTwo - Task Tile Selection', () => {
-  it('renders all 6 tiles with correct labels', () => {
-    render(<ScreenTwo content={mockContent.screenTwo} />)
-
-    const tiles = screen.getAllByRole('button', { name: /framing|roofing|electrical|plumbing|interior|exterior/ })
-    expect(tiles).toHaveLength(6)
+// Nested describe groups reflect feature areas, not just component name
+describe('ScreenTwo', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockSessionState = buildSessionState()
   })
 
-  it('allows selecting 2-3 tiles and disables if max reached', async () => {
-    const user = userEvent.setup()
-    const onSelectionChange = jest.fn()
-
-    render(
-      <ScreenTwo
-        content={mockContent.screenTwo}
-        onSelectionChange={onSelectionChange}
-      />
-    )
-
-    const tiles = screen.getAllByRole('button')
-
-    // Select 2 tiles
-    await user.click(tiles[0])
-    await user.click(tiles[1])
-    expect(onSelectionChange).toHaveBeenCalledWith(['framing', 'roofing'])
-
-    // Attempt to select 4th tile — should be prevented
-    await user.click(tiles[3])
-    expect(onSelectionChange).toHaveBeenCalledTimes(2) // Only 2 selections
+  describe('tiles', () => {
+    it('renders the heading, instruction copy, and all six task tiles from content', () => { ... })
   })
 
-  it('deselects a tile when clicked again', async () => {
-    const user = userEvent.setup()
-    const onSelectionChange = jest.fn()
+  describe('select', () => {
+    it('appends a tile selection and tracks the select action', () => { ... })
+    it('removes a seeded tile selection and tracks the deselect action', () => { ... })
+  })
 
-    render(
-      <ScreenTwo
-        content={mockContent.screenTwo}
-        onSelectionChange={onSelectionChange}
-      />
-    )
+  describe('max', () => {
+    it('rejects a fourth tile, shows overflow feedback, and clears the timer-driven UI', () => { ... })
+  })
 
-    const firstTile = screen.getByRole('button', { name: /framing/ })
-    await user.click(firstTile)
-    await user.click(firstTile)
-
-    expect(onSelectionChange).toHaveBeenLastCalledWith([])
+  describe('continue', () => {
+    it('shows "Pick at least 2" and stays disabled when no tiles are selected', () => { ... })
   })
 })
 ```
 
-**Test Patterns:**
-- Use `describe()` blocks to organize tests by component/feature
-- Each `it()` test focuses on one behavior
-- Use `userEvent.setup()` for realistic user interactions
-- Use `waitFor()` for async state updates
-- Cleanup is automatic with RTL
-
-**Setup/Teardown:**
-- RTL automatically cleans up between tests
-- Use `beforeEach()` to initialize mock data or reset state
-- Example:
-  ```typescript
-  beforeEach(() => {
-    jest.clearAllMocks()
-    // Reset window.gtag mock
-    delete (window as any).gtag
-  })
-  ```
+**Patterns:**
+- Test IDs are embedded in test names as suffix codes: `(FLOW-01)`, `(LAND-01)`, `(FLOW-03)`
+- `beforeEach` clears mocks with `vi.clearAllMocks()` and resets module-level mock state
+- `vi.useRealTimers()` called in `beforeEach` to ensure clean timer state; fake timers are opted into per-test with `vi.useFakeTimers()`
+- `act()` wraps timer advancement when testing React state updates triggered by timers
 
 ## Mocking
 
-**Framework:** Jest's built-in `jest.fn()` and `jest.mock()`
+**Framework:** Vitest's built-in `vi` mock utilities
 
-**Patterns:**
-
-**1. Mock Analytics (global gtag):**
+**Critical pattern — `vi.hoisted()` for mock factories:**
 ```typescript
-beforeEach(() => {
-  ;(window as any).gtag = jest.fn()
-})
-
-// Test that events fire
-it('fires analytics event on tile selection', async () => {
-  const user = userEvent.setup()
-  render(<ScreenTwo content={mockContent.screenTwo} />)
-
-  const firstTile = screen.getByRole('button', { name: /framing/ })
-  await user.click(firstTile)
-
-  expect(window.gtag).toHaveBeenCalledWith(
-    'event',
-    'tile_select',
-    { tile_id: 'framing', action: 'select' }
-  )
-})
-```
-
-**2. Mock Image Generation API:**
-```typescript
-jest.mock('@/lib/image-gen', () => ({
-  generateCardImage: jest.fn(() =>
-    Promise.resolve('data:image/png;base64,...')
-  )
+// screen-two.test.tsx — mocks must be defined before module import
+const { mockSetSelectedTiles, mockTrackTileSelect, screenTwoTiles } = vi.hoisted(() => ({
+  mockSetSelectedTiles: vi.fn(),
+  mockTrackTileSelect: vi.fn(),
+  screenTwoTiles: [ ... ],
 }))
 
-// Override in specific test:
-import { generateCardImage } from '@/lib/image-gen'
-;(generateCardImage as jest.Mock).mockRejectedValueOnce(
-  new Error('API timeout')
-)
+vi.mock('@/context/SessionContext', () => ({
+  useSession: () => mockSessionState,
+}))
+
+vi.mock('@/lib/analytics', () => ({
+  trackTileSelect: mockTrackTileSelect,
+}))
+
+// Import AFTER all vi.mock() calls
+import ScreenTwo from '@/app/pre-vr/components/ScreenTwo'
 ```
 
-**3. Mock Next.js Router:**
+**Standard mocks applied across test files:**
+
 ```typescript
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-    back: jest.fn(),
-    pathname: '/pre-vr'
+// next/navigation — always mocked in component tests
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}))
+
+// next/font/google — mocked in layout tests
+vi.mock('next/font/google', () => ({
+  Open_Sans: () => ({ variable: 'font-mock' }),
+}))
+
+// @next/third-parties/google — mocked for analytics tests
+vi.mock('@next/third-parties/google', () => ({
+  GoogleAnalytics: () => null,
+  sendGAEvent: mockSendGAEvent,
+}))
+
+// maplibre-gl — mocked to prevent real map rendering in jsdom
+vi.mock('maplibre-gl', () => {
+  const Map = vi.fn(function MockMap() {
+    return { on: vi.fn(), remove: vi.fn(), addControl: vi.fn(), ... }
   })
-}))
-```
+  const Marker = vi.fn(function MockMarker() {
+    return { setLngLat: vi.fn().mockReturnThis(), addTo: vi.fn().mockReturnThis(), ... }
+  })
+  return { default: { Map, Marker }, Map, Marker }
+})
 
-**4. Mock Next.js Image Component:**
-```typescript
-jest.mock('next/image', () => ({
-  __esModule: true,
-  default: (props: any) => (
-    // eslint-disable-next-line jsx-a11y/alt-text
-    <img {...props} />
-  )
+// content/config — always mocked with minimal fixture data per test file
+vi.mock('@/content/config', () => ({ content: { screenTwo: { ... } } }))
+
+// SessionContext — mocked via module-level mutable state
+vi.mock('@/context/SessionContext', () => ({
+  useSession: () => mockSessionState,
 }))
 ```
 
 **What to Mock:**
-- External APIs (NanoBanana, Google Analytics)
-- Next.js router and navigation
-- Global gtag object
-- Image fetches that require network
-- Large data files (load only what's needed)
+- All Next.js internals (`next/navigation`, `next/font/google`)
+- All analytics calls (`@lib/analytics`, `@next/third-parties/google`)
+- SessionContext — inject state via mutable `mockSessionState` variable
+- Content config — inject minimal fixture data matching the tested screen's shape
+- Browser APIs unavailable in jsdom: `window.matchMedia` (in `vitest.setup.ts`), `URL.createObjectURL`, `URL.revokeObjectURL`, `document.fonts`
+- Third-party renderers: `maplibre-gl` Map/Marker constructors
 
 **What NOT to Mock:**
-- User interactions (use userEvent instead)
-- DOM rendering (render the component)
-- React component internals (test behavior, not implementation)
-- Content JSON validation (test against real schema)
+- `@/lib/utils` (the `cn` function) — use real implementation; mock it only in accessibility tests where class strings interfere with axe
+- `@/lib/card-gradients` — real implementation is tested directly in `card-gradients.test.ts`
+- DOM APIs that jsdom supports natively
 
 ## Fixtures and Factories
 
-**Test Data Pattern:**
-
+**Test Data Pattern — `buildSessionState` factory:**
 ```typescript
-// lib/test-fixtures.ts — Centralized mock data
-
-export const mockContent = {
-  screenTwo: {
-    heading: 'What tasks interest you?',
-    subheading: 'Select 2-3 tasks',
-    tiles: [
-      {
-        id: 'framing',
-        label: 'Framing a House',
-        description: 'Build the skeleton of a home...',
-        illustrationAsset: '/illustrations/framing.svg'
-      },
-      {
-        id: 'roofing',
-        label: 'Installing Roofing',
-        description: 'Weatherproof a structure...',
-        illustrationAsset: '/illustrations/roofing.svg'
-      }
-      // ... 4 more tiles
-    ],
-    selectionMin: 2,
-    selectionMax: 3
+// Defined per test file, above the describe block
+function buildSessionState(
+  overrides: Partial<Pick<MockSessionState, 'selectedTiles'>> = {}
+): MockSessionState {
+  return {
+    selectedTiles: [],
+    setSelectedTiles: mockSetSelectedTiles,
+    ...overrides,
   }
 }
 
-export const mockSessionState = {
-  selectedTiles: ['framing', 'roofing'],
-  firstName: 'Alex',
-  selectedIcon: 'hammer',
-  generatedCardUrl: 'data:image/png;base64,...',
-  checkedItems: []
-}
-
-// Factory function for creating session state with overrides
-export function createSessionState(overrides?: Partial<SessionState>): SessionState {
-  return { ...mockSessionState, ...overrides }
+// Usage: inject state by passing overrides to the render helper
+function renderScreenTwo(
+  sessionOverrides: Partial<Pick<MockSessionState, 'selectedTiles'>> = {},
+  props: ComponentProps<typeof ScreenTwo> = {}
+) {
+  mockSessionState = buildSessionState(sessionOverrides)
+  return render(<ScreenTwo {...props} />)
 }
 ```
 
-**Location:** `lib/test-fixtures.ts` — import in any test file
+**Pattern:**
+- Each test file that involves SessionContext defines a local `MockSessionState` interface
+- Mock data for content (`screenTwoTiles`) is hoisted via `vi.hoisted()` so it can be shared between the `vi.mock` factory and test assertions
+- No shared fixture files — all fixture data is defined inline per test file
 
-**Usage:**
-```typescript
-import { mockContent, createSessionState } from '@/lib/test-fixtures'
-
-it('renders with correct content', () => {
-  render(<ScreenTwo content={mockContent.screenTwo} />)
-  // ...
-})
-
-it('preserves state across screen navigation', () => {
-  const initialState = createSessionState({ selectedTiles: ['framing'] })
-  // ...
-})
-```
+**Location:**
+- Fixtures are defined at the top of each test file using `vi.hoisted()` or inline objects within `vi.mock` factories
 
 ## Coverage
 
-**Requirements:** None enforced for MVP (section 12 does not specify coverage target)
+**Requirements:** Not enforced (no coverage thresholds configured, no `--coverage` script)
 
 **View Coverage:**
 ```bash
-npm run test:coverage
-# Generates coverage/ directory with HTML report
-# Open coverage/lcov-report/index.html in browser
+npx vitest run --coverage
 ```
-
-**Post-MVP:** Consider enforcing 70%+ coverage on critical paths:
-- Card generation pipeline
-- State management
-- Analytics event firing
 
 ## Test Types
 
-### Unit Tests
+**Unit Tests:**
+- Scope: Single component or single library module
+- Files: `screen-two.test.tsx`, `screen-five.test.tsx`, `analytics.test.ts`, `card-gradients.test.ts`, `generate-card.test.ts`, `progress-bar.test.tsx`
+- Approach: Render component with controlled mock state; assert DOM via Testing Library queries
 
-**Scope:** Individual functions and utilities
+**Integration Tests:**
+- Scope: Full page flow across multiple screens with real component tree
+- Files: `pre-vr-flow.test.tsx`, `landing.test.tsx`, `post-vr.test.tsx`
+- Approach: Render full page component, drive through navigation via `fireEvent.click`, assert state changes across screen transitions
 
-**Examples (from TECH_SPECS section 12.1):**
-- Content schema validation: Verify that loading `carpentry.json` parses without error
-- Analytics utility: `trackEvent('tile_select', {})` correctly calls `window.gtag`
-- Card generator function: `generateCardImage(inputs)` returns data URL and handles API failure
+**Accessibility Tests:**
+- Framework: `vitest-axe` (wraps axe-core)
+- Files: `tests/a11y/screens.a11y.test.tsx`
+- Approach: Render component, run `axe(container)`, assert `toHaveNoViolations()`; also verifies ARIA attribute presence (`aria-pressed`, `aria-expanded`, `aria-checked`)
 
-**Approach (Jest):**
+**E2E Tests:** Not configured
+
+## Common Patterns
+
+**Async Testing — `waitFor` for state transitions:**
 ```typescript
-// lib/analytics.test.ts
-import { trackEvent } from '@/lib/analytics'
+// Pre-VR flow: waiting for lazy-loaded screen to appear
+fireEvent.click(screen.getByRole('button', { name: /Continue/i }))
 
-describe('trackEvent', () => {
-  beforeEach(() => {
-    ;(window as any).gtag = jest.fn()
-  })
+const screenThreeHeading = await screen.findByRole('heading', {
+  level: 2,
+  name: /Who hires carpenters near you/i,
+})
 
-  it('calls window.gtag with event name and params', () => {
-    trackEvent('tile_select', { tile_id: 'framing', action: 'select' })
-
-    expect(window.gtag).toHaveBeenCalledWith(
-      'event',
-      'tile_select',
-      { tile_id: 'framing', action: 'select' }
-    )
-  })
-
-  it('handles missing gtag gracefully', () => {
-    delete (window as any).gtag
-
-    expect(() => trackEvent('tile_select', {})).not.toThrow()
-  })
+await waitFor(() => {
+  expect(screenThreeHeading).toHaveFocus()
 })
 ```
 
-### Component Tests
-
-**Scope:** React components in isolation (RTL)
-
-**Examples (from TECH_SPECS section 12.1):**
-- Tile selection logic: Selecting/deselecting tiles, enforcing min/max
-- Accordion expand/collapse: Pathway steps
-- Checklist toggle: Bridge page checkbox interactions
-- Download trigger: Card download button
-
-**Approach (React Testing Library):**
+**Timer Testing — fake timers with `act`:**
 ```typescript
-// app/pre-vr/components/ScreenFour.test.tsx
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import ScreenFour from '@/app/pre-vr/components/ScreenFour'
-import { mockContent } from '@/lib/test-fixtures'
+it('rejects a fourth tile, shows overflow feedback, and clears the timer-driven UI', () => {
+  vi.useFakeTimers()
+  renderScreenTwo({ selectedTiles: ['task-framing', 'task-measuring', 'task-finishing'] })
 
-describe('ScreenFour - Pathway Timeline', () => {
-  it('renders all pathway steps collapsed by default', () => {
-    render(<ScreenFour content={mockContent.screenFour} />)
+  fireEvent.click(screen.getByRole('button', { name: /Concrete/i }))
 
-    const buttons = screen.getAllByRole('button')
-    buttons.forEach((button) => {
-      expect(button).toHaveAttribute('aria-expanded', 'false')
+  expect(screen.getByText('You can pick up to 3!')).toBeInTheDocument()
+
+  act(() => { vi.advanceTimersByTime(300) })
+  // shake class removed but message still visible
+
+  act(() => { vi.advanceTimersByTime(2700) })
+  expect(screen.queryByText('You can pick up to 3!')).not.toBeInTheDocument()
+})
+```
+
+**Dynamic Import Testing — `vi.resetModules()` for env-dependent modules:**
+```typescript
+// analytics.test.ts — re-imports module after stubbing NODE_ENV
+describe('production mode', () => {
+  beforeEach(async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    analytics = await import('@/lib/analytics')
+  })
+
+  it('trackScreenView sends screen_view event', () => {
+    analytics.trackScreenView('screen_1')
+    expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'screen_view', {
+      screen_name: 'screen_1',
     })
   })
-
-  it('expands step when clicked', async () => {
-    const user = userEvent.setup()
-    render(<ScreenFour content={mockContent.screenFour} />)
-
-    const highSchoolStep = screen.getByRole('button', { name: /high school/ })
-    await user.click(highSchoolStep)
-
-    expect(highSchoolStep).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByText('Miller Collegiate Carpentry 10/20/30')).toBeVisible()
-  })
-
-  it('fires analytics event on expand', async () => {
-    const user = userEvent.setup()
-    ;(window as any).gtag = jest.fn()
-
-    render(<ScreenFour content={mockContent.screenFour} />)
-
-    const step = screen.getByRole('button', { name: /high school/ })
-    await user.click(step)
-
-    expect(window.gtag).toHaveBeenCalledWith(
-      'event',
-      'pathway_expand',
-      expect.objectContaining({ step_id: 'high_school' })
-    )
-  })
 })
 ```
 
-### Integration Tests
-
-**Scope:** Multiple components or layers working together (RTL + context/state)
-
-**Examples (from TECH_SPECS section 12.1):**
-- Full Pre-VR flow end-to-end: All 6 screens, tile selections persist, card generates and downloads
-- Card generation pipeline: User input → API call → Canvas rendering → download
-- Analytics event firing: Verify events fire at correct moments throughout flow
-
-**Approach (RTL with provider setup):**
+**Spy Usage — DOM method assertions:**
 ```typescript
-// e2e/pre-vr-flow.test.tsx
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { SessionProvider } from '@/components/SessionProvider'
-import PreVRFlow from '@/app/pre-vr/page'
-import { mockContent } from '@/lib/test-fixtures'
+// screen-five.test.tsx — download anchor flow
+const appendSpy = vi.spyOn(document.body, 'appendChild')
+const anchorClickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
 
-describe('Pre-VR Flow Integration', () => {
-  it('persists tile selections through all screens', async () => {
-    const user = userEvent.setup()
-    render(
-      <SessionProvider initialContent={mockContent}>
-        <PreVRFlow />
-      </SessionProvider>
-    )
-
-    // Start on Screen 2, select tiles
-    const tileButtons = screen.getAllByRole('button', { name: /framing|roofing|electrical|plumbing|interior|exterior/ })
-    await user.click(tileButtons[0])
-    await user.click(tileButtons[1])
-
-    // Click Next to go to Screen 3
-    await user.click(screen.getByRole('button', { name: /next/i }))
-
-    // Navigate forward through Screens 3-5
-    // Then return to verify selections are still there
-    await user.click(screen.getByRole('button', { name: /back/i }))
-
-    const selectedTiles = screen.getAllByRole('button', { pressed: true })
-    expect(selectedTiles).toHaveLength(2)
-  })
-})
+// After triggering download...
+const appendedAnchor = appendSpy.mock.calls
+  .map(([node]) => node)
+  .find((node): node is HTMLAnchorElement => node instanceof HTMLAnchorElement)
+expect(appendedAnchor?.href).toBe('blob:mock-card')
+expect(appendedAnchor?.download).toBe('carpenter-card.png')
 ```
 
-### E2E Tests (Browser Automation)
-
-**Scope:** Full user journeys in a real browser (Playwright)
-
-**Examples (from TECH_SPECS section 12.1):**
-- Complete Pre-VR flow on Chromebook at 1366×768 — all screens render, tile selections persist, card generates and downloads
-- Complete Pre-VR flow on mobile (375px wide) — layout adapts, touch targets adequate, card downloads
-- Card generation fails (API timeout) — fallback triggers, card still generates and downloads
-
-**Approach (Playwright):**
+**Stubs for Unimplemented Tests:**
 ```typescript
-// e2e/pre-vr-flow.spec.ts
-import { test, expect } from '@playwright/test'
-
-test.describe('Pre-VR Flow - Chromebook (1366x768)', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.setViewportSize({ width: 1366, height: 768 })
-    await page.goto('http://localhost:3000/pre-vr')
-  })
-
-  test('complete flow: select tiles → enter name → generate card → download', async ({ page }) => {
-    // Screen 1: Hook screen with salary
-    await expect(page.locator('h1')).toContainText('What does a carpenter in Saskatchewan actually earn?')
-
-    // Navigate to Screen 2: Tile selection
-    await page.click('button:has-text("Next")')
-
-    // Select 2 tiles
-    const tiles = page.locator('button[role="checkbox"]')
-    await tiles.nth(0).click()
-    await tiles.nth(1).click()
-
-    // Navigate to Screen 5: Card builder
-    await page.click('button:has-text("Next")')
-    await page.click('button:has-text("Next")')
-    await page.click('button:has-text("Next")')
-
-    // Enter name
-    await page.fill('input[placeholder="Your first name"]', 'Alex')
-
-    // Select icon
-    await page.click('button[aria-label="Hammer icon"]')
-
-    // Wait for card preview to generate
-    await page.waitForSelector('canvas', { timeout: 5000 })
-
-    // Click download
-    const downloadPromise = page.waitForEvent('download')
-    await page.click('button:has-text("Download")')
-
-    const download = await downloadPromise
-    expect(download.suggestedFilename()).toBe('carpenter-card.png')
-  })
-
-  test('card generation fails and triggers fallback', async ({ page }) => {
-    // Mock API to return 503
-    await page.route('**/api/generate-card', (route) => {
-      route.abort('failed')
-    })
-
-    // Go to Screen 5
-    await page.click('button:has-text("Next")') // S2
-    await page.click('button:has-text("Next")') // S3
-    await page.click('button:has-text("Next")') // S4
-    await page.click('button:has-text("Next")') // S5
-
-    // Enter inputs
-    await page.fill('input[placeholder="Your first name"]', 'Alex')
-    await page.click('button[aria-label="Hammer icon"]')
-
-    // Should still render a card (fallback)
-    await waitFor(async () => {
-      const canvas = page.locator('canvas')
-      expect(await canvas.isVisible()).toBe(true)
-    }, { timeout: 10000 })
-
-    // Download should still work
-    const downloadPromise = page.waitForEvent('download')
-    await page.click('button:has-text("Download")')
-    const download = await downloadPromise
-    expect(download.suggestedFilename()).toBe('carpenter-card.png')
-  })
-})
-
-test.describe('Pre-VR Flow - Mobile (375x667)', () => {
-  test('layout adapts: tiles stack 1-wide, card preview below inputs', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 })
-    await page.goto('http://localhost:3000/pre-vr')
-
-    // Navigate to Screen 2
-    await page.click('button:has-text("Next")')
-
-    // Verify tile grid is 1 column
-    const gridClasses = await page.locator('[role="grid"]').getAttribute('class')
-    expect(gridClasses).toContain('grid-cols-1')
-    expect(gridClasses).not.toContain('sm:grid-cols-2') // Should use 1-col on mobile
-
-    // All tiles should be tappable (44px minimum)
-    const tiles = page.locator('button').filter({ has: page.locator('img') })
-    const boundingBox = await tiles.first().boundingBox()
-    expect(boundingBox?.width).toBeGreaterThanOrEqual(44)
-    expect(boundingBox?.height).toBeGreaterThanOrEqual(44)
-  })
-})
+// screen-one.test.tsx — placeholder tests not yet implemented
+it.todo('renders salary amount from content data') // HOOK-01
+it.todo('displays dollar sign and comma formatting') // HOOK-01
 ```
 
-### Accessibility Tests
+## Global Setup (`tests/vitest.setup.ts`)
 
-**Framework:** axe-core (automated) + manual (ChromeVox, VoiceOver)
-
-**Approach (Playwright with axe):**
 ```typescript
-// e2e/accessibility.spec.ts
-import { test, expect } from '@playwright/test'
-import { injectAxe, getViolations } from 'axe-playwright'
+import 'vitest-axe/extend-expect'
+import '@testing-library/jest-dom/vitest'
+import * as matchers from 'vitest-axe/matchers'
 
-test.describe('Accessibility - WCAG AA Compliance', () => {
-  test('ScreenOne has no axe violations', async ({ page }) => {
-    await page.goto('http://localhost:3000/pre-vr')
-    await injectAxe(page)
+expect.extend(matchers)
 
-    const violations = await getViolations(page)
-    expect(violations).toEqual([])
-  })
-
-  test('all interactive elements are keyboard navigable', async ({ page }) => {
-    await page.goto('http://localhost:3000/pre-vr')
-
-    // Tab through 10 elements — verify focus ring visible
-    for (let i = 0; i < 10; i++) {
-      await page.keyboard.press('Tab')
-      const focusedElement = await page.evaluate(() => document.activeElement?.tagName)
-      expect(['BUTTON', 'A', 'INPUT']).toContain(focusedElement)
-    }
-  })
-
-  test('respects prefers-reduced-motion', async ({ page }) => {
-    // Emulate reduced motion preference
-    await page.emulateMedia({ reducedMotion: 'reduce' })
-    await page.goto('http://localhost:3000/pre-vr')
-
-    // Salary counter should not animate
-    const counterElement = page.locator('[data-test="salary-counter"]')
-    const animation = await counterElement.evaluate((el) =>
-      window.getComputedStyle(el).animationDuration
-    )
-    expect(animation).toBe('0s')
-  })
-})
-```
-
-**Manual Testing (not automated):**
-- ChromeVox (primary for Chromebook target): Test all 6 screens + bridge page, verify heading hierarchy, form labels, button purposes
-- VoiceOver (mobile): Test on iPad/iPhone, verify interactions work via VoiceOver rotor
-
-## Critical Test Cases (from TECH_SPECS section 12.2)
-
-**These must have test coverage:**
-
-1. **Complete Pre-VR flow on Chromebook (1366×768)** — all screens render, tile selections persist, card generates and downloads
-   - Test: `e2e/pre-vr-flow.spec.ts` with viewport 1366×768
-   - Verifies: rendering, state persistence, card generation, download
-
-2. **Complete Pre-VR flow on mobile (375px wide)** — layout adapts, touch targets adequate, card downloads
-   - Test: `e2e/pre-vr-flow.spec.ts` with viewport 375×667
-   - Verifies: responsive layout, touch target sizes, download
-
-3. **Card generation fails (API timeout)** — fallback triggers, card still generates and downloads
-   - Test: `e2e/pre-vr-flow.spec.ts` with mocked 503 API
-   - Verifies: error handling, fallback rendering, recovery
-
-4. **Navigate backward through all screens** — tile selections preserved, card (if generated) preserved
-   - Test: Component integration test in `ScreenTwo.test.tsx` + `SessionProvider.test.tsx`
-   - Verifies: state persistence on back navigation
-
-5. **Bridge page loads from direct URL** (`/post-vr`) — renders correctly without prior session state
-   - Test: `e2e/post-vr-bridge.spec.ts`
-   - Verifies: route isolation, independent state, checklist functionality
-
-6. **All analytics events fire correctly** — verify in GA4 debug mode
-   - Test: Multiple tests with mocked gtag, plus manual GA4 debug mode verification
-   - Verifies: event names, parameters, no PII leakage
-
-## Test Data and Mocking Strategy
-
-**Content JSON Validation:**
-```typescript
-// lib/content.test.ts
-import { validateOccupationContent } from '@/lib/content'
-import carpentryContent from '@/content/carpentry.json'
-
-it('parses carpentry.json successfully', () => {
-  expect(() => validateOccupationContent(carpentryContent)).not.toThrow()
-})
-
-it('rejects invalid content schema', () => {
-  const invalid = { meta: { occupationId: 'test' } } // Missing required fields
-  expect(() => validateOccupationContent(invalid)).toThrow()
-})
-```
-
-**Environment Variables for Testing:**
-- `NANOBANANA_API_KEY`: Set to a dummy value in test environment
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID`: Set to a test ID (or mock gtag globally)
-- Use `.env.test` for test-specific overrides
-
-**API Mocking Strategy:**
-```typescript
-// jest.setup.ts
-beforeEach(() => {
-  // Mock fetch globally
-  global.fetch = jest.fn((url: string) => {
-    if (url.includes('/api/generate-card')) {
-      return Promise.resolve({
-        ok: true,
-        arrayBuffer: () => Promise.resolve(/* mock image data */)
-      })
-    }
-    return Promise.reject(new Error(`Unmocked fetch: ${url}`))
-  })
+// jsdom does not implement window.matchMedia — required by useReducedMotion hook
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
 })
 ```
 
 ---
 
-*Testing specification: based on TECH_SPECS.md section 12, ready for implementation*
+*Testing analysis: 2026-04-03*
