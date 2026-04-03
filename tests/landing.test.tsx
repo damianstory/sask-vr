@@ -8,7 +8,17 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockPush }),
 }))
 
+vi.mock('next/font/google', () => ({
+  Open_Sans: () => ({ variable: 'font-mock' }),
+}))
+
+vi.mock('@next/third-parties/google', () => ({
+  GoogleAnalytics: () => null,
+  sendGAEvent: vi.fn(),
+}))
+
 // Import after mocks are set up
+import RootLayout from '@/app/layout'
 import Page from '@/app/page'
 
 describe('Landing Page', () => {
@@ -46,5 +56,25 @@ describe('Landing Page', () => {
     render(<Page />)
     expect(screen.getByLabelText(/pre-vr/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/post-vr/i)).toBeInTheDocument()
+  })
+
+  it('renders the vendored PNG logo asset', () => {
+    render(<Page />)
+    expect(screen.getByAltText('myBlueprint logo')).toHaveAttribute(
+      'src',
+      '/logos/myblueprint-logo.png'
+    )
+  })
+
+  it('keeps the skip link targeting main content', () => {
+    render(
+      <RootLayout>
+        <Page />
+      </RootLayout>
+    )
+    expect(screen.getByRole('link', { name: /skip to content/i })).toHaveAttribute(
+      'href',
+      '#main-content'
+    )
   })
 })

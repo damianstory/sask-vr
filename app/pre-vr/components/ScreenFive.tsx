@@ -66,74 +66,82 @@ export default function ScreenFive({ onNext }: ScreenFiveProps) {
   }
 
   return (
-    <section className="flex flex-col items-center px-4 py-8">
-      {/* Heading */}
-      <h2 data-screen-heading className="text-center text-[28px] font-[800] leading-[1.2] text-[var(--myb-navy)] md:text-[40px]">
-        {data.heading}
-      </h2>
-      <p className="mt-2 text-center text-[16px] font-[300] leading-[1.75] text-[var(--myb-neutral-5)]">
-        {data.subtext}
-      </p>
+    <section className="mx-auto flex w-full max-w-[var(--max-content-width)] flex-col px-4 py-8 md:px-6 md:py-12">
+      <div className="mx-auto max-w-3xl text-center">
+        <p className="text-[12px] font-[800] uppercase tracking-[0.24em] text-[var(--myb-primary-blue)]">
+          Card Builder
+        </p>
+        <h2
+          data-screen-heading
+          className="mt-4 text-center text-[28px] font-[800] leading-[1.15] text-[var(--myb-navy)] md:text-[40px]"
+        >
+          {data.heading}
+        </h2>
+        <p className="mt-3 text-center text-[16px] font-[300] leading-[1.75] text-[var(--myb-neutral-5)]">
+          {data.subtext}
+        </p>
+      </div>
 
-      {/* Side-by-side layout on md+, stacked on mobile */}
-      <div className="mt-6 flex w-full max-w-4xl flex-col gap-8 md:flex-row">
-        {/* Left panel: Controls */}
-        <div className="flex flex-col gap-6 md:w-1/2">
-          {/* Name input section */}
-          <div className="flex flex-col gap-1">
-            <label
-              htmlFor="card-name"
-              className="text-[14px] font-[300] text-[var(--myb-neutral-4)]"
-            >
-              {data.nameInputLabel}
-            </label>
-            <input
-              id="card-name"
-              type="text"
-              maxLength={30}
-              value={firstName}
-              placeholder={data.nameInputPlaceholder}
-              onChange={(e) => {
-                const val = e.target.value
-                setFirstName(val)
-                setNameError(false)
-                if (val.trim().length > 0 && !nameEnteredRef.current) {
-                  nameEnteredRef.current = true
-                  trackNameEntered()
-                }
-              }}
-              onBlur={() => {
-                if (firstName.trim().length === 0 && firstName.length > 0)
-                  setNameError(true)
-              }}
-              className="w-full rounded-xl border border-[var(--myb-neutral-2)] bg-white px-4 py-3 text-[16px] font-[300] text-[var(--myb-navy)] placeholder:text-[var(--myb-neutral-4)] focus:outline-none focus:ring-[3px] focus:ring-[var(--myb-primary-blue)]"
-            />
-            {nameError && (
-              <p className="mt-1 text-[14px] font-[300] text-red-500">
-                Please enter your first name
+      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,var(--max-card-preview-width))] lg:items-start">
+        <div className="rounded-[var(--radius-panel)] border border-[color:rgba(217,223,234,0.8)] bg-white/90 p-5 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:p-6">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label
+                htmlFor="card-name"
+                className="block text-[12px] font-[800] uppercase tracking-[0.2em] text-[var(--myb-primary-blue)]"
+              >
+                {data.nameInputLabel}
+              </label>
+              <input
+                id="card-name"
+                type="text"
+                maxLength={30}
+                value={firstName}
+                placeholder={data.nameInputPlaceholder}
+                onChange={(e) => {
+                  const val = e.target.value
+                  setFirstName(val)
+                  setNameError(false)
+                  if (val.trim().length > 0 && !nameEnteredRef.current) {
+                    nameEnteredRef.current = true
+                    trackNameEntered()
+                  }
+                }}
+                onBlur={() => {
+                  if (firstName.trim().length === 0 && firstName.length > 0)
+                    setNameError(true)
+                }}
+                className="w-full rounded-[var(--radius-input)] border border-[var(--myb-neutral-2)] bg-[var(--myb-light-blue-soft)] px-4 py-3 text-[16px] font-[300] text-[var(--myb-navy)] placeholder:text-[var(--myb-neutral-4)] focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)]"
+              />
+              {nameError && (
+                <p className="text-[14px] font-[300] text-red-500">
+                  Please enter your first name
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-[12px] font-[800] uppercase tracking-[0.2em] text-[var(--myb-primary-blue)]">
+                {data.iconSelectionLabel}
               </p>
-            )}
-          </div>
+              <IconPicker
+                icons={data.icons}
+                selectedIcon={selectedIcon}
+                onSelect={(iconId) => {
+                  trackIconSelect(iconId)
+                  setSelectedIcon(iconId)
+                }}
+              />
+            </div>
 
-          {/* Icon picker section */}
-          <div className="flex flex-col gap-2">
-            <p className="text-[14px] font-[300] text-[var(--myb-neutral-4)]">
-              {data.iconSelectionLabel}
-            </p>
-            <IconPicker
-              icons={data.icons}
-              selectedIcon={selectedIcon}
-              onSelect={(iconId) => { trackIconSelect(iconId); setSelectedIcon(iconId) }}
-            />
+            <TaskTagChips tileIds={selectedTiles} />
           </div>
-
-          {/* Task tag chips section */}
-          <TaskTagChips tileIds={selectedTiles} />
         </div>
 
-        {/* Right panel: Preview + Download */}
-        <div className="flex flex-col items-center gap-4 md:w-1/2">
-          {/* Card preview */}
+        <div className="rounded-[var(--radius-panel)] border border-[color:rgba(217,223,234,0.8)] bg-white/90 p-5 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:p-6 lg:sticky lg:top-28">
+          <p className="mb-4 text-center text-[12px] font-[800] uppercase tracking-[0.2em] text-[var(--myb-primary-blue)]">
+            Live Preview
+          </p>
           <CardPreview
             name={trimmedName}
             iconEmoji={selectedIconData?.emoji ?? null}
@@ -141,24 +149,37 @@ export default function ScreenFive({ onNext }: ScreenFiveProps) {
             gradientVariant={gradientVariant}
           />
 
-          {/* Download button or celebration */}
           {!isDownloaded ? (
-            <button
-              disabled={!canDownload || isDownloading}
-              onClick={handleDownload}
-              className={cn(
-                'w-full max-w-lg min-h-[44px] rounded-lg text-[16px] font-[800]',
-                canDownload && !isDownloading
-                  ? 'bg-[var(--myb-primary-blue)] text-white hover:bg-[var(--myb-blue-dark)]'
-                  : 'bg-[var(--myb-neutral-3)] text-white cursor-not-allowed'
-              )}
-            >
-              {isDownloading ? 'Saving...' : data.downloadButtonLabel}
-            </button>
+            <div className="mt-6 space-y-3">
+              <button
+                type="button"
+                disabled={!canDownload || isDownloading}
+                onClick={handleDownload}
+                className={cn(
+                  'flex min-h-[44px] w-full items-center justify-center gap-2 rounded-[var(--radius-input)] px-5 py-4 text-[16px] font-[800] shadow-[var(--shadow-float)] transition-all duration-[var(--motion-medium)]',
+                  canDownload && !isDownloading
+                    ? 'text-white hover:-translate-y-0.5'
+                    : 'cursor-not-allowed bg-[var(--myb-neutral-3)] text-white'
+                )}
+                style={
+                  canDownload && !isDownloading
+                    ? {
+                        backgroundImage:
+                          'linear-gradient(135deg, var(--myb-navy) 0%, var(--myb-blue-vivid) 100%)',
+                      }
+                    : undefined
+                }
+              >
+                <span>{isDownloading ? 'Saving...' : data.downloadButtonLabel}</span>
+              </button>
+              <p className="text-center text-[12px] font-[300] leading-[1.6] text-[var(--myb-neutral-4)]">
+                Add your name and choose an icon to unlock the PNG export.
+              </p>
+            </div>
           ) : (
-            <div className="flex w-full max-w-lg flex-col items-center gap-4 animate-[scale-fade-in_300ms_ease-out]">
-              <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500">
+            <div className="mt-6 flex flex-col items-center gap-4 rounded-[var(--radius-card)] bg-[var(--myb-light-blue-soft)] p-5 animate-[scale-fade-in_300ms_ease-out]">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-green-500">
                   <svg
                     width="16"
                     height="16"
@@ -175,13 +196,18 @@ export default function ScreenFive({ onNext }: ScreenFiveProps) {
                     />
                   </svg>
                 </span>
-                <p className="text-[16px] font-[800] text-[var(--myb-navy)]">
+                <p className="text-[18px] font-[800] text-[var(--myb-navy)]">
                   Your card is saved!
                 </p>
               </div>
               <button
+                type="button"
                 onClick={onNext}
-                className="w-full min-h-[44px] rounded-lg bg-[var(--myb-primary-blue)] text-[16px] font-[800] text-white hover:bg-[var(--myb-blue-dark)]"
+                className="w-full rounded-[var(--radius-input)] px-5 py-4 text-[16px] font-[800] text-white shadow-[var(--shadow-float)] transition-all duration-[var(--motion-medium)] hover:-translate-y-0.5"
+                style={{
+                  backgroundImage:
+                    'linear-gradient(135deg, var(--myb-navy) 0%, var(--myb-blue-vivid) 100%)',
+                }}
               >
                 Continue
               </button>

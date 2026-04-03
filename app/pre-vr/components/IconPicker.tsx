@@ -14,7 +14,7 @@ export default function IconPicker({
   onSelect,
 }: IconPickerProps) {
   return (
-    <div className="grid grid-cols-3 gap-3 w-full max-w-xs">
+    <div className="grid w-full grid-cols-3 gap-3">
       {icons.map((icon) => {
         const isSelected = selectedIcon === icon.id
 
@@ -25,16 +25,15 @@ export default function IconPicker({
             aria-pressed={isSelected}
             onClick={() => onSelect(icon.id)}
             className={cn(
-              'relative flex flex-col items-center rounded-xl p-3 min-h-[80px] min-w-[44px] gap-1',
-              'transition-colors duration-200 ease-in-out',
-              'focus:outline-none focus:ring-[3px] focus:ring-[var(--myb-primary-blue)]',
+              'relative flex min-h-[92px] min-w-[44px] flex-col items-center justify-center gap-2 rounded-[var(--radius-card)] border-2 px-3 py-4',
+              'transition-all duration-[var(--motion-medium)] ease-in-out',
+              'focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)]',
               'active:scale-[0.98]',
               isSelected
-                ? 'bg-[var(--myb-light-blue)] border-2 border-[var(--myb-primary-blue)]'
-                : 'bg-white border border-[var(--myb-neutral-2)] hover:shadow-md hover:border-[var(--myb-neutral-3)]'
+                ? 'border-[var(--myb-primary-blue)] bg-[var(--myb-light-blue-soft)] shadow-[var(--shadow-card-hover)]'
+                : 'border-transparent bg-white hover:-translate-y-0.5 hover:border-[var(--myb-primary-blue)] hover:shadow-[var(--shadow-card-hover)]'
             )}
           >
-            {/* Checkmark badge */}
             {isSelected && (
               <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--myb-primary-blue)]">
                 <svg
@@ -55,18 +54,16 @@ export default function IconPicker({
               </span>
             )}
 
-            {/* Emoji circle */}
             <span
               className={cn(
-                'flex h-12 w-12 items-center justify-center rounded-full',
-                isSelected ? 'bg-white' : 'bg-[var(--myb-light-blue)]'
+                'flex h-12 w-12 items-center justify-center rounded-full shadow-[var(--shadow-float)]',
+                isSelected ? 'bg-white' : 'bg-[var(--myb-light-blue-soft)]'
               )}
             >
               <span className="text-[24px]">{icon.emoji}</span>
             </span>
 
-            {/* Label */}
-            <span className="text-[12px] font-[300] text-[var(--myb-neutral-4)]">
+            <span className="text-center text-[12px] font-[800] uppercase tracking-[0.12em] text-[var(--myb-neutral-4)]">
               {icon.label}
             </span>
           </button>

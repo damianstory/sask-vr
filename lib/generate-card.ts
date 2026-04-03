@@ -29,29 +29,43 @@ export async function generateCardPng(params: CardParams): Promise<Blob> {
   // 2. Draw "CARPENTER CARD" title
   ctx.font = '800 32px "Open Sans", sans-serif'
   ctx.fillStyle = '#FFFFFF'
-  ctx.textAlign = 'center'
+  ctx.textAlign = 'left'
   ctx.textBaseline = 'alphabetic'
-  ctx.fillText('CARPENTER CARD', 600, 60)
+  ctx.fillText('CARPENTER CARD', 72, 86)
 
-  // 3. Draw emoji icon on white circle
+  // 3. Draw pill badge
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.16)'
   ctx.beginPath()
-  ctx.arc(600, 250, 60, 0, Math.PI * 2)
+  ctx.roundRect(982, 52, 146, 40, 20)
+  ctx.fill()
+  ctx.font = '800 14px "Open Sans", sans-serif'
+  ctx.fillStyle = '#FFFFFF'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText('BUILDER', 1055, 72)
+
+  // 4. Draw emoji icon on white circle
+  ctx.beginPath()
+  ctx.arc(170, 350, 74, 0, Math.PI * 2)
   ctx.fillStyle = '#FFFFFF'
   ctx.fill()
   ctx.font = '80px sans-serif'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
-  ctx.fillText(params.iconEmoji, 600, 250)
+  ctx.fillText(params.iconEmoji, 170, 350)
 
-  // 4. Draw student name
-  ctx.font = '800 48px "Open Sans", sans-serif'
+  // 5. Draw student name and subtitle
+  ctx.font = '800 72px "Open Sans", sans-serif'
   ctx.fillStyle = '#FFFFFF'
-  ctx.textAlign = 'center'
+  ctx.textAlign = 'left'
   ctx.textBaseline = 'alphabetic'
-  ctx.fillText(params.name, 600, 400)
+  ctx.fillText(params.name, 286, 344)
+  ctx.font = '300 28px "Open Sans", sans-serif'
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.78)'
+  ctx.fillText('Career Explorer', 286, 392)
 
-  // 5. Draw task tag chips
-  drawTagChips(ctx, params.taskLabels, 600, 500)
+  // 6. Draw task tag chips
+  drawTagChips(ctx, params.taskLabels, 72, 560)
 
   return new Promise((resolve) => {
     canvas.toBlob((blob) => resolve(blob!), 'image/png')
@@ -61,36 +75,30 @@ export async function generateCardPng(params: CardParams): Promise<Blob> {
 function drawTagChips(
   ctx: CanvasRenderingContext2D,
   labels: string[],
-  centerX: number,
+  startX: number,
   y: number
 ) {
-  ctx.font = '300 18px "Open Sans", sans-serif'
-  const paddingX = 16
-  const paddingY = 8
+  ctx.font = '800 16px "Open Sans", sans-serif'
+  const paddingX = 22
+  const paddingY = 10
   const chipGap = 12
-  const chipHeight = 18 + paddingY * 2
-
-  // Measure total width to center the row
-  const chipWidths = labels.map((l) => ctx.measureText(l).width + paddingX * 2)
-  const totalWidth =
-    chipWidths.reduce((a, b) => a + b, 0) + chipGap * (labels.length - 1)
-  let x = centerX - totalWidth / 2
+  const chipHeight = 16 + paddingY * 2
+  let x = startX
 
   for (let i = 0; i < labels.length; i++) {
-    const w = chipWidths[i]
+    const text = labels[i].toUpperCase()
+    const w = ctx.measureText(text).width + paddingX * 2
     const r = chipHeight / 2
 
-    // Semi-transparent white pill
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.18)'
     ctx.beginPath()
     ctx.roundRect(x, y - chipHeight / 2, w, chipHeight, r)
     ctx.fill()
 
-    // White text
     ctx.fillStyle = '#FFFFFF'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText(labels[i], x + w / 2, y)
+    ctx.fillText(text, x + w / 2, y)
 
     x += w + chipGap
   }

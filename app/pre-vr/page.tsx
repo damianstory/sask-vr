@@ -19,20 +19,43 @@ export default function PreVRPage() {
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward')
   const [isInitialMount, setIsInitialMount] = useState(true)
 
+  const focusHeading = useCallback((retryUntilFound: boolean) => {
+    let frameId: number | null = null
+    let cancelled = false
+
+    const tryFocus = () => {
+      if (cancelled) return
+
+      const heading = document.querySelector('[data-screen-heading]')
+      if (heading instanceof HTMLElement) {
+        heading.setAttribute('tabindex', '-1')
+        heading.focus({ preventScroll: false })
+        return
+      }
+
+      if (retryUntilFound) {
+        frameId = requestAnimationFrame(tryFocus)
+      }
+    }
+
+    frameId = requestAnimationFrame(tryFocus)
+
+    return () => {
+      cancelled = true
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId)
+      }
+    }
+  }, [])
+
   useEffect(() => {
     trackScreenView(`screen_${currentScreen}`)
   }, [currentScreen])
 
   // Move focus to the screen heading after each transition
   useEffect(() => {
-    requestAnimationFrame(() => {
-      const heading = document.querySelector('[data-screen-heading]')
-      if (heading instanceof HTMLElement) {
-        heading.setAttribute('tabindex', '-1')
-        heading.focus({ preventScroll: false })
-      }
-    })
-  }, [currentScreen])
+    return focusHeading(currentScreen === 3)
+  }, [currentScreen, focusHeading])
 
   const goNext = () => {
     if (currentScreen < 6) {

@@ -47,6 +47,28 @@
   --space-5: 32px;
   --space-6: 48px;
   --space-7: 64px;
+
+  --radius-input: 12px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+  --radius-sheet: 24px;
+  --radius-pill: 20px;
+
+  --shadow-card-hover: 0 8px 24px rgba(34, 34, 76, 0.1);
+  --shadow-card-dialog: 0 8px 24px rgba(34, 34, 76, 0.12);
+  --shadow-float: 0 24px 48px rgba(87, 87, 132, 0.06);
+  --shadow-nav: 0 -8px 32px rgba(34, 34, 76, 0.06);
+
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 3px;
+  --glass-blur: 20px;
+
+  --motion-fast: 200ms;
+  --motion-medium: 300ms;
+  --motion-screen: 400ms;
+
+  --max-content-width: 1120px;
+  --max-card-preview-width: 512px;
 }
 
 body {
@@ -95,11 +117,11 @@ body {
 }
 
 .animate-slide-left {
-  animation: slide-left-enter 400ms ease-out;
+  animation: slide-left-enter var(--motion-screen) ease-out;
 }
 
 .animate-slide-right {
-  animation: slide-right-enter 400ms ease-out;
+  animation: slide-right-enter var(--motion-screen) ease-out;
 }
 
 .animate-pulse-dot {
