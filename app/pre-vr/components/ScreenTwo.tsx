@@ -4,19 +4,18 @@ import { useState } from 'react'
 import { content } from '@/content/config'
 import { useSession } from '@/context/SessionContext'
 import { cn } from '@/lib/utils'
-import { trackTileSelect } from '@/lib/analytics'
+const data = content.taskRanking
 
-const data = content.screenTwo
-
-export default function ScreenTwo({ onNext }: { onNext?: () => void }) {
-  const { selectedTiles, setSelectedTiles } = useSession()
+// Temporary bridge: uses rankedTiles as selectedTiles until Phase 1B rework
+export default function ScreenTwo({ onNext, onComplete }: { onNext?: () => void; onComplete?: () => void }) {
+  const { rankedTiles: selectedTiles, setRankedTiles: setSelectedTiles } = useSession()
   const [shakeId, setShakeId] = useState<string | null>(null)
   const [overflowMessage, setOverflowMessage] = useState(false)
 
   const handleTileToggle = (tileId: string) => {
     if (selectedTiles.includes(tileId)) {
       setSelectedTiles(selectedTiles.filter((id) => id !== tileId))
-      trackTileSelect(tileId, 'deselect')
+      // TODO: Phase 1B will replace with trackRankingSubmit
     } else if (selectedTiles.length >= data.maxSelections) {
       setShakeId(tileId)
       setOverflowMessage(true)
@@ -24,7 +23,7 @@ export default function ScreenTwo({ onNext }: { onNext?: () => void }) {
       setTimeout(() => setOverflowMessage(false), 3000)
     } else {
       setSelectedTiles([...selectedTiles, tileId])
-      trackTileSelect(tileId, 'select')
+      // TODO: Phase 1B will replace with trackRankingSubmit
     }
   }
 
@@ -160,7 +159,7 @@ export default function ScreenTwo({ onNext }: { onNext?: () => void }) {
       <button
         type="button"
         disabled={isDisabled}
-        onClick={isDisabled ? undefined : onNext}
+        onClick={isDisabled ? undefined : () => { onComplete?.(); onNext?.() }}
         className={cn(
           'mt-6 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-[var(--radius-input)] px-5 py-4 text-[16px] font-[800] shadow-[var(--shadow-float)]',
           isDisabled

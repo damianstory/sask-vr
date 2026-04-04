@@ -4,20 +4,9 @@ import { useState, useEffect } from 'react'
 import { content } from '@/content/config'
 import { cn } from '@/lib/utils'
 import { trackPathwayExpand } from '@/lib/analytics'
+import { useReducedMotion } from '@/lib/hooks'
 
-function useReducedMotion() {
-  const [reduced, setReduced] = useState(false)
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReduced(mq.matches)
-    const handler = (e: MediaQueryListEvent) => setReduced(e.matches)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
-  return reduced
-}
-
-const data = content.screenFour
+const data = content.careerPathway
 
 export default function ScreenFour() {
   const reduced = useReducedMotion()

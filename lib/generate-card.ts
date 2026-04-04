@@ -1,4 +1,14 @@
-import { CARD_GRADIENTS } from '@/lib/card-gradients'
+// Inline gradients (card-gradients.ts removed with card builder)
+const CARD_GRADIENTS = [
+  { from: '#22224C', to: '#0092FF' },
+  { from: '#0092FF', to: '#C6E7FF' },
+  { from: '#22224C', to: '#3A3A6B' },
+  { from: '#0070CC', to: '#C6E7FF' },
+  { from: '#3A3A6B', to: '#0092FF' },
+  { from: '#22224C', to: '#4DA6FF' },
+  { from: '#0070CC', to: '#4DA6FF' },
+  { from: '#4DA6FF', to: '#E0F0FF' },
+]
 
 export interface CardParams {
   name: string

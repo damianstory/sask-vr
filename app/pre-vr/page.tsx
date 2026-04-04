@@ -1,112 +1,179 @@
 'use client'
 
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
-import { SessionProvider } from '@/context/SessionContext'
+import { useState, useEffect, useCallback, lazy, Suspense, type ComponentType } from 'react'
+import { SessionProvider, useSession } from '@/context/SessionContext'
 import ProgressBar from '@/components/ProgressBar'
 import Navigation from '@/components/Navigation'
 import ScreenOne from './components/ScreenOne'
 import ScreenTwo from './components/ScreenTwo'
 const ScreenThree = lazy(() => import('./components/ScreenThree'))
 import ScreenFour from './components/ScreenFour'
-import ScreenFive from './components/ScreenFive'
 import ScreenSix from './components/ScreenSix'
 import { trackScreenView } from '@/lib/analytics'
 
-type ScreenNumber = 1 | 2 | 3 | 4 | 5 | 6
+// ---------------------------------------------------------------------------
+// Screen config
+// ---------------------------------------------------------------------------
 
-export default function PreVRPage() {
-  const [currentScreen, setCurrentScreen] = useState<ScreenNumber>(1)
+type ScreenComponent = ComponentType<{ onComplete?: () => void }>
+
+interface ScreenConfig {
+  key: string
+  Component: ScreenComponent
+  gated?: boolean
+}
+
+/** Suspense wrapper for the lazy-loaded employer map — local to this file. */
+function ScreenThreeWrapper() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-64 items-center justify-center">
+          <p className="text-[14px] font-[300] text-[var(--myb-neutral-4)]">
+            Loading map...
+          </p>
+        </div>
+      }
+    >
+      <ScreenThree />
+    </Suspense>
+  )
+}
+
+const SCREENS: ScreenConfig[] = [
+  { key: 'salaryHook', Component: ScreenOne },
+  { key: 'taskRanking', Component: ScreenTwo as ScreenComponent, gated: true },
+  { key: 'employerMap', Component: ScreenThreeWrapper },
+  { key: 'careerPathway', Component: ScreenFour },
+  { key: 'vrPrep', Component: ScreenSix },
+]
+
+const TOTAL_SCREENS = SCREENS.length
+
+// Screen key → snake_case analytics name
+const analyticsName = (key: string) => key.replace(/([A-Z])/g, '_$1').toLowerCase()
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
+function PreVRFlow() {
+  const [currentScreen, setCurrentScreen] = useState(0)
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward')
   const [isInitialMount, setIsInitialMount] = useState(true)
+  const [completedScreens, setCompletedScreens] = useState<Record<string, boolean>>({})
 
+  const session = useSession()
+  const config = SCREENS[currentScreen]
+
+  // Derive completion for gated screens from session state on transition
+  useEffect(() => {
+    if (!config.gated) return
+
+    let isComplete = false
+    if (config.key === 'taskRanking') {
+      isComplete = session.rankingSubmitted ?? false
+    }
+    // Future: aiSorting → session.aiSortComplete
+
+    if (isComplete && !completedScreens[config.key]) {
+      setCompletedScreens((prev) => ({ ...prev, [config.key]: true }))
+    }
+  }, [currentScreen, config.key, config.gated, session.rankingSubmitted, completedScreens])
+
+  const isScreenComplete = !config.gated || !!completedScreens[config.key]
+
+  const handleComplete = useCallback(() => {
+    setCompletedScreens((prev) => ({ ...prev, [config.key]: true }))
+  }, [config.key])
+
+  // Focus heading after each transition
   const focusHeading = useCallback((retryUntilFound: boolean) => {
     let frameId: number | null = null
     let cancelled = false
 
     const tryFocus = () => {
       if (cancelled) return
-
       const heading = document.querySelector('[data-screen-heading]')
       if (heading instanceof HTMLElement) {
         heading.setAttribute('tabindex', '-1')
         heading.focus({ preventScroll: false })
         return
       }
-
       if (retryUntilFound) {
         frameId = requestAnimationFrame(tryFocus)
       }
     }
 
     frameId = requestAnimationFrame(tryFocus)
-
     return () => {
       cancelled = true
-      if (frameId !== null) {
-        cancelAnimationFrame(frameId)
-      }
+      if (frameId !== null) cancelAnimationFrame(frameId)
     }
   }, [])
 
   useEffect(() => {
-    trackScreenView(`screen_${currentScreen}`)
-  }, [currentScreen])
+    trackScreenView(analyticsName(config.key))
+  }, [currentScreen, config.key])
 
-  // Move focus to the screen heading after each transition
   useEffect(() => {
-    return focusHeading(currentScreen === 3)
-  }, [currentScreen, focusHeading])
+    // Employer map lazy-loads — retry focus until heading exists
+    const isEmployerMap = config.key === 'employerMap'
+    return focusHeading(isEmployerMap)
+  }, [currentScreen, config.key, focusHeading])
 
   const goNext = () => {
-    if (currentScreen < 6) {
+    if (currentScreen < TOTAL_SCREENS - 1) {
       setDirection('forward')
-      setCurrentScreen((prev) => (prev + 1) as ScreenNumber)
+      setCurrentScreen((prev) => prev + 1)
       setIsInitialMount(false)
     }
   }
 
   const goPrev = () => {
-    if (currentScreen > 1) {
+    if (currentScreen > 0) {
       setDirection('backward')
-      setCurrentScreen((prev) => (prev - 1) as ScreenNumber)
+      setCurrentScreen((prev) => prev - 1)
       setIsInitialMount(false)
     }
   }
 
-  const screens: Record<ScreenNumber, React.ReactNode> = {
-    1: <ScreenOne />,
-    2: <ScreenTwo onNext={goNext} />,
-    3: <Suspense fallback={<div className="flex h-64 items-center justify-center"><p className="text-[14px] font-[300] text-[var(--myb-neutral-4)]">Loading map...</p></div>}><ScreenThree /></Suspense>,
-    4: <ScreenFour />,
-    5: <ScreenFive onNext={goNext} />,
-    6: <ScreenSix />,
-  }
+  const ScreenComponent = config.Component
 
   return (
-    <SessionProvider>
-      <div id="main-content" className="flex min-h-screen flex-col">
-        <ProgressBar current={currentScreen} total={6} />
-        <div className="relative flex-1 overflow-hidden">
-          <div
-            key={currentScreen}
-            className={
-              isInitialMount
-                ? ''
-                : direction === 'forward'
-                  ? 'animate-slide-left'
-                  : 'animate-slide-right'
-            }
-          >
-            {screens[currentScreen]}
-          </div>
+    <div id="main-content" className="flex min-h-screen flex-col">
+      <ProgressBar current={currentScreen + 1} total={TOTAL_SCREENS} />
+      <div className="relative flex-1 overflow-hidden">
+        <div
+          key={currentScreen}
+          className={
+            isInitialMount
+              ? ''
+              : direction === 'forward'
+                ? 'animate-slide-left'
+                : 'animate-slide-right'
+          }
+        >
+          <ScreenComponent
+            onComplete={config.gated ? handleComplete : undefined}
+          />
         </div>
-        <Navigation
-          currentScreen={currentScreen}
-          totalScreens={6}
-          onNext={goNext}
-          onPrev={goPrev}
-        />
       </div>
+      <Navigation
+        currentScreen={currentScreen + 1}
+        totalScreens={TOTAL_SCREENS}
+        onNext={goNext}
+        onPrev={goPrev}
+        hideNext={!isScreenComplete}
+      />
+    </div>
+  )
+}
+
+export default function PreVRPage() {
+  return (
+    <SessionProvider>
+      <PreVRFlow />
     </SessionProvider>
   )
 }

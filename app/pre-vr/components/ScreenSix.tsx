@@ -1,6 +1,6 @@
 import { content } from '@/content/config'
 
-const data = content.screenSix
+const data = content.vrPrep
 
 const promptIcons = ['\uD83D\uDD0D', '\uD83D\uDC40', '\uD83D\uDCA1']
 

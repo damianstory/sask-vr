@@ -27,9 +27,9 @@ describe('analytics module', () => {
     })
 
     it('trackScreenView sends screen_view event with screen_name', () => {
-      analytics.trackScreenView('screen_1')
+      analytics.trackScreenView('salary_hook')
       expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'screen_view', {
-        screen_name: 'screen_1',
+        screen_name: 'salary_hook',
       })
     })
 
@@ -37,14 +37,6 @@ describe('analytics module', () => {
       analytics.trackPathSelect('pre_vr')
       expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'path_select', {
         path: 'pre_vr',
-      })
-    })
-
-    it('trackTileSelect sends tile_select event with tile_id and action', () => {
-      analytics.trackTileSelect('framing', 'select')
-      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'tile_select', {
-        tile_id: 'framing',
-        action: 'select',
       })
     })
 
@@ -64,21 +56,52 @@ describe('analytics module', () => {
       })
     })
 
-    it('trackIconSelect sends icon_select event with icon_id', () => {
-      analytics.trackIconSelect('hammer')
-      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'icon_select', {
-        icon_id: 'hammer',
+    it('trackVideoNavigate sends video_navigate event', () => {
+      analytics.trackVideoNavigate('abc123', 'next')
+      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'video_navigate', {
+        video_id: 'abc123',
+        direction: 'next',
       })
     })
 
-    it('trackNameEntered sends name_entered with NO parameters (zero PII)', () => {
-      analytics.trackNameEntered()
-      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'name_entered', undefined)
+    it('trackRankingSubmit serializes array to comma-joined string', () => {
+      analytics.trackRankingSubmit(['task-framing', 'task-concrete', 'task-roofing'])
+      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'ranking_submit', {
+        ranked_order: 'task-framing,task-concrete,task-roofing',
+      })
     })
 
-    it('trackCardDownload sends card_download with NO parameters', () => {
-      analytics.trackCardDownload()
-      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'card_download', undefined)
+    it('trackRankingScore sends ranking_score with correct_count', () => {
+      analytics.trackRankingScore(4)
+      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'ranking_score', {
+        correct_count: '4',
+      })
+    })
+
+    it('trackAISortAttempt sends ai_sort_attempt with serialized boolean', () => {
+      analytics.trackAISortAttempt('ai-essay', 'ai', true)
+      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'ai_sort_attempt', {
+        task_id: 'ai-essay',
+        chosen: 'ai',
+        correct: 'true',
+      })
+    })
+
+    it('trackAISortComplete sends ai_sort_complete with score', () => {
+      analytics.trackAISortComplete(5)
+      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'ai_sort_complete', {
+        score: '5',
+      })
+    })
+
+    it('trackStudentNameEntered sends student_name_entered with NO parameters (zero PII)', () => {
+      analytics.trackStudentNameEntered()
+      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'student_name_entered', undefined)
+    })
+
+    it('trackTinyHouseDownload sends tiny_house_download with NO parameters', () => {
+      analytics.trackTinyHouseDownload()
+      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'tiny_house_download', undefined)
     })
 
     it('trackChecklistCheck sends checklist_check event with item_id and item_label', () => {
@@ -98,9 +121,9 @@ describe('analytics module', () => {
 
     it('logs to console instead of calling sendGAEvent', () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-      analytics.trackScreenView('screen_1')
+      analytics.trackScreenView('salary_hook')
       expect(consoleSpy).toHaveBeenCalledWith('[Analytics]', 'screen_view', {
-        screen_name: 'screen_1',
+        screen_name: 'salary_hook',
       })
       expect(mockSendGAEvent).not.toHaveBeenCalled()
       consoleSpy.mockRestore()
@@ -108,8 +131,8 @@ describe('analytics module', () => {
 
     it('logs events with no params in dev mode', () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-      analytics.trackNameEntered()
-      expect(consoleSpy).toHaveBeenCalledWith('[Analytics]', 'name_entered', undefined)
+      analytics.trackStudentNameEntered()
+      expect(consoleSpy).toHaveBeenCalledWith('[Analytics]', 'student_name_entered', undefined)
       expect(mockSendGAEvent).not.toHaveBeenCalled()
       consoleSpy.mockRestore()
     })

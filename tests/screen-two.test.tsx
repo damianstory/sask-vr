@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import type { ComponentProps } from 'react'
 
-const { mockSetSelectedTiles, mockTrackTileSelect, screenTwoTiles } = vi.hoisted(() => ({
-  mockSetSelectedTiles: vi.fn(),
+const { mockSetRankedTiles, mockTrackTileSelect, screenTwoTiles } = vi.hoisted(() => ({
+  mockSetRankedTiles: vi.fn(),
   mockTrackTileSelect: vi.fn(),
   screenTwoTiles: [
     {
@@ -58,18 +58,18 @@ const { mockSetSelectedTiles, mockTrackTileSelect, screenTwoTiles } = vi.hoisted
 }))
 
 interface MockSessionState {
-  selectedTiles: string[]
-  setSelectedTiles: typeof mockSetSelectedTiles
+  rankedTiles: string[]
+  setRankedTiles: typeof mockSetRankedTiles
 }
 
 let mockSessionState: MockSessionState
 
 function buildSessionState(
-  overrides: Partial<Pick<MockSessionState, 'selectedTiles'>> = {}
+  overrides: Partial<Pick<MockSessionState, 'rankedTiles'>> = {}
 ): MockSessionState {
   return {
-    selectedTiles: [],
-    setSelectedTiles: mockSetSelectedTiles,
+    rankedTiles: [],
+    setRankedTiles: mockSetRankedTiles,
     ...overrides,
   }
 }
@@ -80,7 +80,7 @@ vi.mock('@/context/SessionContext', () => ({
 
 vi.mock('@/content/config', () => ({
   content: {
-    screenTwo: {
+    taskRanking: {
       heading: 'What sounds fun?',
       subtext: 'Pick the tasks that interest you most.',
       instruction: 'Choose 2-3 tasks',
@@ -98,7 +98,7 @@ vi.mock('@/lib/analytics', () => ({
 import ScreenTwo from '@/app/pre-vr/components/ScreenTwo'
 
 function renderScreenTwo(
-  sessionOverrides: Partial<Pick<MockSessionState, 'selectedTiles'>> = {},
+  sessionOverrides: Partial<Pick<MockSessionState, 'rankedTiles'>> = {},
   props: ComponentProps<typeof ScreenTwo> = {}
 ) {
   mockSessionState = buildSessionState(sessionOverrides)
@@ -135,22 +135,22 @@ describe('ScreenTwo', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /Framing/i }))
 
-      expect(mockSetSelectedTiles).toHaveBeenCalledWith(['task-framing'])
+      expect(mockSetRankedTiles).toHaveBeenCalledWith(['task-framing'])
       expect(mockTrackTileSelect).toHaveBeenCalledWith('task-framing', 'select')
     })
 
     it('removes a seeded tile selection and tracks the deselect action', () => {
-      renderScreenTwo({ selectedTiles: ['task-framing', 'task-roofing'] })
+      renderScreenTwo({ rankedTiles: ['task-framing', 'task-roofing'] })
 
       fireEvent.click(screen.getByRole('button', { name: /Framing/i }))
 
-      expect(mockSetSelectedTiles).toHaveBeenCalledWith(['task-roofing'])
+      expect(mockSetRankedTiles).toHaveBeenCalledWith(['task-roofing'])
       expect(mockTrackTileSelect).toHaveBeenCalledWith('task-framing', 'deselect')
     })
 
     it('renders aria-pressed state from seeded session selections', () => {
       renderScreenTwo({
-        selectedTiles: ['task-framing', 'task-measuring', 'task-finishing'],
+        rankedTiles: ['task-framing', 'task-measuring', 'task-finishing'],
       })
 
       const tileButtons = Array.from(
@@ -184,13 +184,13 @@ describe('ScreenTwo', () => {
     it('rejects a fourth tile, shows overflow feedback, and clears the timer-driven UI', () => {
       vi.useFakeTimers()
       renderScreenTwo({
-        selectedTiles: ['task-framing', 'task-measuring', 'task-finishing'],
+        rankedTiles: ['task-framing', 'task-measuring', 'task-finishing'],
       })
 
       const rejectedTile = screen.getByRole('button', { name: /Concrete/i })
       fireEvent.click(rejectedTile)
 
-      expect(mockSetSelectedTiles).not.toHaveBeenCalled()
+      expect(mockSetRankedTiles).not.toHaveBeenCalled()
       expect(mockTrackTileSelect).not.toHaveBeenCalled()
       expect(rejectedTile.className).toContain('animate-shake')
       expect(screen.getByText('You can pick up to 3!')).toBeInTheDocument()
@@ -218,7 +218,7 @@ describe('ScreenTwo', () => {
     })
 
     it('shows "Pick 1 more" and stays disabled when one tile is selected', () => {
-      renderScreenTwo({ selectedTiles: ['task-framing'] })
+      renderScreenTwo({ rankedTiles: ['task-framing'] })
 
       expect(screen.getByRole('button', { name: /Pick 1 more/i })).toBeDisabled()
     })
@@ -226,7 +226,7 @@ describe('ScreenTwo', () => {
     it('shows "Continue" and enables the local CTA once two tiles are selected', () => {
       const onNext = vi.fn()
       renderScreenTwo(
-        { selectedTiles: ['task-framing', 'task-measuring'] },
+        { rankedTiles: ['task-framing', 'task-measuring'] },
         { onNext }
       )
 
@@ -239,8 +239,8 @@ describe('ScreenTwo', () => {
   })
 
   describe('session', () => {
-    it('reads selectedTiles from session on mount and reflects the seeded CTA state', () => {
-      renderScreenTwo({ selectedTiles: ['task-framing'] })
+    it('reads rankedTiles from session on mount and reflects the seeded CTA state', () => {
+      renderScreenTwo({ rankedTiles: ['task-framing'] })
 
       expect(screen.getByRole('button', { name: /Framing/i })).toHaveAttribute(
         'aria-pressed',

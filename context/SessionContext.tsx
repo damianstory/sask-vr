@@ -2,39 +2,60 @@
 
 import { createContext, useContext, useState, type ReactNode } from 'react'
 
+interface AiSortResult {
+  taskId: string
+  chosen: 'ai' | 'human'
+  correct: boolean
+}
+
 interface SessionState {
-  selectedTiles: string[]
   firstName: string
-  selectedIcon: string | null
-  generatedCardUrl: string | null
+  shuffledTileOrder: string[]
+  rankedTiles: string[]
+  rankingSubmitted: boolean
+  rankingScore: number | null
+  aiSortResults: AiSortResult[] | null
+  aiSortComplete: boolean
 }
 
 interface SessionContextValue extends SessionState {
-  setSelectedTiles: (tiles: string[]) => void
   setFirstName: (name: string) => void
-  setSelectedIcon: (iconId: string | null) => void
-  setGeneratedCardUrl: (url: string | null) => void
+  setShuffledTileOrder: (order: string[]) => void
+  setRankedTiles: (tiles: string[]) => void
+  setRankingSubmitted: (submitted: boolean) => void
+  setRankingScore: (score: number | null) => void
+  setAiSortResults: (results: AiSortResult[] | null) => void
+  setAiSortComplete: (complete: boolean) => void
 }
 
 const SessionContext = createContext<SessionContextValue | null>(null)
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const [selectedTiles, setSelectedTiles] = useState<string[]>([])
   const [firstName, setFirstName] = useState('')
-  const [selectedIcon, setSelectedIcon] = useState<string | null>(null)
-  const [generatedCardUrl, setGeneratedCardUrl] = useState<string | null>(null)
+  const [shuffledTileOrder, setShuffledTileOrder] = useState<string[]>([])
+  const [rankedTiles, setRankedTiles] = useState<string[]>([])
+  const [rankingSubmitted, setRankingSubmitted] = useState(false)
+  const [rankingScore, setRankingScore] = useState<number | null>(null)
+  const [aiSortResults, setAiSortResults] = useState<AiSortResult[] | null>(null)
+  const [aiSortComplete, setAiSortComplete] = useState(false)
 
   return (
     <SessionContext.Provider
       value={{
-        selectedTiles,
         firstName,
-        selectedIcon,
-        generatedCardUrl,
-        setSelectedTiles,
+        shuffledTileOrder,
+        rankedTiles,
+        rankingSubmitted,
+        rankingScore,
+        aiSortResults,
+        aiSortComplete,
         setFirstName,
-        setSelectedIcon,
-        setGeneratedCardUrl,
+        setShuffledTileOrder,
+        setRankedTiles,
+        setRankingSubmitted,
+        setRankingScore,
+        setAiSortResults,
+        setAiSortComplete,
       }}
     >
       {children}

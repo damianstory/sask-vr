@@ -10,7 +10,7 @@ const REGINA_CENTER: [number, number] = [-104.6189, 50.4452]
 const ZOOM_LEVEL = 11
 const TILE_STYLE = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
 
-const data = content.screenThree
+const data = content.employerMap
 
 export default function ScreenThree() {
   const mapContainerRef = useRef<HTMLDivElement>(null)

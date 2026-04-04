@@ -5,7 +5,7 @@ import ScreenOne from '@/app/pre-vr/components/ScreenOne'
 // Mock content module
 vi.mock('@/content/config', () => ({
   content: {
-    screenOne: {
+    salaryHook: {
       hookQuestion: 'How much does a carpenter in Saskatchewan actually make?',
       salary: { amount: 67000, label: 'Average Annual Salary', source: 'Government of Canada Job Bank, NOC 72310 — Regina Region', seasonalityNote: '53% work year-round  ·  Average 41 weeks/year even for seasonal workers' },
       stats: [

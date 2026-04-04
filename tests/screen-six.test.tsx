@@ -5,7 +5,7 @@ import ScreenSix from '@/app/pre-vr/components/ScreenSix'
 // Mock content
 vi.mock('@/content/config', () => ({
   content: {
-    screenSix: {
+    vrPrep: {
       heading: 'Get ready for VR',
       subtext: 'Keep these in mind during the simulation.',
       prompts: [

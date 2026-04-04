@@ -18,10 +18,6 @@ export function trackPathSelect(path: 'pre_vr' | 'post_vr') {
   track('path_select', { path })
 }
 
-export function trackTileSelect(tileId: string, action: 'select' | 'deselect') {
-  track('tile_select', { tile_id: tileId, action })
-}
-
 export function trackEmployerTap(employerId: string, employerName: string) {
   track('employer_tap', { employer_id: employerId, employer_name: employerName })
 }
@@ -30,16 +26,32 @@ export function trackPathwayExpand(stepId: string, stepLabel: string) {
   track('pathway_expand', { step_id: stepId, step_label: stepLabel })
 }
 
-export function trackIconSelect(iconId: string) {
-  track('icon_select', { icon_id: iconId })
+export function trackVideoNavigate(videoId: string, direction: 'next' | 'prev') {
+  track('video_navigate', { video_id: videoId, direction })
 }
 
-export function trackNameEntered() {
-  track('name_entered')
+export function trackRankingSubmit(rankedOrder: string[]) {
+  track('ranking_submit', { ranked_order: rankedOrder.join(',') })
 }
 
-export function trackCardDownload() {
-  track('card_download')
+export function trackRankingScore(correctCount: number) {
+  track('ranking_score', { correct_count: String(correctCount) })
+}
+
+export function trackAISortAttempt(taskId: string, chosen: 'ai' | 'human', correct: boolean) {
+  track('ai_sort_attempt', { task_id: taskId, chosen, correct: String(correct) })
+}
+
+export function trackAISortComplete(score: number) {
+  track('ai_sort_complete', { score: String(score) })
+}
+
+export function trackStudentNameEntered() {
+  track('student_name_entered')
+}
+
+export function trackTinyHouseDownload() {
+  track('tiny_house_download')
 }
 
 export function trackChecklistCheck(itemId: string, itemLabel: string) {

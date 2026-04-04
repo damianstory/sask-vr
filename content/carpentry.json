@@ -5,7 +5,7 @@
     "displayName": "Carpentry",
     "landingDescription": "Explore what carpentry in Saskatchewan is really like"
   },
-  "screenOne": {
+  "salaryHook": {
     "hookQuestion": "How much does a carpenter in Saskatchewan actually make?",
     "salary": {
       "amount": 67000,
@@ -20,7 +20,7 @@
       { "value": "12.4%", "label": "Indigenous Workers in SK Construction", "eyebrow": "Representation" }
     ]
   },
-  "screenTwo": {
+  "taskRanking": {
     "heading": "What do carpenters actually do?",
     "subtext": "Tap the tasks that sound most interesting to you.",
     "instruction": "Select 2 to 3 tasks",
@@ -77,7 +77,7 @@
       }
     ]
   },
-  "screenThree": {
+  "employerMap": {
     "heading": "Who hires carpenters near you?",
     "subtext": "Tap a pin to learn about real employers in the Regina area.",
     "employers": [
@@ -173,7 +173,7 @@
       }
     ]
   },
-  "screenFour": {
+  "careerPathway": {
     "heading": "How do you become a carpenter?",
     "subtext": "Tap each step to see what comes next.",
     "steps": [
@@ -243,23 +243,7 @@
       }
     ]
   },
-  "screenFive": {
-    "heading": "Make it yours",
-    "subtext": "Create your personal carpenter card to take with you.",
-    "nameInputLabel": "Your first name",
-    "nameInputPlaceholder": "Enter your first name",
-    "iconSelectionLabel": "Pick your favourite tool",
-    "icons": [
-      { "id": "icon-hammer", "label": "Hammer", "svgPath": "/icons/hammer.svg", "emoji": "🔨" },
-      { "id": "icon-saw", "label": "Saw", "svgPath": "/icons/saw.svg", "emoji": "🪚" },
-      { "id": "icon-hardhat", "label": "Hard Hat", "svgPath": "/icons/hardhat.svg", "emoji": "⛑️" },
-      { "id": "icon-tape", "label": "Tape Measure", "svgPath": "/icons/tape.svg", "emoji": "📏" },
-      { "id": "icon-goggles", "label": "Goggles", "svgPath": "/icons/goggles.svg", "emoji": "🥽" },
-      { "id": "icon-level", "label": "Level", "svgPath": "/icons/level.svg", "emoji": "📐" }
-    ],
-    "downloadButtonLabel": "Download Your Card"
-  },
-  "screenSix": {
+  "vrPrep": {
     "heading": "Get ready for VR",
     "subtext": "Keep these questions in mind while you explore.",
     "prompts": [

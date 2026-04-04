@@ -18,13 +18,12 @@ describe('Content Schema', () => {
     expect(content.meta.occupationTitle).toBeTruthy()
   })
 
-  it('has all seven screen sections', () => {
-    expect(content.screenOne).toBeDefined()
-    expect(content.screenTwo).toBeDefined()
-    expect(content.screenThree).toBeDefined()
-    expect(content.screenFour).toBeDefined()
-    expect(content.screenFive).toBeDefined()
-    expect(content.screenSix).toBeDefined()
+  it('has all content sections with semantic keys', () => {
+    expect(content.salaryHook).toBeDefined()
+    expect(content.taskRanking).toBeDefined()
+    expect(content.employerMap).toBeDefined()
+    expect(content.careerPathway).toBeDefined()
+    expect(content.vrPrep).toBeDefined()
     expect(content.postVr).toBeDefined()
   })
 
@@ -35,13 +34,12 @@ describe('Content Schema', () => {
     expect(content.meta.landingDescription).not.toBe('')
   })
 
-  it('has populated arrays in each screen section', () => {
-    expect(content.screenOne.stats.length).toBeGreaterThan(0)
-    expect(content.screenTwo.tiles.length).toBeGreaterThan(0)
-    expect(content.screenThree.employers.length).toBeGreaterThan(0)
-    expect(content.screenFour.steps.length).toBeGreaterThan(0)
-    expect(content.screenFive.icons.length).toBeGreaterThan(0)
-    expect(content.screenSix.prompts.length).toBeGreaterThan(0)
+  it('has populated arrays in each content section', () => {
+    expect(content.salaryHook.stats.length).toBeGreaterThan(0)
+    expect(content.taskRanking.tiles.length).toBeGreaterThan(0)
+    expect(content.employerMap.employers.length).toBeGreaterThan(0)
+    expect(content.careerPathway.steps.length).toBeGreaterThan(0)
+    expect(content.vrPrep.prompts.length).toBeGreaterThan(0)
     expect(content.postVr.checklist.length).toBeGreaterThan(0)
   })
 })

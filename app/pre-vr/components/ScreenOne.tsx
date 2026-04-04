@@ -2,26 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { content } from '@/content/config'
+import { useReducedMotion } from '@/lib/hooks'
 
-const data = content.screenOne
-
-/**
- * Hook to detect prefers-reduced-motion media query.
- */
-function useReducedMotion() {
-  const [reduced, setReduced] = useState(false)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReduced(mq.matches)
-
-    const handler = (e: MediaQueryListEvent) => setReduced(e.matches)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
-
-  return reduced
-}
+const data = content.salaryHook
 
 /**
  * Single odometer digit column. Renders 0-9 stacked vertically and scrolls

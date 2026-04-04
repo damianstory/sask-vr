@@ -8,28 +8,32 @@ import { axe } from 'vitest-axe'
 vi.mock('@/lib/analytics', () => ({
   trackScreenView: vi.fn(),
   trackPathSelect: vi.fn(),
-  trackTileSelect: vi.fn(),
   trackEmployerTap: vi.fn(),
   trackPathwayExpand: vi.fn(),
-  trackIconSelect: vi.fn(),
-  trackNameEntered: vi.fn(),
-  trackCardDownload: vi.fn(),
+  trackStudentNameEntered: vi.fn(),
   trackChecklistCheck: vi.fn(),
+  trackVideoNavigate: vi.fn(),
+  trackRankingSubmit: vi.fn(),
+  trackRankingScore: vi.fn(),
+  trackAISortAttempt: vi.fn(),
+  trackAISortComplete: vi.fn(),
+  trackTinyHouseDownload: vi.fn(),
 }))
 
 // Mock content/config with minimal data for each screen
 vi.mock('@/content/config', () => ({
   content: {
-    screenOne: {
-      hookQuestion: 'Ever wonder what a carpenter earns?',
-      salary: { amount: 72000, label: 'Average Annual Salary', source: 'Saskatchewan Labour Market Information, 2025' },
+    salaryHook: {
+      hookQuestion: 'How much does a carpenter in Saskatchewan actually make?',
+      salary: { amount: 67000, label: 'Average Annual Salary', source: 'Government of Canada Job Bank, NOC 72310 — Regina Region' },
       stats: [
-        { value: '4,200+', label: 'Jobs in Saskatchewan' },
-        { value: '12%', label: 'Demand Growth' },
-        { value: '350+', label: 'Employers Hiring' },
+        { value: '1,590', label: 'Job Openings by 2029', eyebrow: 'Opportunity' },
+        { value: '23%', label: 'Retiring by 2034', eyebrow: 'Demand' },
+        { value: '37%', label: 'Run Their Own Business', eyebrow: 'Entrepreneurship' },
+        { value: '12.4%', label: 'Indigenous Workers in SK Construction', eyebrow: 'Representation' },
       ],
     },
-    screenTwo: {
+    taskRanking: {
       heading: 'What sounds fun?',
       subtext: 'Pick the tasks that interest you most.',
       instruction: 'Choose 2-3 tasks',
@@ -44,7 +48,7 @@ vi.mock('@/content/config', () => ({
         { id: 'task-renovation', title: 'Renovation', description: 'Transform spaces', emoji: '\u{1F527}', illustrationPath: '' },
       ],
     },
-    screenFour: {
+    careerPathway: {
       heading: 'Your career pathway',
       subtext: 'From school to skilled trades.',
       steps: [
@@ -55,7 +59,7 @@ vi.mock('@/content/config', () => ({
         { id: 'step-5', title: 'Master Carpenter', subtitle: 'Expert', details: { description: 'Lead projects and mentor.' } },
       ],
     },
-    screenSix: {
+    vrPrep: {
       heading: 'Get ready for VR',
       subtext: 'Keep these in mind during the simulation.',
       prompts: [
@@ -87,8 +91,9 @@ vi.mock('@/content/config', () => ({
 // Mock SessionContext for ScreenTwo
 vi.mock('@/context/SessionContext', () => ({
   useSession: () => ({
-    selectedTiles: [],
-    setSelectedTiles: vi.fn(),
+    rankedTiles: [],
+    setRankedTiles: vi.fn(),
+    rankingSubmitted: false,
   }),
 }))
 

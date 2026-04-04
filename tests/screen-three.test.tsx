@@ -30,7 +30,7 @@ vi.mock('maplibre-gl', () => {
 // Mock content
 vi.mock('@/content/config', () => ({
   content: {
-    screenThree: {
+    employerMap: {
       heading: 'Who hires carpenters near you?',
       subtext: 'Tap a pin to learn about real employers.',
       employers: [

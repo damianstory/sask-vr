@@ -5,7 +5,7 @@ export interface OccupationContent {
     displayName: string
     landingDescription: string
   }
-  screenOne: {
+  salaryHook: {
     hookQuestion: string
     salary: {
       amount: number
@@ -19,7 +19,7 @@ export interface OccupationContent {
       eyebrow?: string
     }>
   }
-  screenTwo: {
+  taskRanking: {
     heading: string
     subtext: string
     instruction: string
@@ -34,7 +34,7 @@ export interface OccupationContent {
       weight?: number
     }>
   }
-  screenThree: {
+  employerMap: {
     heading: string
     subtext: string
     employers: Array<{
@@ -48,7 +48,7 @@ export interface OccupationContent {
       pinPosition: { lng: number; lat: number }
     }>
   }
-  screenFour: {
+  careerPathway: {
     heading: string
     subtext: string
     steps: Array<{
@@ -68,21 +68,7 @@ export interface OccupationContent {
       }
     }>
   }
-  screenFive: {
-    heading: string
-    subtext: string
-    nameInputLabel: string
-    nameInputPlaceholder: string
-    iconSelectionLabel: string
-    icons: Array<{
-      id: string
-      label: string
-      svgPath: string
-      emoji: string
-    }>
-    downloadButtonLabel: string
-  }
-  screenSix: {
+  vrPrep: {
     heading: string
     subtext: string
     prompts: Array<{

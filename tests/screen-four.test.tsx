@@ -6,7 +6,7 @@ import ScreenFour from '@/app/pre-vr/components/ScreenFour'
 // Mock content
 vi.mock('@/content/config', () => ({
   content: {
-    screenFour: {
+    careerPathway: {
       heading: 'Your career pathway',
       subtext: 'From school to skilled trades.',
       steps: [

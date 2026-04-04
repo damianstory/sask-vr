@@ -5,6 +5,7 @@ interface NavigationProps {
   totalScreens: number
   onNext: () => void
   onPrev: () => void
+  hideNext?: boolean
 }
 
 export default function Navigation({
@@ -12,6 +13,7 @@ export default function Navigation({
   totalScreens,
   onNext,
   onPrev,
+  hideNext,
 }: NavigationProps) {
   return (
     <div className="sticky bottom-0 z-30 mt-auto px-4 pb-[max(env(safe-area-inset-bottom),1rem)] pt-4">
@@ -41,7 +43,7 @@ export default function Navigation({
           <span>Back</span>
         </button>
 
-        {currentScreen !== totalScreens && (
+        {currentScreen !== totalScreens && !hideNext && (
           <button
             type="button"
             onClick={onNext}
