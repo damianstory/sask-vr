@@ -53,93 +53,98 @@
 
 ## Phase 1 — Screen Updates
 
-- [ ] **1A. Salary Hook redesign**
-  - Schema: `hourlyRange`, `annualRange`, `selfEmployment` in salaryHook
-  - Odometer for median annual, range bar below, self-employment callout card
-  - File: `app/pre-vr/components/ScreenOne.tsx`, `content/carpentry.json`
-
-- [ ] **1B. Task Ranking rework**
-  - Replace tile selection with drag-and-drop ranking of all 6
-  - @dnd-kit/sortable + visible up/down arrow buttons (first-class, not fallback)
-  - Phase 1: ranking list, Phase 2: side-by-side reveal
-  - Shuffle on first mount → `shuffledTileOrder` in session
-  - Scoring: tie groups (14% tiles interchangeable in positions 3-5)
-  - `gated: true` — calls `onComplete()` after submit
-  - Revisit: show reveal directly if `rankingSubmitted`
-  - File: `app/pre-vr/components/ScreenTwo.tsx`, `content/carpentry.json`
-
-- [ ] **1C. Career Pathway — remove Grade 7/8 step**
-  - Remove step-1 from JSON, 5 steps starting with High School
+- [x] **1C. Career Pathway — remove Grade 7/8 step**
+  - Removed step-1 from JSON, 5 steps starting with High School
   - Head start widget stays in new step 1 (High School)
-  - File: `content/carpentry.json`
 
-- [ ] **Phase 1 gate**
-  - `npm run type-check && npm run lint`
-  - `npx vitest run tests/content-schema.test.ts`
-  - Targeted: ranking behavior test (6 items render, reorder works, reveal shows)
+- [x] **1A. Salary Hook redesign**
+  - Added `hourlyRange`, `annualRange`, `selfEmployment` to schema and JSON
+  - Odometer for median annual ($67K), range bar ($19–$45/hr), self-employment callout (37%, $80K+)
+  - Removed duplicate 37% stat card, changed label to "Median Annual Salary"
+  - Added `formatMoney` helper, accessible `aria-label` on odometer
+
+- [x] **1B. Task Ranking rework**
+  - Full rewrite with @dnd-kit/sortable drag-and-drop ranking
+  - Up/down arrow buttons (first-class), shuffle on first mount
+  - Tie-group scoring via `lib/scoring.ts` (returns `tieGroups` for reveal)
+  - Reveal phase: two-column comparison, bracketed 14% tie group, per-row match indicators
+  - Locked after submit — revisit shows reveal directly
+  - Updated flow tests, a11y tests, content-schema tests
+
+- [x] **Phase 1 gate**
+  - `npm run type-check` — clean
+  - `npx vitest run` — 98 passed, 0 failed
+  - New files: `lib/scoring.ts`, `tests/scoring.test.ts`
+  - Updated: `tests/pre-vr-flow.test.tsx`, `tests/a11y/screens.a11y.test.tsx`
 
 ---
 
 ## Phase 2 — New Screens (parallel-safe)
 
-- [ ] **2A. Video Snippets** (`ScreenVideo.tsx`)
+- [x] **2A. Video Snippets** (`ScreenVideo.tsx`)
   - 6 YouTube Shorts carousel with arrow buttons
   - `youtube-nocookie.com`, `loading="lazy"`, `rel=0`, 9:16 portrait
   - No autoplay after navigation, focus to carousel region container
-  - Single iframe at a time (swap src)
+  - Single keyed iframe (swap src), accessible prev/next labels
   - File: `app/pre-vr/components/ScreenVideo.tsx` (new)
 
-- [ ] **2B. No-Debt Speed Run** (`ScreenSpeedRun.tsx`)
+- [x] **2B. No-Debt Speed Run** (`ScreenSpeedRun.tsx`)
   - Side-by-side animated timelines (carpenter vs university)
-  - `disclaimer` field for illustrative values
-  - Timer cleanup on unmount, reduced-motion: milestones immediate
+  - Lockstep row reveal, `disclaimer` field for illustrative values
+  - Timer cleanup on unmount, reduced-motion: all milestones visible immediately
   - File: `app/pre-vr/components/ScreenSpeedRun.tsx` (new)
 
-- [ ] **2C. AI Can't Build This** (`ScreenAI.tsx`)
+- [x] **2C. AI Can't Build This** (`ScreenAI.tsx`)
   - Sort 6 tasks into AI/Human buckets, one at a time
-  - Green/red feedback, score + punchline after all 6
-  - `gated: true` — `onComplete()` after all sorted
-  - Revisit: complete→show score, partial→restore progress (content order minus completed IDs)
-  - Timer cleanup on unmount, reduced-motion: skip animations
+  - Non-color-only feedback ("Correct!" / "Not quite"), score + punchline after all 6
+  - `gated: true` — `onComplete()` only on first completion, not on revisit
+  - Revisit: complete→show score, partial→restore by answered IDs (Set + filter)
+  - Buttons disabled during feedback window, nextResults pattern for stale-state safety
+  - Results rendered from canonical data.tasks order via Map lookup
   - File: `app/pre-vr/components/ScreenAI.tsx` (new)
 
-- [ ] **Phase 2 gate**
-  - `npm run type-check && npm run lint`
-  - Targeted smoke tests: each screen renders without crashing
+- [x] **Phase 2 gate**
+  - `npm run type-check` — clean
+  - `npm run lint` — no new errors (7 pre-existing)
+  - Targeted tests: 46 passed across 4 files (content-schema, screen-video, screen-speed-run, screen-ai)
+  - New files: `ScreenVideo.tsx`, `ScreenSpeedRun.tsx`, `ScreenAI.tsx`, 3 test files
+  - Schema additions: `videoSnippets`, `speedRun`, `aiSorting` in types.ts + carpentry.json
 
 ---
 
 ## Phase 3 — Flow Wiring + File Renames
 
-- [ ] **Wire 8 screens into SCREENS array**
+- [x] **Wire 8 screens into SCREENS array**
   - Final order: videoSnippets, salaryHook, speedRun, taskRanking, employerMap, careerPathway, aiSorting, vrPrep
   - `gated: true` on taskRanking and aiSorting
 
-- [ ] **Rename component files**
+- [x] **Rename component files**
   - `ScreenOne.tsx` → `ScreenSalary.tsx`
   - `ScreenTwo.tsx` → `ScreenTaskRanking.tsx`
-  - Update all imports
+  - Updated all imports in page.tsx, tests, and a11y import paths
 
-- [ ] **Phase 3 gate**
-  - `npm run type-check && npm run lint`
-  - Run Phase 1/2 targeted tests
-  - Manual: click through all 8 screens, progress bar "X of 8", gating on 4 and 7
+- [x] **Phase 3 gate**
+  - `npm run type-check` — clean
+  - `npm run lint` — no new errors (7 pre-existing)
+  - Targeted tests: 83 passed across 7 files
+  - Flow test updated for 8 screens, both gated checkpoints, employer-map focus on screen 5
 
 ---
 
 ## Phase 4 — Post-VR Tiny House Designer
 
-- [ ] **TinyHouseDesigner component**
-  - Top-down grid (24x12ft), pre-defined slots, tap→pick room
-  - Skills mapping sidebar
-  - Canvas PNG download (reuse generate-card.ts pattern)
-  - Filename: `tiny-house-{sanitized}.png` (lowercase, strip non-alnum, collapse hyphens, fallback 'student')
-  - 1200x675px, 20-char name truncation, URL.revokeObjectURL cleanup
-  - Local state only (not SessionContext), `firstName` from session
-  - File: `app/post-vr/components/TinyHouseDesigner.tsx` (new), `app/post-vr/page.tsx`
+- [x] **TinyHouseDesigner component**
+  - Top-down 6×3 CSS grid (24×12ft), 5 pre-defined slots with tap→pick room overlay
+  - Skills mapping sidebar: 10 skills, active/inactive states, source room attribution
+  - Canvas PNG download (1200×675px, navy-to-blue gradient, room rectangles, skill chips)
+  - Filename: `tiny-house-${sanitizeName(firstName)}.png` with 20-char truncation, fallback 'student'
+  - Focus trap in picker, Escape dismissal, keyboard-accessible slot buttons
+  - Local state only, `firstName` read-only from SessionContext
+  - Files: `app/post-vr/components/TinyHouseDesigner.tsx` (new), `app/post-vr/page.tsx`
 
-- [ ] **Phase 4 gate**
-  - `npm run type-check && npm run lint`
+- [x] **Phase 4 gate**
+  - `npm run type-check` — clean
+  - `npm run lint` — no new errors (7 pre-existing)
 
 ---
 

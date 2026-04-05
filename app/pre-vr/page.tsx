@@ -4,10 +4,13 @@ import { useState, useEffect, useCallback, lazy, Suspense, type ComponentType } 
 import { SessionProvider, useSession } from '@/context/SessionContext'
 import ProgressBar from '@/components/ProgressBar'
 import Navigation from '@/components/Navigation'
-import ScreenOne from './components/ScreenOne'
-import ScreenTwo from './components/ScreenTwo'
+import ScreenVideo from './components/ScreenVideo'
+import ScreenSalary from './components/ScreenSalary'
+import ScreenSpeedRun from './components/ScreenSpeedRun'
+import ScreenTaskRanking from './components/ScreenTaskRanking'
 const ScreenThree = lazy(() => import('./components/ScreenThree'))
 import ScreenFour from './components/ScreenFour'
+import ScreenAI from './components/ScreenAI'
 import ScreenSix from './components/ScreenSix'
 import { trackScreenView } from '@/lib/analytics'
 
@@ -41,10 +44,13 @@ function ScreenThreeWrapper() {
 }
 
 const SCREENS: ScreenConfig[] = [
-  { key: 'salaryHook', Component: ScreenOne },
-  { key: 'taskRanking', Component: ScreenTwo as ScreenComponent, gated: true },
+  { key: 'videoSnippets', Component: ScreenVideo },
+  { key: 'salaryHook', Component: ScreenSalary },
+  { key: 'speedRun', Component: ScreenSpeedRun },
+  { key: 'taskRanking', Component: ScreenTaskRanking as ScreenComponent, gated: true },
   { key: 'employerMap', Component: ScreenThreeWrapper },
   { key: 'careerPathway', Component: ScreenFour },
+  { key: 'aiSorting', Component: ScreenAI, gated: true },
   { key: 'vrPrep', Component: ScreenSix },
 ]
 
@@ -74,12 +80,14 @@ function PreVRFlow() {
     if (config.key === 'taskRanking') {
       isComplete = session.rankingSubmitted ?? false
     }
-    // Future: aiSorting → session.aiSortComplete
+    if (config.key === 'aiSorting') {
+      isComplete = session.aiSortComplete ?? false
+    }
 
     if (isComplete && !completedScreens[config.key]) {
       setCompletedScreens((prev) => ({ ...prev, [config.key]: true }))
     }
-  }, [currentScreen, config.key, config.gated, session.rankingSubmitted, completedScreens])
+  }, [currentScreen, config.key, config.gated, session.rankingSubmitted, session.aiSortComplete, completedScreens])
 
   const isScreenComplete = !config.gated || !!completedScreens[config.key]
 

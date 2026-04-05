@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { content } from '@/content/config'
 import { cn } from '@/lib/utils'
 import { trackChecklistCheck } from '@/lib/analytics'
+import TinyHouseDesigner from './components/TinyHouseDesigner'
 
 const data = content.postVr
 
@@ -69,6 +70,8 @@ export default function PostVRPage() {
             </div>
           </div>
         </section>
+
+        <TinyHouseDesigner />
 
         <section className="rounded-[var(--radius-panel)] border border-[color:rgba(217,223,234,0.8)] bg-white/90 p-4 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:p-5">
           <div className="flex flex-col gap-3">

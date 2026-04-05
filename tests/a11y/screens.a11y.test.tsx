@@ -25,27 +25,28 @@ vi.mock('@/content/config', () => ({
   content: {
     salaryHook: {
       hookQuestion: 'How much does a carpenter in Saskatchewan actually make?',
-      salary: { amount: 67000, label: 'Average Annual Salary', source: 'Government of Canada Job Bank, NOC 72310 — Regina Region' },
+      salary: { amount: 67000, label: 'Median Annual Salary', source: 'Government of Canada Job Bank, NOC 72310 — Regina Region' },
+      hourlyRange: { entry: 19, median: 32, senior: 45 },
+      annualRange: { entry: 39000, median: 67000, senior: 94000 },
+      selfEmployment: { percentage: 37, potentialEarnings: '$80K+' },
       stats: [
         { value: '1,590', label: 'Job Openings by 2029', eyebrow: 'Opportunity' },
         { value: '23%', label: 'Retiring by 2034', eyebrow: 'Demand' },
-        { value: '37%', label: 'Run Their Own Business', eyebrow: 'Entrepreneurship' },
         { value: '12.4%', label: 'Indigenous Workers in SK Construction', eyebrow: 'Representation' },
       ],
     },
     taskRanking: {
       heading: 'What sounds fun?',
       subtext: 'Pick the tasks that interest you most.',
-      instruction: 'Choose 2-3 tasks',
-      minSelections: 2,
-      maxSelections: 3,
+      instruction: 'Drag to rank from most to least interesting',
+      reveal: { heading: "Here's how your ranking compares", subtext: 'See how your interests line up with actual job time.' },
       tiles: [
-        { id: 'task-framing', title: 'Framing', description: 'Build the skeleton', emoji: '\u{1F528}', illustrationPath: '' },
-        { id: 'task-measuring', title: 'Measuring', description: 'Measure twice', emoji: '\u{1F4CF}', illustrationPath: '' },
-        { id: 'task-finishing', title: 'Finishing', description: 'Install trim', emoji: '\u{1FA9A}', illustrationPath: '' },
-        { id: 'task-concrete', title: 'Concrete', description: 'Pour foundations', emoji: '\u{1F9F1}', illustrationPath: '' },
-        { id: 'task-roofing', title: 'Roofing', description: 'Keep buildings protected', emoji: '\u{1F3E0}', illustrationPath: '' },
-        { id: 'task-renovation', title: 'Renovation', description: 'Transform spaces', emoji: '\u{1F527}', illustrationPath: '' },
+        { id: 'task-framing', title: 'Framing', description: 'Build the skeleton', emoji: '\u{1F528}', illustrationPath: '', weight: 20 },
+        { id: 'task-measuring', title: 'Measuring', description: 'Measure twice', emoji: '\u{1F4CF}', illustrationPath: '', weight: 14 },
+        { id: 'task-finishing', title: 'Finishing', description: 'Install trim', emoji: '\u{1FA9A}', illustrationPath: '', weight: 14 },
+        { id: 'task-concrete', title: 'Concrete', description: 'Pour foundations', emoji: '\u{1F9F1}', illustrationPath: '', weight: 16 },
+        { id: 'task-roofing', title: 'Roofing', description: 'Keep buildings protected', emoji: '\u{1F3E0}', illustrationPath: '', weight: 14 },
+        { id: 'task-renovation', title: 'Renovation', description: 'Transform spaces', emoji: '\u{1F527}', illustrationPath: '', weight: 10 },
       ],
     },
     careerPathway: {
@@ -91,9 +92,14 @@ vi.mock('@/content/config', () => ({
 // Mock SessionContext for ScreenTwo
 vi.mock('@/context/SessionContext', () => ({
   useSession: () => ({
+    shuffledTileOrder: ['task-framing', 'task-measuring', 'task-finishing', 'task-concrete', 'task-roofing', 'task-renovation'],
+    setShuffledTileOrder: vi.fn(),
     rankedTiles: [],
     setRankedTiles: vi.fn(),
     rankingSubmitted: false,
+    setRankingSubmitted: vi.fn(),
+    rankingScore: null,
+    setRankingScore: vi.fn(),
   }),
 }))
 
@@ -102,10 +108,43 @@ vi.mock('@/lib/utils', () => ({
   cn: (...args: unknown[]) => args.filter(Boolean).join(' '),
 }))
 
+// Mock @dnd-kit
+vi.mock('@dnd-kit/core', () => ({
+  DndContext: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  closestCenter: vi.fn(),
+  PointerSensor: vi.fn(),
+  KeyboardSensor: vi.fn(),
+  useSensor: vi.fn(),
+  useSensors: vi.fn(() => []),
+}))
+
+vi.mock('@dnd-kit/sortable', () => ({
+  SortableContext: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  verticalListSortingStrategy: {},
+  useSortable: () => ({
+    setNodeRef: vi.fn(),
+    attributes: {},
+    listeners: {},
+    transform: null,
+    transition: undefined,
+    isDragging: false,
+  }),
+  arrayMove: (arr: unknown[], from: number, to: number) => {
+    const result = [...arr]
+    const [item] = result.splice(from, 1)
+    result.splice(to, 0, item)
+    return result
+  },
+}))
+
+vi.mock('@dnd-kit/utilities', () => ({
+  CSS: { Transform: { toString: () => undefined } },
+}))
+
 // ── Imports (after mocks) ──────────────────────────────────────────────────
 
-import ScreenOne from '@/app/pre-vr/components/ScreenOne'
-import ScreenTwo from '@/app/pre-vr/components/ScreenTwo'
+import ScreenOne from '@/app/pre-vr/components/ScreenSalary'
+import ScreenTwo from '@/app/pre-vr/components/ScreenTaskRanking'
 import ScreenFour from '@/app/pre-vr/components/ScreenFour'
 import ScreenSix from '@/app/pre-vr/components/ScreenSix'
 import PostVRPage from '@/app/post-vr/page'
@@ -147,11 +186,13 @@ describe('Accessibility (axe-core)', () => {
 // ── ARIA attribute verification ────────────────────────────────────────────
 
 describe('ARIA attributes', () => {
-  it('ScreenTwo tile buttons have aria-pressed attribute', () => {
+  it('ScreenTwo ranking items have accessible move buttons', () => {
     render(<ScreenTwo />)
-    const tileButtons = screen.getAllByRole('button', { pressed: false })
-    // All 6 tiles should have aria-pressed="false" (none selected)
-    expect(tileButtons.length).toBeGreaterThanOrEqual(6)
+    // Each sortable item should have up and down buttons with aria-labels
+    const moveUpButtons = screen.getAllByLabelText(/Move .+ up/)
+    const moveDownButtons = screen.getAllByLabelText(/Move .+ down/)
+    expect(moveUpButtons).toHaveLength(6)
+    expect(moveDownButtons).toHaveLength(6)
   })
 
   it('ScreenFour step buttons have aria-expanded attribute', () => {

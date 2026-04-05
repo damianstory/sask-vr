@@ -5,7 +5,7 @@ import * as matchers from 'vitest-axe/matchers'
 expect.extend(matchers)
 
 // Mock window.matchMedia for jsdom environment
-// Required because ScreenOne.tsx useReducedMotion hook calls window.matchMedia
+// Required because ScreenSalary.tsx useReducedMotion hook calls window.matchMedia
 // which is not implemented in jsdom.
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

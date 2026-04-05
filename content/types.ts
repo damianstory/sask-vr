@@ -13,6 +13,9 @@ export interface OccupationContent {
       source: string
       seasonalityNote?: string
     }
+    hourlyRange: { entry: number; median: number; senior: number }
+    annualRange: { entry: number; median: number; senior: number }
+    selfEmployment: { percentage: number; potentialEarnings: string }
     stats: Array<{
       value: string
       label: string
@@ -23,8 +26,7 @@ export interface OccupationContent {
     heading: string
     subtext: string
     instruction: string
-    minSelections: number
-    maxSelections: number
+    reveal: { heading: string; subtext: string }
     tiles: Array<{
       id: string
       title: string
@@ -66,6 +68,45 @@ export interface OccupationContent {
           hours: number
         }>
       }
+    }>
+  }
+  videoSnippets: {
+    heading: string
+    subtext: string
+    videos: Array<{
+      id: string
+      title: string
+      youtubeId: string
+    }>
+  }
+  speedRun: {
+    heading: string
+    subtext: string
+    disclaimer: string
+    carpenter: {
+      milestones: Array<{
+        year: number
+        label: string
+        value: string
+      }>
+    }
+    university: {
+      milestones: Array<{
+        year: number
+        label: string
+        value: string
+      }>
+    }
+  }
+  aiSorting: {
+    heading: string
+    subtext: string
+    punchline: string
+    tasks: Array<{
+      id: string
+      description: string
+      correctAnswer: 'ai' | 'human'
+      explanation: string
     }>
   }
   vrPrep: {

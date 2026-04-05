@@ -9,23 +9,27 @@
     "hookQuestion": "How much does a carpenter in Saskatchewan actually make?",
     "salary": {
       "amount": 67000,
-      "label": "Average Annual Salary",
+      "label": "Median Annual Salary",
       "source": "Government of Canada Job Bank, NOC 72310 — Regina Region",
       "seasonalityNote": "53% work year-round  ·  Average 41 weeks/year even for seasonal workers"
     },
+    "hourlyRange": { "entry": 19, "median": 32, "senior": 45 },
+    "annualRange": { "entry": 39000, "median": 67000, "senior": 94000 },
+    "selfEmployment": { "percentage": 37, "potentialEarnings": "$80K+" },
     "stats": [
       { "value": "1,590", "label": "Job Openings by 2029", "eyebrow": "Opportunity" },
       { "value": "23%", "label": "Retiring by 2034", "eyebrow": "Demand" },
-      { "value": "37%", "label": "Run Their Own Business", "eyebrow": "Entrepreneurship" },
       { "value": "12.4%", "label": "Indigenous Workers in SK Construction", "eyebrow": "Representation" }
     ]
   },
   "taskRanking": {
     "heading": "What do carpenters actually do?",
-    "subtext": "Tap the tasks that sound most interesting to you.",
-    "instruction": "Select 2 to 3 tasks",
-    "minSelections": 2,
-    "maxSelections": 3,
+    "subtext": "Which of these tasks sound most interesting to you?",
+    "instruction": "Drag to rank from most to least interesting",
+    "reveal": {
+      "heading": "Here's how your ranking compares",
+      "subtext": "See how your interests line up with actual job time."
+    },
     "tiles": [
       {
         "id": "task-framing",
@@ -179,15 +183,6 @@
     "steps": [
       {
         "id": "step-1",
-        "title": "You are here - Grade 7/8",
-        "subtitle": "Middle School",
-        "details": {
-          "courses": ["Industrial Arts", "Math", "Science"],
-          "description": "Start exploring trades and hands-on projects in your current classes."
-        }
-      },
-      {
-        "id": "step-2",
         "title": "High School",
         "subtitle": "Grades 9-12",
         "details": {
@@ -202,7 +197,7 @@
         }
       },
       {
-        "id": "step-3",
+        "id": "step-2",
         "title": "Post-Secondary",
         "subtitle": "Technical Training",
         "details": {
@@ -212,7 +207,7 @@
         }
       },
       {
-        "id": "step-4",
+        "id": "step-3",
         "title": "Apprenticeship",
         "subtitle": "Earn While You Learn",
         "details": {
@@ -222,7 +217,7 @@
         }
       },
       {
-        "id": "step-5",
+        "id": "step-4",
         "title": "Red Seal Journeyperson",
         "subtitle": "Certified Carpenter",
         "details": {
@@ -231,7 +226,7 @@
         }
       },
       {
-        "id": "step-6",
+        "id": "step-5",
         "title": "Bachelor's Degree",
         "subtitle": "Optional — Management Pathway",
         "details": {
@@ -240,6 +235,86 @@
           "earnings": "Management and supervisory roles",
           "description": "Your Red Seal counts as 2 years of university credit. Top up to a full Bachelor of Applied Management degree at Sask Polytech — from the job site to the boardroom."
         }
+      }
+    ]
+  },
+  "videoSnippets": {
+    "heading": "See it in action",
+    "subtext": "Quick clips of what carpentry actually looks like day to day.",
+    "videos": [
+      { "id": "vid-framing", "title": "Framing a wall in under 60 seconds", "youtubeId": "dQw4w9WgXcQ" },
+      { "id": "vid-concrete", "title": "Pouring a basement foundation", "youtubeId": "dQw4w9WgXcQ" },
+      { "id": "vid-finishing", "title": "Installing crown moulding like a pro", "youtubeId": "dQw4w9WgXcQ" },
+      { "id": "vid-tools", "title": "Every tool in a carpenter's belt explained", "youtubeId": "dQw4w9WgXcQ" },
+      { "id": "vid-roof", "title": "Roof truss installation on a Saskatchewan home", "youtubeId": "dQw4w9WgXcQ" },
+      { "id": "vid-dayinlife", "title": "A day in the life: Red Seal carpenter", "youtubeId": "dQw4w9WgXcQ" }
+    ]
+  },
+  "speedRun": {
+    "heading": "The no-debt speed run",
+    "subtext": "Two paths after high school — same 10 years, very different outcomes.",
+    "disclaimer": "Values are illustrative estimates based on Saskatchewan averages and may vary.",
+    "carpenter": {
+      "milestones": [
+        { "year": 0, "label": "Starts apprenticeship", "value": "$0 debt" },
+        { "year": 1, "label": "Earning 60% journeyperson wage", "value": "$38K/yr" },
+        { "year": 2, "label": "Earning 70% journeyperson wage", "value": "$44K/yr" },
+        { "year": 4, "label": "Red Seal certified", "value": "$67K/yr" },
+        { "year": 6, "label": "Senior carpenter or foreperson", "value": "$80K/yr" },
+        { "year": 10, "label": "Runs own contracting business", "value": "$100K+" }
+      ]
+    },
+    "university": {
+      "milestones": [
+        { "year": 0, "label": "Starts 4-year degree", "value": "-$10K debt" },
+        { "year": 2, "label": "Midway through degree", "value": "-$28K debt" },
+        { "year": 4, "label": "Graduates with BA", "value": "-$45K debt" },
+        { "year": 5, "label": "Entry-level office job", "value": "$42K/yr" },
+        { "year": 7, "label": "Still paying off loans", "value": "$48K/yr" },
+        { "year": 10, "label": "Mid-career professional", "value": "$58K/yr" }
+      ]
+    }
+  },
+  "aiSorting": {
+    "heading": "AI can't build this",
+    "subtext": "Can a robot do a carpenter's job? Sort each task.",
+    "punchline": "AI can crunch numbers and draft plans — but it can't swing a hammer, read a crooked wall, or build something you can walk through. Carpenters are irreplaceable.",
+    "tasks": [
+      {
+        "id": "ai-task-1",
+        "description": "Calculate the lumber needed for a 2,400 sq ft house from a blueprint",
+        "correctAnswer": "ai",
+        "explanation": "AI can read specs and compute material takeoffs faster than any human."
+      },
+      {
+        "id": "ai-task-2",
+        "description": "Frame a wall plumb and square on an uneven concrete slab",
+        "correctAnswer": "human",
+        "explanation": "Adjusting to real-world imperfections requires hands, eyes, and experience."
+      },
+      {
+        "id": "ai-task-3",
+        "description": "Generate a 3D model of a kitchen renovation from photos",
+        "correctAnswer": "ai",
+        "explanation": "AI vision tools can already produce 3D renders from smartphone photos."
+      },
+      {
+        "id": "ai-task-4",
+        "description": "Scribe and fit trim against a wavy plaster wall",
+        "correctAnswer": "human",
+        "explanation": "Scribing requires feel, patience, and micro-adjustments no robot can replicate on site."
+      },
+      {
+        "id": "ai-task-5",
+        "description": "Schedule subcontractors and optimize a 6-month build timeline",
+        "correctAnswer": "ai",
+        "explanation": "Scheduling optimization is a classic AI strength — faster and fewer conflicts."
+      },
+      {
+        "id": "ai-task-6",
+        "description": "Safely demolish a load-bearing wall while supporting the structure above",
+        "correctAnswer": "human",
+        "explanation": "Structural demo is high-stakes physical work — one wrong move and the roof comes down."
       }
     ]
   },
