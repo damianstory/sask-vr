@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { content } from '@/content/config'
 import { cn } from '@/lib/utils'
 import { trackChecklistCheck } from '@/lib/analytics'
+import { SessionProvider } from '@/context/SessionContext'
 import TinyHouseDesigner from './components/TinyHouseDesigner'
 
 const data = content.postVr
@@ -23,6 +24,7 @@ export default function PostVRPage() {
   }
 
   return (
+    <SessionProvider>
     <main
       id="main-content"
       className="relative isolate min-h-screen overflow-hidden px-4 py-8 md:px-6 md:py-12"
@@ -164,5 +166,6 @@ export default function PostVRPage() {
         </section>
       </div>
     </main>
+    </SessionProvider>
   )
 }
