@@ -95,6 +95,14 @@ function unlockScreenOne() {
   }
 }
 
+/** Navigate through the page-3 milestone carousel until the flow unlocks */
+function unlockScreenThree() {
+  const speedRunNext = screen.getByLabelText('Show next comparison year')
+  for (let i = 0; i < 5; i++) {
+    fireEvent.click(speedRunNext)
+  }
+}
+
 /** Submit the task ranking (click "Lock in my ranking") */
 function submitRanking() {
   fireEvent.click(screen.getByRole('button', { name: /Lock in my ranking/i }))
@@ -111,13 +119,17 @@ function completeAiSort() {
 /** Navigate from screen 1 to the taskRanking gate (screen 4) */
 function navigateToTaskRanking() {
   unlockScreenOne()
-  clickNext(3) // screens 1→2→3→4
+  clickNext(2) // screens 1→2→3
+  unlockScreenThree()
+  clickNext(1) // screen 3→4
 }
 
 /** Navigate from screen 1 to screen 7 (aiSorting), unlocking taskRanking gate along the way */
 function navigateToAiSorting() {
   unlockScreenOne()
-  clickNext(3)    // reach screen 4 (taskRanking)
+  clickNext(2)    // reach screen 3 (speedRun)
+  unlockScreenThree()
+  clickNext(1)    // reach screen 4 (taskRanking)
   submitRanking() // unlock gate
   clickNext(3)    // screens 4→5→6→7
 }
@@ -234,6 +246,33 @@ describe('Pre-VR Flow - Gating (FLOW-03)', () => {
     // Now Next should appear
     expect(screen.getByLabelText('Go to next screen')).toBeInTheDocument()
     vi.useRealTimers()
+  })
+
+  it('shows Next disabled on screen 3 until the student reaches the last carpenter milestone', () => {
+    render(<PreVrPage />)
+
+    unlockScreenOne()
+    clickNext(2)
+
+    expect(screen.getByText('3 of 8')).toBeInTheDocument()
+    expect(screen.getByLabelText('Go to next screen')).toBeDisabled()
+
+    unlockScreenThree()
+
+    expect(screen.getByText('Year 10')).toBeInTheDocument()
+    expect(screen.getByLabelText('Go to next screen')).toBeEnabled()
+  })
+
+  it('keeps screen 3 unlocked after the last carpenter milestone has been reached once', () => {
+    render(<PreVrPage />)
+
+    unlockScreenOne()
+    clickNext(2)
+    unlockScreenThree()
+    fireEvent.click(screen.getByLabelText('Show previous comparison year'))
+
+    expect(screen.getByText('Year 6')).toBeInTheDocument()
+    expect(screen.getByLabelText('Go to next screen')).toBeEnabled()
   })
 })
 

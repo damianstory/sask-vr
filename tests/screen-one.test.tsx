@@ -98,6 +98,45 @@ describe('ScreenSalary', () => {
     })
   })
 
+  describe('detail navigation', () => {
+    it('renders previous and next chevron controls', () => {
+      render(<ScreenSalary />)
+      expect(screen.getByRole('button', { name: 'Show previous salary detail' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Show next salary detail' })).toBeInTheDocument()
+    })
+
+    it('advances through the detail panels with the next chevron', () => {
+      render(<ScreenSalary />)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Show next salary detail' }))
+      expect(screen.getByText('1,590')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Show next salary detail' }))
+      expect(screen.getByText('37%')).toBeInTheDocument()
+    })
+
+    it('moves backward through the detail panels with the previous chevron', () => {
+      render(<ScreenSalary />)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Show next salary detail' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Show next salary detail' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Show previous salary detail' }))
+
+      expect(screen.getByText('1,590')).toBeInTheDocument()
+    })
+
+    it('disables the previous chevron on Pay and the next chevron on Own Business', () => {
+      render(<ScreenSalary />)
+
+      expect(screen.getByRole('button', { name: 'Show previous salary detail' })).toBeDisabled()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Show next salary detail' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Show next salary detail' }))
+
+      expect(screen.getByRole('button', { name: 'Show next salary detail' })).toBeDisabled()
+    })
+  })
+
   describe('reduced-motion', () => {
     it.todo('shows final salary immediately when prefers-reduced-motion is set')
     it.todo('stat cards have no animation class when reduced motion is active')

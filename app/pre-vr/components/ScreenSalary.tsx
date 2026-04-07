@@ -7,6 +7,11 @@ import { cn } from '@/lib/utils'
 import PreVRScreenShell from './PreVRScreenShell'
 
 const data = content.salaryHook
+const DETAIL_PANELS: Array<{ id: DetailPanel; label: string }> = [
+  { id: 'pay', label: 'Pay' },
+  { id: 'market', label: 'Market' },
+  { id: 'business', label: 'Own Business' },
+]
 
 function formatMoney(n: number, style: 'hourly' | 'annual'): string {
   if (style === 'hourly') return `$${n}/hr`
@@ -47,6 +52,9 @@ export default function ScreenSalary() {
   const reduced = useReducedMotion()
   const [isVisible, setIsVisible] = useState(false)
   const [detailPanel, setDetailPanel] = useState<DetailPanel>('pay')
+  const activePanelIndex = DETAIL_PANELS.findIndex((panel) => panel.id === detailPanel)
+  const isFirstPanel = activePanelIndex === 0
+  const isLastPanel = activePanelIndex === DETAIL_PANELS.length - 1
 
   useEffect(() => {
     if (reduced) {
@@ -115,12 +123,21 @@ export default function ScreenSalary() {
         </div>
 
         <div className="rounded-[var(--radius-panel)] border border-[var(--myb-neutral-2)] bg-white/90 p-4 shadow-[var(--shadow-float)]">
-          <div className="flex flex-wrap gap-2">
-            {[
-              { id: 'pay', label: 'Pay' },
-              { id: 'market', label: 'Market' },
-              { id: 'business', label: 'Own Business' },
-            ].map((panel) => (
+          <div className="flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => setDetailPanel(DETAIL_PANELS[Math.max(activePanelIndex - 1, 0)].id)}
+              disabled={isFirstPanel}
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[var(--myb-neutral-2)] text-[var(--myb-navy)] transition-colors hover:bg-[var(--myb-light-blue-soft)] disabled:opacity-30 disabled:hover:bg-transparent"
+              aria-label="Show previous salary detail"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+
+            <div className="flex flex-wrap items-center justify-center gap-2" aria-label="Salary detail panels">
+            {DETAIL_PANELS.map((panel) => (
               <button
                 key={panel.id}
                 type="button"
@@ -136,18 +153,36 @@ export default function ScreenSalary() {
                 {panel.label}
               </button>
             ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                setDetailPanel(DETAIL_PANELS[Math.min(activePanelIndex + 1, DETAIL_PANELS.length - 1)].id)
+              }
+              disabled={isLastPanel}
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[var(--myb-neutral-2)] text-[var(--myb-navy)] transition-colors hover:bg-[var(--myb-light-blue-soft)] disabled:opacity-30 disabled:hover:bg-transparent"
+              aria-label="Show next salary detail"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
 
           {detailPanel === 'pay' && (
             <div className="mt-4">
               <div className="relative h-2 w-full rounded-full bg-gradient-to-r from-[var(--myb-light-blue)] via-[var(--myb-primary-blue)] to-[var(--myb-navy)]" />
-              <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+              <div className="mt-4 grid gap-3 text-center sm:auto-rows-fr sm:grid-cols-3">
                 {[
                   { hourly: hr.entry, annual: ar.entry, label: 'Entry' },
                   { hourly: hr.median, annual: ar.median, label: 'Median' },
                   { hourly: hr.senior, annual: ar.senior, label: 'Senior' },
                 ].map((tier) => (
-                  <div key={tier.label} className="rounded-[var(--radius-card)] bg-[var(--myb-light-blue-soft)] px-3 py-3">
+                  <div
+                    key={tier.label}
+                    className="flex h-full flex-col rounded-[var(--radius-card)] bg-[var(--myb-light-blue-soft)] p-4"
+                  >
                     <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--myb-neutral-4)]">
                       {tier.label}
                     </div>
@@ -164,11 +199,11 @@ export default function ScreenSalary() {
           )}
 
           {detailPanel === 'market' && (
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <div className="mt-4 grid gap-3 sm:auto-rows-fr sm:grid-cols-3">
               {data.stats.map((stat, i) => (
                 <div
                   key={i}
-                  className="rounded-[var(--radius-card)] bg-[var(--myb-navy)] p-4 text-white"
+                  className="flex h-full flex-col rounded-[var(--radius-card)] bg-[var(--myb-navy)] p-4 text-white"
                 >
                   <div className="text-[11px] font-[800] uppercase tracking-[0.18em] text-white/65">
                     {stat.eyebrow || `Insight ${i + 1}`}

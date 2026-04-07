@@ -1,31 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { content } from '@/content/config'
 import { cn } from '@/lib/utils'
 import PreVRScreenShell from './PreVRScreenShell'
 
 const data = content.speedRun
-const maxVisible = Math.max(
-  data.carpenter.milestones.length,
-  data.university.milestones.length,
-)
+const maxVisible = data.carpenter.milestones.length
 
 function milestoneAt<T>(items: T[], index: number): T {
   return items[Math.min(index, items.length - 1)]
 }
 
-export default function ScreenSpeedRun() {
+export default function ScreenSpeedRun({ onComplete }: { onComplete?: () => void }) {
   const [activeMilestoneIndex, setActiveMilestoneIndex] = useState(0)
+  const [completedInSession, setCompletedInSession] = useState(false)
 
   const carpenterMilestone = milestoneAt(data.carpenter.milestones, activeMilestoneIndex)
-  const universityMilestone = milestoneAt(data.university.milestones, activeMilestoneIndex)
   const isFirst = activeMilestoneIndex === 0
   const isLast = activeMilestoneIndex === maxVisible - 1
 
+  const setMilestoneIndex = useCallback(
+    (nextIndex: number) => {
+      if (nextIndex < 0 || nextIndex >= maxVisible) return
+
+      if (nextIndex === maxVisible - 1 && !completedInSession) {
+        onComplete?.()
+        setCompletedInSession(true)
+      }
+
+      setActiveMilestoneIndex(nextIndex)
+    },
+    [completedInSession, onComplete],
+  )
+
   return (
     <PreVRScreenShell
-      eyebrow="Career Comparison"
+      eyebrow="Carpenter Path"
       heading={data.heading}
       subtext={data.subtext}
       mode="fit"
@@ -33,39 +44,24 @@ export default function ScreenSpeedRun() {
       bodyClassName="justify-center"
     >
       <div className="flex h-full min-h-0 flex-col justify-center">
-        <div className="grid gap-4 md:grid-cols-2">
-          <section className="rounded-[var(--radius-panel)] border border-[color:rgba(217,223,234,0.8)] bg-white/90 p-5 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)]">
+        <div className="grid gap-4">
+          <section className="rounded-[var(--radius-panel)] border border-[color:rgba(217,223,234,0.8)] bg-white/90 p-6 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:p-7">
             <p className="text-[12px] font-[800] uppercase tracking-[0.2em] text-[var(--myb-primary-blue)]">
               Carpenter
             </p>
-            <div className="mt-5 flex items-baseline justify-between gap-4">
-              <span className="text-[40px] font-[800] leading-none text-[var(--myb-navy)]">
+            <div className="mt-5 flex flex-wrap items-baseline justify-between gap-4">
+              <span className="text-[44px] font-[800] leading-none text-[var(--myb-navy)] md:text-[56px]">
                 Year {carpenterMilestone.year}
               </span>
               <span className="rounded-[var(--radius-pill)] bg-[var(--myb-light-blue-soft)] px-3 py-1 text-[13px] font-[800] text-[var(--myb-primary-blue)]">
                 Faster Earnings
               </span>
             </div>
-            <p className="mt-5 text-[18px] font-[800] leading-[1.35] text-[var(--myb-navy)]">
+            <p className="mt-6 max-w-3xl text-[22px] font-[800] leading-[1.35] text-[var(--myb-navy)] md:text-[28px]">
               {carpenterMilestone.label}
             </p>
-            <p className="mt-3 text-[28px] font-[800] leading-none text-[var(--myb-primary-blue)]">
+            <p className="mt-4 text-[36px] font-[800] leading-none text-[var(--myb-primary-blue)] md:text-[48px]">
               {carpenterMilestone.value}
-            </p>
-          </section>
-
-          <section className="rounded-[var(--radius-panel)] border border-[color:rgba(217,223,234,0.8)] bg-[var(--myb-navy)] p-5 text-white shadow-[var(--shadow-float)]">
-            <p className="text-[12px] font-[800] uppercase tracking-[0.2em] text-white/65">
-              University Grad
-            </p>
-            <div className="mt-5 text-[40px] font-[800] leading-none">
-              Year {universityMilestone.year}
-            </div>
-            <p className="mt-5 text-[18px] font-[800] leading-[1.35]">
-              {universityMilestone.label}
-            </p>
-            <p className="mt-3 text-[28px] font-[800] leading-none text-[var(--myb-blue-vivid)]">
-              {universityMilestone.value}
             </p>
           </section>
         </div>
@@ -74,7 +70,7 @@ export default function ScreenSpeedRun() {
           <div className="flex items-center justify-between gap-3">
             <button
               type="button"
-              onClick={() => setActiveMilestoneIndex((prev) => Math.max(prev - 1, 0))}
+              onClick={() => setMilestoneIndex(Math.max(activeMilestoneIndex - 1, 0))}
               disabled={isFirst}
               className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[var(--myb-neutral-2)] text-[var(--myb-navy)] transition-colors hover:bg-[var(--myb-light-blue-soft)] disabled:opacity-30 disabled:hover:bg-transparent"
               aria-label="Show previous comparison year"
@@ -89,7 +85,7 @@ export default function ScreenSpeedRun() {
                 <button
                   key={index}
                   type="button"
-                  onClick={() => setActiveMilestoneIndex(index)}
+                  onClick={() => setMilestoneIndex(index)}
                   aria-label={`Show comparison year ${index + 1}`}
                   aria-pressed={activeMilestoneIndex === index}
                   className={cn(
@@ -104,7 +100,7 @@ export default function ScreenSpeedRun() {
 
             <button
               type="button"
-              onClick={() => setActiveMilestoneIndex((prev) => Math.min(prev + 1, maxVisible - 1))}
+              onClick={() => setMilestoneIndex(Math.min(activeMilestoneIndex + 1, maxVisible - 1))}
               disabled={isLast}
               className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[var(--myb-neutral-2)] text-[var(--myb-navy)] transition-colors hover:bg-[var(--myb-light-blue-soft)] disabled:opacity-30 disabled:hover:bg-transparent"
               aria-label="Show next comparison year"
