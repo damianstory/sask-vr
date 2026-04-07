@@ -229,10 +229,10 @@ describe('ScreenAI', () => {
 
     render(<ScreenAI />)
 
-    // Get all task descriptions in render order
-    const descriptions = screen.getAllByText(/Calculate lumber|Frame a wall|Schedule subs/)
-    expect(descriptions[0].textContent).toBe('Calculate lumber')
-    expect(descriptions[1].textContent).toBe('Frame a wall')
-    expect(descriptions[2].textContent).toBe('Schedule subs')
+    expect(screen.getByText('Calculate lumber')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Show next result' }))
+    expect(screen.getByText('Frame a wall')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Show next result' }))
+    expect(screen.getByText('Schedule subs')).toBeInTheDocument()
   })
 })

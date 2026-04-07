@@ -5,6 +5,7 @@ import { content } from '@/content/config'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { trackEmployerTap } from '@/lib/analytics'
+import PreVRScreenShell from './PreVRScreenShell'
 
 const REGINA_CENTER: [number, number] = [-104.6189, 50.4452]
 const ZOOM_LEVEL = 11
@@ -22,14 +23,12 @@ export default function ScreenThree() {
 
   const closeCard = useCallback(() => setSelectedEmployer(null), [])
 
-  // Focus close button when card opens
   useEffect(() => {
     if (selectedEmployer && closeButtonRef.current) {
       closeButtonRef.current.focus()
     }
   }, [selectedEmployer])
 
-  // Escape key to close
   useEffect(() => {
     if (!selectedEmployer) return
     const handler = (e: KeyboardEvent) => {
@@ -39,11 +38,12 @@ export default function ScreenThree() {
     return () => document.removeEventListener('keydown', handler)
   }, [selectedEmployer, closeCard])
 
-  // Click-outside to close (rAF delay skips the opening click)
   useEffect(() => {
     if (!selectedEmployer) return
     let listening = false
-    const rafId = requestAnimationFrame(() => { listening = true })
+    const rafId = requestAnimationFrame(() => {
+      listening = true
+    })
     const handler = (e: MouseEvent) => {
       if (!listening) return
       const card = document.getElementById('employer-card')
@@ -58,7 +58,6 @@ export default function ScreenThree() {
     }
   }, [selectedEmployer, closeCard])
 
-  // Return focus to pin on close
   useEffect(() => {
     if (!selectedEmployer && lastPinRef.current) {
       const pin = pinRefs.current.get(lastPinRef.current)
@@ -67,7 +66,6 @@ export default function ScreenThree() {
     }
   }, [selectedEmployer])
 
-  // Initialize map
   useEffect(() => {
     if (!mapContainerRef.current) return
 
@@ -80,14 +78,12 @@ export default function ScreenThree() {
       attributionControl: false,
     })
 
-    // Disable all interactions explicitly as well
     map.scrollZoom.disable()
     map.dragPan.disable()
     map.doubleClickZoom.disable()
     map.touchZoomRotate.disable()
     map.keyboard.disable()
 
-    // Add employer pin markers
     data.employers.forEach((employer) => {
       const el = document.createElement('button')
       el.className =
@@ -102,7 +98,6 @@ export default function ScreenThree() {
       el.style.justifyContent = 'center'
       el.setAttribute('aria-label', `View ${employer.name}`)
 
-      // Pin icon SVG
       el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`
 
       pinRefs.current.set(employer.id, el)
@@ -118,7 +113,6 @@ export default function ScreenThree() {
         .addTo(map)
     })
 
-    // Auto-fit viewport to show all employer pins
     if (data.employers.length >= 2) {
       const bounds = new maplibregl.LngLatBounds()
       data.employers.forEach((emp) => {
@@ -135,37 +129,28 @@ export default function ScreenThree() {
     }
   }, [])
 
-
   const employer = selectedEmployer
     ? data.employers.find((e) => e.id === selectedEmployer)
     : null
 
   return (
-    <section className="mx-auto flex w-full max-w-[var(--max-content-width)] flex-col px-4 py-8 md:px-6 md:py-12">
-      <div className="max-w-3xl">
-        <p className="text-[12px] font-[800] uppercase tracking-[0.24em] text-[var(--myb-primary-blue)]">
-          Local Employers
-        </p>
-        <h2
-          data-screen-heading
-          className="mt-4 text-[28px] font-[800] leading-[1.1] text-[var(--myb-navy)] md:text-[40px]"
-        >
-          {data.heading}
-        </h2>
-        <p className="mt-3 max-w-2xl text-[16px] font-[300] leading-[1.75] text-[var(--myb-neutral-5)]">
-          {data.subtext}
-        </p>
-      </div>
-
-      <div className="relative mt-8 overflow-hidden rounded-[32px] border border-[color:rgba(217,223,234,0.8)] bg-white/90 p-3 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:p-4">
-        <div className="pointer-events-none absolute left-7 top-7 z-10 rounded-[var(--radius-pill)] bg-white/92 px-4 py-2 shadow-[var(--shadow-float)]">
+    <PreVRScreenShell
+      eyebrow="Local Employers"
+      heading={data.heading}
+      subtext={data.subtext}
+      mode="fit"
+      desktopLayout="split"
+      bodyClassName="min-h-0"
+    >
+      <div className="relative h-full min-h-[420px] overflow-hidden rounded-[32px] border border-[color:rgba(217,223,234,0.8)] bg-white/90 p-3 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:min-h-0 md:flex-1 md:p-4">
+        <div className="pointer-events-none absolute left-5 top-5 z-10 rounded-[var(--radius-pill)] bg-white/92 px-4 py-2 shadow-[var(--shadow-float)]">
           <span className="text-[12px] font-[800] uppercase tracking-[0.18em] text-[var(--myb-primary-blue)]">
             Regina Employers
           </span>
         </div>
         <div
           ref={mapContainerRef}
-          className="h-[360px] w-full overflow-hidden rounded-[28px] bg-[var(--myb-light-blue-soft)] md:h-[500px] lg:h-[560px]"
+          className="h-full w-full overflow-hidden rounded-[28px] bg-[var(--myb-light-blue-soft)]"
         />
 
         {employer && (
@@ -180,7 +165,7 @@ export default function ScreenThree() {
               role="dialog"
               aria-labelledby="employer-card-name"
               aria-modal="true"
-              className="fixed bottom-4 left-4 right-4 z-50 rounded-[28px] border border-white/20 bg-white/96 p-5 shadow-[var(--shadow-card-dialog)] animate-[scale-fade-in_250ms_ease-out_both] md:absolute md:bottom-6 md:left-auto md:right-6 md:top-6 md:w-[360px]"
+              className="fixed bottom-4 left-4 right-4 z-50 rounded-[28px] border border-white/20 bg-white/96 p-5 shadow-[var(--shadow-card-dialog)] animate-[scale-fade-in_250ms_ease-out_both] md:absolute md:bottom-5 md:left-auto md:right-5 md:top-5 md:w-[min(340px,calc(100%-2.5rem))]"
             >
               <div className="absolute left-1/2 top-3 h-1 w-10 -translate-x-1/2 rounded-full bg-[var(--myb-neutral-1)] md:hidden" />
               <button
@@ -189,18 +174,7 @@ export default function ScreenThree() {
                 aria-label="Close employer card"
                 className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-[var(--myb-neutral-4)] transition-colors hover:bg-[var(--myb-neutral-1)] focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)]"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M18 6 6 18" />
                   <path d="m6 6 12 12" />
                 </svg>
@@ -219,19 +193,16 @@ export default function ScreenThree() {
                       {employer.specialty}
                     </span>
                   )}
-                  <h3
-                    id="employer-card-name"
-                    className="mt-2 text-[24px] font-[800] leading-[1.1] text-[var(--myb-navy)]"
-                  >
+                  <h3 id="employer-card-name" className="mt-2 text-[22px] font-[800] leading-[1.1] text-[var(--myb-navy)]">
                     {employer.name}
                   </h3>
-                  <p className="mt-3 text-[14px] font-[300] leading-[1.75] text-[var(--myb-neutral-5)]">
+                  <p className="mt-3 text-[14px] font-[300] leading-[1.65] text-[var(--myb-neutral-5)]">
                     {employer.description}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2">
+              <div className="mt-5 grid grid-cols-2 gap-3">
                 <div className="rounded-[var(--radius-card)] bg-[var(--myb-light-blue-soft)] px-4 py-3">
                   <p className="text-[11px] font-[800] uppercase tracking-[0.16em] text-[var(--myb-primary-blue)]">
                     Team Size
@@ -252,7 +223,7 @@ export default function ScreenThree() {
 
               {employer.quote && (
                 <div className="mt-5 rounded-[var(--radius-card)] border-l-4 border-[var(--myb-primary-blue)] bg-[var(--myb-light-blue-soft)] px-4 py-3">
-                  <p className="text-[13px] font-[300] italic leading-[1.7] text-[var(--myb-neutral-4)]">
+                  <p className="text-[13px] font-[300] italic leading-[1.65] text-[var(--myb-neutral-4)]">
                     &ldquo;{employer.quote}&rdquo;
                   </p>
                 </div>
@@ -261,6 +232,6 @@ export default function ScreenThree() {
           </>
         )}
       </div>
-    </section>
+    </PreVRScreenShell>
   )
 }

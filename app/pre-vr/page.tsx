@@ -24,6 +24,7 @@ interface ScreenConfig {
   key: string
   Component: ScreenComponent
   gated?: boolean
+  gateStyle?: 'hidden' | 'disabled'
 }
 
 /** Suspense wrapper for the lazy-loaded employer map — local to this file. */
@@ -44,7 +45,7 @@ function ScreenThreeWrapper() {
 }
 
 const SCREENS: ScreenConfig[] = [
-  { key: 'videoSnippets', Component: ScreenVideo },
+  { key: 'videoSnippets', Component: ScreenVideo, gated: true, gateStyle: 'disabled' },
   { key: 'salaryHook', Component: ScreenSalary },
   { key: 'speedRun', Component: ScreenSpeedRun },
   { key: 'taskRanking', Component: ScreenTaskRanking as ScreenComponent, gated: true },
@@ -72,24 +73,16 @@ function PreVRFlow() {
   const session = useSession()
   const config = SCREENS[currentScreen]
 
-  // Derive completion for gated screens from session state on transition
-  useEffect(() => {
-    if (!config.gated) return
+  const sessionCompleted =
+    config.key === 'taskRanking'
+      ? session.rankingSubmitted ?? false
+      : config.key === 'aiSorting'
+        ? session.aiSortComplete ?? false
+        : false
 
-    let isComplete = false
-    if (config.key === 'taskRanking') {
-      isComplete = session.rankingSubmitted ?? false
-    }
-    if (config.key === 'aiSorting') {
-      isComplete = session.aiSortComplete ?? false
-    }
-
-    if (isComplete && !completedScreens[config.key]) {
-      setCompletedScreens((prev) => ({ ...prev, [config.key]: true }))
-    }
-  }, [currentScreen, config.key, config.gated, session.rankingSubmitted, session.aiSortComplete, completedScreens])
-
-  const isScreenComplete = !config.gated || !!completedScreens[config.key]
+  const isScreenComplete = !config.gated || sessionCompleted || !!completedScreens[config.key]
+  const shouldHideNext = !isScreenComplete && config.gateStyle !== 'disabled'
+  const shouldDisableNext = !isScreenComplete && config.gateStyle === 'disabled'
 
   const handleComplete = useCallback(() => {
     setCompletedScreens((prev) => ({ ...prev, [config.key]: true }))
@@ -149,17 +142,20 @@ function PreVRFlow() {
   const ScreenComponent = config.Component
 
   return (
-    <div id="main-content" className="flex min-h-screen flex-col">
+    <div
+      id="main-content"
+      className="grid min-h-[100dvh] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden"
+    >
       <ProgressBar current={currentScreen + 1} total={TOTAL_SCREENS} />
-      <div className="relative flex-1 overflow-hidden">
+      <div className="relative min-h-0 overflow-hidden">
         <div
           key={currentScreen}
           className={
             isInitialMount
-              ? ''
+              ? 'h-full min-h-0'
               : direction === 'forward'
-                ? 'animate-slide-left'
-                : 'animate-slide-right'
+                ? 'h-full min-h-0 animate-slide-left'
+                : 'h-full min-h-0 animate-slide-right'
           }
         >
           <ScreenComponent
@@ -172,7 +168,8 @@ function PreVRFlow() {
         totalScreens={TOTAL_SCREENS}
         onNext={goNext}
         onPrev={goPrev}
-        hideNext={!isScreenComplete}
+        hideNext={shouldHideNext}
+        disableNext={shouldDisableNext}
       />
     </div>
   )

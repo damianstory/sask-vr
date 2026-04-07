@@ -6,6 +6,7 @@ interface NavigationProps {
   onNext: () => void
   onPrev: () => void
   hideNext?: boolean
+  disableNext?: boolean
 }
 
 export default function Navigation({
@@ -14,6 +15,7 @@ export default function Navigation({
   onNext,
   onPrev,
   hideNext,
+  disableNext,
 }: NavigationProps) {
   return (
     <div className="sticky bottom-0 z-30 mt-auto px-4 pb-[max(env(safe-area-inset-bottom),1rem)] pt-4">
@@ -47,11 +49,20 @@ export default function Navigation({
           <button
             type="button"
             onClick={onNext}
-            className="flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-[var(--radius-input)] px-5 py-3 text-[15px] font-[800] uppercase tracking-[0.14em] text-white shadow-[var(--shadow-float)] transition-all duration-[var(--motion-medium)] hover:-translate-y-0.5 focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)]"
-            style={{
-              backgroundImage:
-                'linear-gradient(135deg, var(--myb-navy) 0%, var(--myb-blue-vivid) 100%)',
-            }}
+            disabled={disableNext}
+            className={`flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-[var(--radius-input)] px-5 py-3 text-[15px] font-[800] uppercase tracking-[0.14em] transition-all duration-[var(--motion-medium)] focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)] ${
+              disableNext
+                ? 'cursor-not-allowed bg-[var(--myb-neutral-2)] text-[var(--myb-neutral-4)] shadow-none'
+                : 'text-white shadow-[var(--shadow-float)] hover:-translate-y-0.5'
+            }`}
+            style={
+              disableNext
+                ? undefined
+                : {
+                    backgroundImage:
+                      'linear-gradient(135deg, var(--myb-navy) 0%, var(--myb-blue-vivid) 100%)',
+                  }
+            }
             aria-label="Go to next screen"
           >
             <span>Next</span>

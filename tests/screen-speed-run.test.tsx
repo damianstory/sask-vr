@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, render, screen, cleanup } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 vi.mock('@/content/config', () => ({
   content: {
@@ -51,96 +51,21 @@ describe('ScreenSpeedRun', () => {
     expect(screen.getByText('Starts apprenticeship')).toBeInTheDocument()
     expect(screen.getByText('$0 debt')).toBeInTheDocument()
     expect(screen.getByText('Starts degree')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Show next comparison year' }))
     expect(screen.getByText('-$45K debt')).toBeInTheDocument()
   })
 
-  describe('with reduced motion', () => {
-    beforeEach(() => {
-      // Mock matchMedia to report reduced motion
-      Object.defineProperty(window, 'matchMedia', {
-        writable: true,
-        value: vi.fn().mockImplementation((query: string) => ({
-          matches: query === '(prefers-reduced-motion: reduce)',
-          media: query,
-          onchange: null,
-          addListener: vi.fn(),
-          removeListener: vi.fn(),
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-        })),
-      })
-    })
-
-    afterEach(() => {
-      // Restore default matchMedia
-      Object.defineProperty(window, 'matchMedia', {
-        writable: true,
-        value: vi.fn().mockImplementation((query: string) => ({
-          matches: false,
-          media: query,
-          onchange: null,
-          addListener: vi.fn(),
-          removeListener: vi.fn(),
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-        })),
-      })
-      cleanup()
-    })
-
-    it('all milestones are visible immediately (no opacity-0 class)', () => {
-      const { container } = render(<ScreenSpeedRun />)
-      const milestones = container.querySelectorAll('[class*="translate-y"]')
-      for (const m of milestones) {
-        expect(m.className).not.toContain('opacity-0')
-      }
-    })
+  it('advances through milestones with the next control', () => {
+    render(<ScreenSpeedRun />)
+    fireEvent.click(screen.getByRole('button', { name: 'Show next comparison year' }))
+    expect(screen.getByText('Earning 60%')).toBeInTheDocument()
+    expect(screen.getByText('Graduates')).toBeInTheDocument()
   })
 
-  describe('with fake timers (no reduced motion)', () => {
-    beforeEach(() => {
-      vi.useFakeTimers()
-    })
-
-    afterEach(() => {
-      vi.useRealTimers()
-      cleanup()
-    })
-
-    it('milestones start hidden and reveal progressively', () => {
-      const { container } = render(<ScreenSpeedRun />)
-
-      // Initially all milestones should have opacity-0 (visibleCount = 0)
-      const getMilestoneClasses = () =>
-        Array.from(container.querySelectorAll('[class*="pb-6"]')).map((el) => el.className)
-
-      const initialClasses = getMilestoneClasses()
-      for (const cls of initialClasses) {
-        expect(cls).toContain('opacity-0')
-      }
-
-      // After one tick, first row should be visible
-      act(() => { vi.advanceTimersByTime(400) })
-      const afterOneTick = getMilestoneClasses()
-      // First milestone of each column (index 0) should now be visible
-      expect(afterOneTick[0]).toContain('opacity-100')
-      expect(afterOneTick[3]).toContain('opacity-100')
-      // Second milestone should still be hidden
-      expect(afterOneTick[1]).toContain('opacity-0')
-    })
-
-    it('cleans up interval on unmount', () => {
-      const clearIntervalSpy = vi.spyOn(globalThis, 'clearInterval')
-      const { unmount } = render(<ScreenSpeedRun />)
-
-      // Advance partially — not all milestones revealed yet
-      vi.advanceTimersByTime(400)
-      unmount()
-
-      expect(clearIntervalSpy).toHaveBeenCalled()
-      clearIntervalSpy.mockRestore()
-    })
+  it('allows direct milestone selection through step dots', () => {
+    render(<ScreenSpeedRun />)
+    fireEvent.click(screen.getByRole('button', { name: 'Show comparison year 3' }))
+    expect(screen.getByText('Red Seal certified')).toBeInTheDocument()
+    expect(screen.getByText('Entry-level job')).toBeInTheDocument()
   })
 })

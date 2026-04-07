@@ -37,6 +37,17 @@ describe('ScreenVideo', () => {
     expect(screen.getByText('Quick clips of carpentry.')).toBeInTheDocument()
   })
 
+  it('renders inside the fit shell layout', () => {
+    render(<ScreenVideo />)
+
+    const shell = screen
+      .getByRole('heading', { level: 2, name: 'See it in action' })
+      .closest('[data-prevr-shell="fit"]')
+
+    expect(shell).toBeInTheDocument()
+    expect(shell).toHaveClass('h-full', 'min-h-0', 'flex-1')
+  })
+
   it('renders iframe with correct youtube-nocookie src', () => {
     render(<ScreenVideo />)
     const iframe = document.querySelector('iframe')!
@@ -107,5 +118,42 @@ describe('ScreenVideo', () => {
   it('shows counter text', () => {
     render(<ScreenVideo />)
     expect(screen.getByText('1 of 3')).toBeInTheDocument()
+  })
+
+  it('does not call onComplete on mount', () => {
+    const onComplete = vi.fn()
+
+    render(<ScreenVideo onComplete={onComplete} />)
+
+    expect(onComplete).not.toHaveBeenCalled()
+  })
+
+  it('calls onComplete the first time the last video is reached', () => {
+    const onComplete = vi.fn()
+
+    render(<ScreenVideo onComplete={onComplete} />)
+
+    const nextBtn = screen.getByLabelText('Show next video')
+    fireEvent.click(nextBtn)
+    expect(onComplete).not.toHaveBeenCalled()
+
+    fireEvent.click(nextBtn)
+    expect(onComplete).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not call onComplete repeatedly after the last video has already been reached', () => {
+    const onComplete = vi.fn()
+
+    render(<ScreenVideo onComplete={onComplete} />)
+
+    const nextBtn = screen.getByLabelText('Show next video')
+    fireEvent.click(nextBtn)
+    fireEvent.click(nextBtn)
+
+    const prevBtn = screen.getByLabelText('Show previous video')
+    fireEvent.click(prevBtn)
+    fireEvent.click(nextBtn)
+
+    expect(onComplete).toHaveBeenCalledTimes(1)
   })
 })

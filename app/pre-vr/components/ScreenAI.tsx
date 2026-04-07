@@ -3,14 +3,13 @@
 import { useState, useRef, useCallback } from 'react'
 import { content } from '@/content/config'
 import { useSession } from '@/context/SessionContext'
-import { useReducedMotion } from '@/lib/hooks'
 import { trackAISortAttempt, trackAISortComplete } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
+import PreVRScreenShell from './PreVRScreenShell'
 
 const data = content.aiSorting
 
 export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
-  const reduced = useReducedMotion()
   const {
     aiSortResults,
     aiSortComplete,
@@ -21,12 +20,11 @@ export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
   const [feedback, setFeedback] = useState<{ correct: boolean } | null>(null)
   const [completedInSession, setCompletedInSession] = useState(false)
   const [buttonsDisabled, setButtonsDisabled] = useState(false)
+  const [activeResultIndex, setActiveResultIndex] = useState(0)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Show results if already complete (revisit) or just completed in this session
   const showResults = aiSortComplete || completedInSession
 
-  // Derive current task from answered IDs
   const answeredIds = new Set(aiSortResults?.map((r) => r.taskId) ?? [])
   const remainingTasks = data.tasks.filter((t) => !answeredIds.has(t.id))
   const currentTask = remainingTasks[0]
@@ -41,7 +39,6 @@ export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
         { taskId: currentTask.id, chosen, correct },
       ]
 
-      // Disable buttons to prevent double-submit
       setButtonsDisabled(true)
       setFeedback({ correct })
       trackAISortAttempt(currentTask.id, chosen, correct)
@@ -51,11 +48,8 @@ export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
         timerRef.current = null
         setFeedback(null)
 
-        // Check completion against local nextResults, not stale session state
         const nextAnsweredIds = new Set(nextResults.map((r) => r.taskId))
-        const stillRemaining = data.tasks.filter(
-          (t) => !nextAnsweredIds.has(t.id),
-        )
+        const stillRemaining = data.tasks.filter((t) => !nextAnsweredIds.has(t.id))
 
         if (stillRemaining.length === 0) {
           const score = nextResults.filter((r) => r.correct).length
@@ -63,8 +57,8 @@ export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
           trackAISortComplete(score)
           onComplete?.()
           setCompletedInSession(true)
+          setActiveResultIndex(0)
         } else {
-          // Re-enable buttons for the next task
           setButtonsDisabled(false)
         }
       }, 1200)
@@ -79,140 +73,152 @@ export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
     ],
   )
 
-  // Results view — render from canonical data.tasks order
   if (showResults) {
-    const resultsByTaskId = new Map(
-      (aiSortResults ?? []).map((r) => [r.taskId, r]),
-    )
+    const orderedResults = data.tasks.map((task) => ({
+      task,
+      result: (aiSortResults ?? []).find((entry) => entry.taskId === task.id),
+    }))
     const score = (aiSortResults ?? []).filter((r) => r.correct).length
+    const activeResult = orderedResults[Math.min(activeResultIndex, orderedResults.length - 1)]
+    const activeTask = activeResult.task
+    const isCorrect = activeResult.result?.correct ?? false
 
     return (
-      <section className="mx-auto flex w-full max-w-[var(--max-content-width)] flex-col px-4 py-8 md:px-6 md:py-12">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="text-[12px] font-[800] uppercase tracking-[0.24em] text-[var(--myb-primary-blue)]">
-            Results
-          </p>
-          <h2
-            data-screen-heading
-            className="mt-4 text-center text-[28px] font-[800] leading-[1.15] text-[var(--myb-navy)] md:text-[40px]"
-          >
-            {score} of {data.tasks.length}
-          </h2>
-          <p className="mt-3 text-center text-[16px] font-[300] leading-[1.75] text-[var(--myb-neutral-5)]">
-            {data.punchline}
-          </p>
-        </div>
-
-        <ul className="mx-auto mt-8 flex w-full max-w-3xl flex-col gap-4">
-          {data.tasks.map((task) => {
-            const result = resultsByTaskId.get(task.id)
-            const isCorrect = result?.correct ?? false
-
-            return (
-              <li
-                key={task.id}
-                className="rounded-[var(--radius-card)] border border-[var(--myb-neutral-2)] p-4"
+      <PreVRScreenShell
+        eyebrow="Results"
+        heading={`${score} of ${data.tasks.length}`}
+        subtext={data.punchline}
+        mode="fit"
+        desktopLayout="split"
+        bodyClassName="justify-center"
+      >
+        <div className="flex h-full min-h-0 flex-col justify-center gap-4">
+          <div className="rounded-[var(--radius-panel)] border border-[var(--myb-neutral-2)] bg-white/90 p-5 shadow-[var(--shadow-float)]">
+            <div className="flex items-start gap-3">
+              <span
+                className={cn(
+                  'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[14px] font-[800]',
+                  isCorrect ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-500',
+                )}
+                aria-hidden="true"
               >
-                <div className="flex items-start gap-3">
-                  <span
-                    className={cn(
-                      'mt-0.5 shrink-0 text-[14px] font-[800]',
-                      isCorrect
-                        ? 'text-green-600'
-                        : 'text-red-500',
-                    )}
-                    aria-hidden="true"
-                  >
-                    {isCorrect ? '\u2713' : '\u2717'}
-                  </span>
-                  <div>
-                    <p className="text-[14px] font-[300] text-[var(--myb-neutral-5)]">
-                      {task.description}
-                    </p>
-                    <p className="mt-1 text-[13px] font-[800] uppercase tracking-[0.12em] text-[var(--myb-primary-blue)]">
-                      Answer: {task.correctAnswer === 'ai' ? 'AI' : 'Human'}
-                    </p>
-                    <p className="mt-1 text-[13px] font-[300] text-[var(--myb-neutral-4)]">
-                      {task.explanation}
-                    </p>
-                  </div>
-                </div>
-              </li>
-            )
-          })}
-        </ul>
-      </section>
-    )
-  }
+                {isCorrect ? '\u2713' : '!'}
+              </span>
+              <div>
+                <p className="text-[12px] font-[800] uppercase tracking-[0.16em] text-[var(--myb-primary-blue)]">
+                  Task {activeResultIndex + 1} of {orderedResults.length}
+                </p>
+                <p className="mt-2 text-[18px] font-[800] leading-[1.4] text-[var(--myb-navy)]">
+                  {activeTask.description}
+                </p>
+                <p className="mt-3 text-[13px] font-[800] uppercase tracking-[0.12em] text-[var(--myb-primary-blue)]">
+                  Answer: {activeTask.correctAnswer === 'ai' ? 'AI' : 'Human'}
+                </p>
+                <p className="mt-2 text-[14px] font-[300] leading-[1.65] text-[var(--myb-neutral-4)]">
+                  {activeTask.explanation}
+                </p>
+              </div>
+            </div>
+          </div>
 
-  // Sorting view
-  const progress = data.tasks.length - remainingTasks.length
-
-  return (
-    <section className="mx-auto flex w-full max-w-[var(--max-content-width)] flex-col px-4 py-8 md:px-6 md:py-12">
-      <div className="mx-auto max-w-3xl text-center">
-        <p className="text-[12px] font-[800] uppercase tracking-[0.24em] text-[var(--myb-primary-blue)]">
-          AI Challenge
-        </p>
-        <h2
-          data-screen-heading
-          className="mt-4 text-center text-[28px] font-[800] leading-[1.15] text-[var(--myb-navy)] md:text-[40px]"
-        >
-          {data.heading}
-        </h2>
-        <p className="mt-3 text-center text-[16px] font-[300] leading-[1.75] text-[var(--myb-neutral-5)]">
-          {data.subtext}
-        </p>
-      </div>
-
-      <div className="mx-auto mt-2 text-[13px] font-[300] text-[var(--myb-neutral-3)]">
-        {progress + 1} of {data.tasks.length}
-      </div>
-
-      {currentTask && (
-        <div
-          className={cn(
-            'mx-auto mt-6 w-full max-w-md rounded-[var(--radius-card)] border border-[var(--myb-neutral-2)] p-6 text-center',
-            feedback !== null && !reduced && 'transition-colors duration-300',
-            feedback?.correct === true && 'border-green-400 bg-green-50',
-            feedback?.correct === false && 'border-red-400 bg-red-50',
-          )}
-        >
-          <p className="text-[16px] font-[300] leading-[1.75] text-[var(--myb-navy)]">
-            {currentTask.description}
-          </p>
-
-          {feedback !== null && (
-            <p
-              className={cn(
-                'mt-3 text-[14px] font-[800]',
-                feedback.correct ? 'text-green-600' : 'text-red-500',
-              )}
-            >
-              {feedback.correct ? 'Correct!' : 'Not quite'}
-            </p>
-          )}
-
-          <div className="mt-6 flex gap-3">
+          <div className="flex items-center justify-between rounded-[var(--radius-card)] border border-[var(--myb-neutral-2)] bg-white/80 p-3">
             <button
               type="button"
-              disabled={buttonsDisabled}
-              onClick={() => handleAnswer('ai')}
-              className="flex min-h-[44px] flex-1 items-center justify-center rounded-[var(--radius-input)] border-2 border-[var(--myb-primary-blue)] px-4 py-3 text-[16px] font-[800] text-[var(--myb-primary-blue)] transition-colors hover:bg-[var(--myb-light-blue-soft)] disabled:opacity-50 disabled:hover:bg-transparent"
+              onClick={() => setActiveResultIndex((prev) => Math.max(prev - 1, 0))}
+              disabled={activeResultIndex === 0}
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[var(--myb-neutral-2)] text-[var(--myb-navy)] transition-colors hover:bg-[var(--myb-light-blue-soft)] disabled:opacity-30 disabled:hover:bg-transparent"
+              aria-label="Show previous result"
             >
-              AI
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M15 6L9 12L15 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
+            <div className="flex gap-2">
+              {orderedResults.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setActiveResultIndex(index)}
+                  aria-label={`Show result ${index + 1}`}
+                  aria-pressed={activeResultIndex === index}
+                  className={cn(
+                    'h-2.5 w-2.5 rounded-full transition-colors',
+                    activeResultIndex === index ? 'bg-[var(--myb-primary-blue)]' : 'bg-[var(--myb-neutral-3)]'
+                  )}
+                />
+              ))}
+            </div>
             <button
               type="button"
-              disabled={buttonsDisabled}
-              onClick={() => handleAnswer('human')}
-              className="flex min-h-[44px] flex-1 items-center justify-center rounded-[var(--radius-input)] border-2 border-[var(--myb-navy)] px-4 py-3 text-[16px] font-[800] text-[var(--myb-navy)] transition-colors hover:bg-[var(--myb-light-blue-soft)] disabled:opacity-50 disabled:hover:bg-transparent"
+              onClick={() => setActiveResultIndex((prev) => Math.min(prev + 1, orderedResults.length - 1))}
+              disabled={activeResultIndex === orderedResults.length - 1}
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[var(--myb-neutral-2)] text-[var(--myb-navy)] transition-colors hover:bg-[var(--myb-light-blue-soft)] disabled:opacity-30 disabled:hover:bg-transparent"
+              aria-label="Show next result"
             >
-              Human
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
           </div>
         </div>
-      )}
-    </section>
+      </PreVRScreenShell>
+    )
+  }
+
+  const progress = data.tasks.length - remainingTasks.length
+
+  return (
+    <PreVRScreenShell
+      eyebrow="AI Challenge"
+      heading={data.heading}
+      subtext={data.subtext}
+      mode="fit"
+      desktopLayout="split"
+      bodyClassName="justify-center"
+    >
+      <div className="mx-auto w-full max-w-md rounded-[var(--radius-panel)] border border-[var(--myb-neutral-2)] bg-white/90 p-6 text-center shadow-[var(--shadow-float)]">
+        <p className="text-[13px] font-[300] text-[var(--myb-neutral-3)]">
+          {progress + 1} of {data.tasks.length}
+        </p>
+
+        {currentTask && (
+          <>
+            <p className="mt-5 text-[18px] font-[300] leading-[1.7] text-[var(--myb-navy)]">
+              {currentTask.description}
+            </p>
+
+            {feedback !== null && (
+              <p
+                className={cn(
+                  'mt-4 text-[14px] font-[800]',
+                  feedback.correct ? 'text-green-600' : 'text-red-500',
+                )}
+              >
+                {feedback.correct ? 'Correct!' : 'Not quite'}
+              </p>
+            )}
+
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                disabled={buttonsDisabled}
+                onClick={() => handleAnswer('ai')}
+                className="flex min-h-[44px] flex-1 items-center justify-center rounded-[var(--radius-input)] border-2 border-[var(--myb-primary-blue)] px-4 py-3 text-[16px] font-[800] text-[var(--myb-primary-blue)] transition-colors hover:bg-[var(--myb-light-blue-soft)] disabled:opacity-50 disabled:hover:bg-transparent"
+              >
+                AI
+              </button>
+              <button
+                type="button"
+                disabled={buttonsDisabled}
+                onClick={() => handleAnswer('human')}
+                className="flex min-h-[44px] flex-1 items-center justify-center rounded-[var(--radius-input)] border-2 border-[var(--myb-navy)] px-4 py-3 text-[16px] font-[800] text-[var(--myb-navy)] transition-colors hover:bg-[var(--myb-light-blue-soft)] disabled:opacity-50 disabled:hover:bg-transparent"
+              >
+                Human
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </PreVRScreenShell>
   )
 }

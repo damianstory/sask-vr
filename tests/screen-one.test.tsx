@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import ScreenSalary from '@/app/pre-vr/components/ScreenSalary'
 
 // Mock content module
@@ -70,17 +70,20 @@ describe('ScreenSalary', () => {
   describe('self-employment callout', () => {
     it('renders the percentage and description', () => {
       render(<ScreenSalary />)
+      fireEvent.click(screen.getByRole('button', { name: 'Own Business' }))
       expect(screen.getByText('37%')).toBeInTheDocument()
       expect(screen.getByText(/run their own business/)).toBeInTheDocument()
     })
 
     it('renders the potential earnings', () => {
       render(<ScreenSalary />)
+      fireEvent.click(screen.getByRole('button', { name: 'Own Business' }))
       expect(screen.getByText('$80K+')).toBeInTheDocument()
     })
 
     it('renders the entrepreneurship eyebrow', () => {
       render(<ScreenSalary />)
+      fireEvent.click(screen.getByRole('button', { name: 'Own Business' }))
       expect(screen.getByText('Entrepreneurship')).toBeInTheDocument()
     })
   })
@@ -88,6 +91,7 @@ describe('ScreenSalary', () => {
   describe('stat cards', () => {
     it('renders exactly 3 stat cards', () => {
       render(<ScreenSalary />)
+      fireEvent.click(screen.getByRole('button', { name: 'Market' }))
       expect(screen.getByText('1,590')).toBeInTheDocument()
       expect(screen.getByText('23%')).toBeInTheDocument()
       expect(screen.getByText('12.4%')).toBeInTheDocument()

@@ -3,11 +3,13 @@
 import { useState, useRef, useCallback } from 'react'
 import { content } from '@/content/config'
 import { trackVideoNavigate } from '@/lib/analytics'
+import PreVRScreenShell from './PreVRScreenShell'
 
 const data = content.videoSnippets
 
-export default function ScreenVideo() {
+export default function ScreenVideo({ onComplete }: { onComplete?: () => void }) {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [completedInSession, setCompletedInSession] = useState(false)
   const regionRef = useRef<HTMLDivElement>(null)
 
   const currentVideo = data.videos[currentIndex]
@@ -19,38 +21,35 @@ export default function ScreenVideo() {
       const nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1
       if (nextIndex < 0 || nextIndex >= data.videos.length) return
 
+      if (nextIndex === data.videos.length - 1 && !completedInSession) {
+        onComplete?.()
+        setCompletedInSession(true)
+      }
+
       setCurrentIndex(nextIndex)
       trackVideoNavigate(data.videos[nextIndex].id, direction)
       regionRef.current?.focus()
     },
-    [currentIndex],
+    [completedInSession, currentIndex, onComplete],
   )
 
   return (
-    <section className="mx-auto flex w-full max-w-[var(--max-content-width)] flex-col px-4 py-8 md:px-6 md:py-12">
-      <div className="mx-auto max-w-3xl text-center">
-        <p className="text-[12px] font-[800] uppercase tracking-[0.24em] text-[var(--myb-primary-blue)]">
-          Video Snippets
-        </p>
-        <h2
-          data-screen-heading
-          className="mt-4 text-center text-[28px] font-[800] leading-[1.15] text-[var(--myb-navy)] md:text-[40px]"
-        >
-          {data.heading}
-        </h2>
-        <p className="mt-3 text-center text-[16px] font-[300] leading-[1.75] text-[var(--myb-neutral-5)]">
-          {data.subtext}
-        </p>
-      </div>
-
+    <PreVRScreenShell
+      eyebrow="Video Snippets"
+      heading={data.heading}
+      subtext={data.subtext}
+      mode="fit"
+      desktopLayout="split"
+      bodyClassName="min-h-0"
+    >
       <div
         ref={regionRef}
         role="region"
         aria-label="Video carousel"
         tabIndex={-1}
-        className="mx-auto mt-8 flex w-full max-w-[420px] flex-col items-center outline-none"
+        className="mx-auto flex h-full min-h-0 w-full max-w-[460px] flex-col items-center outline-none md:max-w-none"
       >
-        <div className="flex w-full items-center gap-3">
+        <div className="grid min-h-0 w-full flex-1 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 md:gap-4">
           <button
             type="button"
             aria-label="Show previous video"
@@ -63,8 +62,12 @@ export default function ScreenVideo() {
             </svg>
           </button>
 
-          <div className="flex-1">
-            <div className="relative mx-auto aspect-[9/16] w-full max-w-[360px] overflow-hidden rounded-[var(--radius-card)] bg-[var(--myb-neutral-1)]">
+          <div className="flex min-h-0 items-center justify-center">
+            <div className="relative w-full max-w-[320px] overflow-hidden rounded-[var(--radius-card)] bg-[var(--myb-neutral-1)] md:max-w-[360px]">
+              <div
+                className="relative mx-auto aspect-[9/16] w-full max-h-[52svh] md:max-h-[56svh]"
+                style={{ minHeight: '320px' }}
+              >
               <iframe
                 key={currentVideo.youtubeId + currentVideo.id}
                 src={`https://www.youtube-nocookie.com/embed/${currentVideo.youtubeId}?rel=0`}
@@ -72,6 +75,7 @@ export default function ScreenVideo() {
                 loading="lazy"
                 className="absolute inset-0 h-full w-full"
               />
+              </div>
             </div>
           </div>
 
@@ -88,13 +92,13 @@ export default function ScreenVideo() {
           </button>
         </div>
 
-        <p className="mt-4 text-[14px] font-[300] text-[var(--myb-neutral-4)]">
+        <p className="mt-4 text-center text-[14px] font-[300] text-[var(--myb-neutral-4)]">
           {currentVideo.title}
         </p>
-        <p className="mt-1 text-[13px] font-[300] text-[var(--myb-neutral-3)]">
+        <p className="mt-1 text-center text-[13px] font-[300] text-[var(--myb-neutral-3)]">
           {currentIndex + 1} of {data.videos.length}
         </p>
       </div>
-    </section>
+    </PreVRScreenShell>
   )
 }

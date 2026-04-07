@@ -91,6 +91,7 @@ vi.mock('@/content/config', () => ({
 
 // Mock SessionContext for ScreenTwo
 vi.mock('@/context/SessionContext', () => ({
+  SessionProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useSession: () => ({
     shuffledTileOrder: ['task-framing', 'task-measuring', 'task-finishing', 'task-concrete', 'task-roofing', 'task-renovation'],
     setShuffledTileOrder: vi.fn(),

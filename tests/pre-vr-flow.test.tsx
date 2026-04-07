@@ -87,6 +87,14 @@ function clickNext(n: number) {
   }
 }
 
+/** Navigate through the page-1 video carousel until the flow unlocks */
+function unlockScreenOne() {
+  const videoNext = screen.getByLabelText('Show next video')
+  for (let i = 0; i < 5; i++) {
+    fireEvent.click(videoNext)
+  }
+}
+
 /** Submit the task ranking (click "Lock in my ranking") */
 function submitRanking() {
   fireEvent.click(screen.getByRole('button', { name: /Lock in my ranking/i }))
@@ -102,11 +110,13 @@ function completeAiSort() {
 
 /** Navigate from screen 1 to the taskRanking gate (screen 4) */
 function navigateToTaskRanking() {
+  unlockScreenOne()
   clickNext(3) // screens 1→2→3→4
 }
 
 /** Navigate from screen 1 to screen 7 (aiSorting), unlocking taskRanking gate along the way */
 function navigateToAiSorting() {
+  unlockScreenOne()
   clickNext(3)    // reach screen 4 (taskRanking)
   submitRanking() // unlock gate
   clickNext(3)    // screens 4→5→6→7
@@ -120,12 +130,14 @@ describe('Pre-VR Flow - Screen Navigation (FLOW-01)', () => {
 
   it('navigates forward when Next is clicked', () => {
     render(<PreVrPage />)
+    unlockScreenOne()
     fireEvent.click(screen.getByLabelText('Go to next screen'))
     expect(screen.getByText('2 of 8')).toBeInTheDocument()
   })
 
   it('navigates backward when Back is clicked', () => {
     render(<PreVrPage />)
+    unlockScreenOne()
     fireEvent.click(screen.getByLabelText('Go to next screen')) // go to screen 2
     fireEvent.click(screen.getByLabelText('Go to previous screen'))
     expect(screen.getByText('1 of 8')).toBeInTheDocument()
@@ -161,6 +173,27 @@ describe('Pre-VR Flow - Navigation Bounds (FLOW-02)', () => {
 })
 
 describe('Pre-VR Flow - Gating (FLOW-03)', () => {
+  it('shows Next disabled on screen 1 until the student reaches video 6 of 6', () => {
+    render(<PreVrPage />)
+
+    const flowNext = screen.getByLabelText('Go to next screen')
+    expect(flowNext).toBeDisabled()
+
+    unlockScreenOne()
+    expect(screen.getByText('6 of 6')).toBeInTheDocument()
+    expect(screen.getByLabelText('Go to next screen')).toBeEnabled()
+  })
+
+  it('keeps screen 1 unlocked after reaching video 6 of 6 once', () => {
+    render(<PreVrPage />)
+
+    unlockScreenOne()
+    fireEvent.click(screen.getByLabelText('Show previous video'))
+
+    expect(screen.getByText('5 of 6')).toBeInTheDocument()
+    expect(screen.getByLabelText('Go to next screen')).toBeEnabled()
+  })
+
   it('hides Next on ranking screen until submit', () => {
     render(<PreVrPage />)
     navigateToTaskRanking()
@@ -215,6 +248,7 @@ describe('Pre-VR Flow - Transitions (FLOW-04)', () => {
 
   it('applies slide-left animation on forward navigation', () => {
     const { container } = render(<PreVrPage />)
+    unlockScreenOne()
     fireEvent.click(screen.getByLabelText('Go to next screen'))
     const slideLeft = container.querySelector('.animate-slide-left')
     expect(slideLeft).not.toBeNull()
@@ -222,6 +256,7 @@ describe('Pre-VR Flow - Transitions (FLOW-04)', () => {
 
   it('applies slide-right animation on backward navigation', () => {
     const { container } = render(<PreVrPage />)
+    unlockScreenOne()
     fireEvent.click(screen.getByLabelText('Go to next screen')) // forward to 2
     fireEvent.click(screen.getByLabelText('Go to previous screen')) // back to 1
     const slideRight = container.querySelector('.animate-slide-right')
