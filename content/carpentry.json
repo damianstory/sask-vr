@@ -197,16 +197,6 @@
         }
       },
       {
-        "id": "step-2",
-        "title": "Post-Secondary",
-        "subtitle": "Technical Training",
-        "details": {
-          "programs": ["Saskatchewan Polytechnic (Moose Jaw, Prince Albert, Saskatoon)"],
-          "duration": "32-week certificate",
-          "description": "A hands-on program covering blueprints, concrete, framing, finishing, and trade math. Includes a 2-week work placement with a real employer."
-        }
-      },
-      {
         "id": "step-3",
         "title": "Apprenticeship",
         "subtitle": "Earn While You Learn",
@@ -217,9 +207,21 @@
         }
       },
       {
+        "id": "step-2",
+        "title": "Post-Secondary",
+        "subtitle": "Technical Training",
+        "optional": true,
+        "details": {
+          "programs": ["Saskatchewan Polytechnic (Moose Jaw, Prince Albert, Saskatoon)"],
+          "duration": "32-week certificate",
+          "description": "A hands-on program covering blueprints, concrete, framing, finishing, and trade math. Includes a 2-week work placement with a real employer."
+        }
+      },
+      {
         "id": "step-4",
         "title": "Red Seal Journeyperson",
         "subtitle": "Certified Carpenter",
+        "optional": true,
         "details": {
           "earnings": "$28-45+/hour",
           "description": "Pass the Red Seal exam — the gold standard in Canadian trades. Your certification is recognized in every province and territory, so you can work anywhere in Canada."
@@ -228,7 +230,8 @@
       {
         "id": "step-5",
         "title": "Bachelor's Degree",
-        "subtitle": "Optional — Management Pathway",
+        "subtitle": "Management Pathway",
+        "optional": true,
         "details": {
           "programs": ["Saskatchewan Polytechnic"],
           "duration": "2 additional years",

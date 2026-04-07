@@ -57,6 +57,7 @@ export interface OccupationContent {
       id: string
       title: string
       subtitle: string
+      optional?: boolean
       details: {
         courses?: string[]
         duration?: string

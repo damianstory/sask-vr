@@ -18,32 +18,10 @@ function formatMoney(n: number, style: 'hourly' | 'annual'): string {
   return n >= 1000 ? `$${Math.round(n / 1000)}K` : `$${n}`
 }
 
-function OdometerDigit({
-  digit,
-  delay,
-  animate,
-}: {
-  digit: number
-  delay: number
-  animate: boolean
-}) {
-  return (
-    <div className="h-[1em] overflow-hidden">
-      <div
-        className={animate ? 'transition-transform duration-[2000ms] ease-out' : ''}
-        style={{
-          transform: `translateY(-${digit * 10}%)`,
-          ...(animate ? { transitionDelay: `${delay}ms` } : {}),
-        }}
-      >
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-          <div key={n} className="h-[1em] leading-[1em]">
-            {n}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
+function getLabelTransform(position: number): string {
+  if (position <= 15) return 'translateX(0)'
+  if (position >= 85) return 'translateX(-100%)'
+  return 'translateX(-50%)'
 }
 
 type DetailPanel = 'pay' | 'market' | 'business'
@@ -65,13 +43,16 @@ export default function ScreenSalary() {
     return () => cancelAnimationFrame(raf)
   }, [reduced])
 
-  const formattedSalary = data.salary.amount.toLocaleString('en-US')
-  const chars = formattedSalary.split('')
-  let digitIndex = 0
-
   const hr = data.hourlyRange
   const ar = data.annualRange
   const se = data.selfEmployment
+
+  const toPosition = (value: number) => ((value - ar.entry) / (ar.senior - ar.entry)) * 100
+  const tiers = [
+    { label: 'Entry', value: ar.entry, position: toPosition(ar.entry), emphasis: false },
+    { label: 'Median', value: ar.median, position: toPosition(ar.median), emphasis: true },
+    { label: 'Senior', value: ar.senior, position: toPosition(ar.senior), emphasis: false },
+  ]
 
   return (
     <PreVRScreenShell
@@ -85,33 +66,113 @@ export default function ScreenSalary() {
         <div className="rounded-[var(--radius-panel)] border border-[color:rgba(217,223,234,0.8)] bg-white/90 p-4 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:p-6">
           <div className="relative overflow-hidden rounded-[var(--radius-card)] bg-[var(--myb-light-blue-soft)] px-6 py-8 text-center md:px-10 md:py-10">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,146,255,0.18),transparent_50%)]" />
+
+            <p className="relative z-10 text-[11px] font-[800] uppercase tracking-[0.16em] text-[var(--myb-neutral-4)]">
+              Annual Salary Range
+            </p>
+
             <div
-              className="relative z-10 flex items-baseline justify-center text-[48px] font-[800] leading-[1] text-[var(--myb-navy)] md:text-[56px] lg:text-[64px]"
-              aria-label={`$${formattedSalary}`}
-              role="text"
+              role="img"
+              aria-label={`Salary range: ${formatMoney(ar.entry, 'annual')} entry, ${formatMoney(ar.median, 'annual')} median, ${formatMoney(ar.senior, 'annual')} senior`}
+              className="relative z-10 mx-2 mt-6 md:mx-6"
             >
-              <span>$</span>
-              {chars.map((char, i) => {
-                if (char === ',') {
-                  return (
-                    <span key={i} className="h-[1em] leading-[1em]">
-                      ,
-                    </span>
-                  )
-                }
-                const d = parseInt(char, 10)
-                const idx = digitIndex++
-                return (
-                  <OdometerDigit
-                    key={i}
-                    digit={isVisible ? d : 0}
-                    delay={idx * 50}
-                    animate={!reduced}
+              <div aria-hidden="true">
+                {/* ROW 1: value labels */}
+                <div className="relative h-[28px] md:h-[36px]">
+                  {tiers.map((tier, i) => (
+                    <div
+                      key={tier.label}
+                      className="absolute bottom-0"
+                      style={{
+                        left: `${tier.position}%`,
+                        transform: getLabelTransform(tier.position),
+                      }}
+                    >
+                      <span
+                        className={cn(
+                          'block whitespace-nowrap font-[800] text-[var(--myb-navy)] transition-all duration-500 ease-out',
+                          tier.emphasis
+                            ? 'text-[22px] md:text-[28px]'
+                            : 'text-[14px] md:text-[18px] text-[var(--myb-neutral-4)]',
+                          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-1 opacity-0'
+                        )}
+                        style={{
+                          transitionDelay: reduced ? '0ms' : `${520 + i * 120}ms`,
+                        }}
+                      >
+                        {formatMoney(tier.value, 'annual')}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* ROW 2: rail + marker dots */}
+                <div className="relative h-[18px] flex items-center">
+                  <div
+                    className={cn(
+                      'h-1 w-full origin-center rounded-full bg-gradient-to-r from-[var(--myb-light-blue)] via-[var(--myb-primary-blue)] to-[var(--myb-navy)] transition-all duration-[800ms] ease-out',
+                      isVisible ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
+                    )}
                   />
-                )
-              })}
+                  {tiers.map((tier, i) => (
+                    <div
+                      key={tier.label}
+                      className="absolute top-1/2"
+                      style={{
+                        left: `${tier.position}%`,
+                        transform: 'translate(-50%, -50%)',
+                      }}
+                    >
+                      <div
+                        className={cn(
+                          'rounded-full border-2 border-white shadow-sm transition-all duration-500 ease-out',
+                          tier.emphasis
+                            ? 'h-[18px] w-[18px] bg-[var(--myb-primary-blue)] shadow-md'
+                            : 'h-[12px] w-[12px]',
+                          tier.position === 0 && 'bg-[var(--myb-light-blue)]',
+                          tier.position === 100 && 'bg-[var(--myb-navy)]',
+                          isVisible ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+                        )}
+                        style={{
+                          transitionDelay: reduced ? '0ms' : `${400 + i * 120}ms`,
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* ROW 3: tier labels */}
+                <div className="relative h-[20px]">
+                  {tiers.map((tier, i) => (
+                    <div
+                      key={tier.label}
+                      className="absolute top-0"
+                      style={{
+                        left: `${tier.position}%`,
+                        transform: getLabelTransform(tier.position),
+                      }}
+                    >
+                      <span
+                        className={cn(
+                          'block whitespace-nowrap uppercase tracking-[0.16em] transition-all duration-500 ease-out',
+                          tier.emphasis
+                            ? 'text-[10px] font-[800] text-[var(--myb-navy)]'
+                            : 'text-[9px] font-[400] text-[var(--myb-neutral-4)]',
+                          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-[-4px] opacity-0'
+                        )}
+                        style={{
+                          transitionDelay: reduced ? '0ms' : `${520 + i * 120}ms`,
+                        }}
+                      >
+                        {tier.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-            <p className="relative z-10 mt-4 text-center text-[14px] font-[300] text-[var(--myb-neutral-4)]">
+
+            <p className="relative z-10 mt-6 text-center text-[14px] font-[300] text-[var(--myb-neutral-4)]">
               {data.salary.source}
             </p>
             {data.salary.seasonalityNote && (

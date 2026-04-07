@@ -50,7 +50,7 @@ const SCREENS: ScreenConfig[] = [
   { key: 'speedRun', Component: ScreenSpeedRun, gated: true, gateStyle: 'disabled' },
   { key: 'taskRanking', Component: ScreenTaskRanking as ScreenComponent, gated: true },
   { key: 'employerMap', Component: ScreenThreeWrapper },
-  { key: 'careerPathway', Component: ScreenFour },
+  { key: 'careerPathway', Component: ScreenFour, gated: true, gateStyle: 'disabled' },
   { key: 'aiSorting', Component: ScreenAI, gated: true },
   { key: 'vrPrep', Component: ScreenSix },
 ]

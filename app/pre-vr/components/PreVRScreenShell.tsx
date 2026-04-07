@@ -11,6 +11,8 @@ type PreVRScreenShellProps = {
   className?: string
   headerClassName?: string
   bodyClassName?: string
+  subtextClassName?: string
+  headerSlot?: ReactNode
   children: ReactNode
 }
 
@@ -24,6 +26,8 @@ export default function PreVRScreenShell({
   className,
   headerClassName,
   bodyClassName,
+  subtextClassName,
+  headerSlot,
   children,
 }: PreVRScreenShellProps) {
   const isFit = mode === 'fit'
@@ -58,7 +62,9 @@ export default function PreVRScreenShell({
       >
         <div
           className={cn(
-            isSplit ? 'text-center md:self-center md:text-left' : 'mx-auto max-w-3xl text-center',
+            isSplit
+              ? cn('text-center md:text-left', headerSlot ? 'md:self-start' : 'md:self-center')
+              : 'mx-auto max-w-3xl text-center',
             isFit && !isSplit && 'flex-shrink-0',
             headerClassName,
           )}
@@ -80,11 +86,13 @@ export default function PreVRScreenShell({
               className={cn(
                 'mt-3 text-[16px] font-[300] leading-[1.75] text-[var(--myb-neutral-5)]',
                 isSplit ? 'text-center md:max-w-[28rem] md:text-left' : 'text-center',
+                subtextClassName,
               )}
             >
               {subtext}
             </p>
           )}
+          {headerSlot}
         </div>
 
         <div

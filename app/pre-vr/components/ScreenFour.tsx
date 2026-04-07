@@ -1,25 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { content } from '@/content/config'
 import { cn } from '@/lib/utils'
 import { trackPathwayExpand } from '@/lib/analytics'
 import PreVRScreenShell from './PreVRScreenShell'
 
 const data = content.careerPathway
+const lastStepId = data.steps[data.steps.length - 1]?.id
 
-export default function ScreenFour() {
+export default function ScreenFour({ onComplete }: { onComplete?: () => void }) {
   const [activeStepId, setActiveStepId] = useState<string>(data.steps[0]?.id ?? '')
+  const completedRef = useRef(false)
 
   const activeStep = data.steps.find((step) => step.id === activeStepId) ?? data.steps[0]
 
-  const selectStep = (stepId: string) => {
+  const selectStep = useCallback((stepId: string) => {
     if (stepId === activeStepId) return
     const step = data.steps.find((item) => item.id === stepId)
     if (!step) return
     setActiveStepId(stepId)
     trackPathwayExpand(step.id, step.title)
-  }
+
+    if (stepId === lastStepId && !completedRef.current) {
+      completedRef.current = true
+      onComplete?.()
+    }
+  }, [activeStepId, onComplete])
 
   const activeIndex = data.steps.findIndex((step) => step.id === activeStep.id)
   const totalHours = activeStep.details.headStart?.reduce((sum, p) => sum + p.hours, 0) ?? 0
@@ -45,17 +52,24 @@ export default function ScreenFour() {
                 aria-expanded={isActive}
                 aria-controls={`pathway-step-panel-${step.id}`}
                 className={cn(
-                  'rounded-[var(--radius-card)] border px-3 py-3 text-left transition-all duration-[var(--motion-medium)]',
+                  'flex flex-col rounded-[var(--radius-card)] border px-3 py-3 text-left transition-all duration-[var(--motion-medium)]',
                   isActive
                     ? 'border-[var(--myb-primary-blue)] bg-[var(--myb-light-blue-soft)] shadow-[var(--shadow-card-hover)]'
                     : 'border-[var(--myb-neutral-2)] bg-white hover:border-[var(--myb-primary-blue)]'
                 )}
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--myb-navy)] text-[12px] font-[800] text-white">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--myb-navy)] text-[12px] font-[800] text-white">
                   {index + 1}
                 </div>
-                <div className="mt-3 text-[13px] font-[800] leading-[1.35] text-[var(--myb-navy)]">
+                <div className="mt-3 min-h-[36px] text-[12px] font-[800] leading-[1.35] text-[var(--myb-navy)]">
                   {step.title}
+                </div>
+                <div className="mt-1 h-[18px]">
+                  {step.optional && (
+                    <span className="text-[11px] font-[600] uppercase tracking-[0.1em] text-[var(--myb-neutral-4)]">
+                      Optional
+                    </span>
+                  )}
                 </div>
               </button>
             )
@@ -70,6 +84,11 @@ export default function ScreenFour() {
             <div>
               <p className="text-[12px] font-[800] uppercase tracking-[0.18em] text-[var(--myb-primary-blue)]">
                 Step {activeIndex + 1}
+                {activeStep.optional && (
+                  <span className="ml-2 rounded-[var(--radius-pill)] bg-[var(--myb-light-blue-soft)] px-2 py-0.5 text-[10px] font-[600] normal-case tracking-[0.08em] text-[var(--myb-neutral-4)]">
+                    Optional
+                  </span>
+                )}
               </p>
               <h3 className="mt-3 text-[26px] font-[800] leading-[1.1] text-[var(--myb-navy)]">
                 {activeStep.title}
