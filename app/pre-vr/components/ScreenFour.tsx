@@ -1,32 +1,56 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { content } from '@/content/config'
 import { cn } from '@/lib/utils'
 import { trackPathwayExpand } from '@/lib/analytics'
+import { useSession } from '@/context/SessionContext'
 import PreVRScreenShell from './PreVRScreenShell'
 
 const data = content.careerPathway
-const lastStepId = data.steps[data.steps.length - 1]?.id
 
 export default function ScreenFour({ onComplete }: { onComplete?: () => void }) {
+  const session = useSession()
+
   const [activeStepId, setActiveStepId] = useState<string>(data.steps[0]?.id ?? '')
+  const firstStepId = data.steps[0]?.id
+  const [visitedSteps, setVisitedSteps] = useState<Set<string>>(() => {
+    const initial = new Set(session.visitedPathwaySteps)
+    if (firstStepId) initial.add(firstStepId)
+    return initial
+  })
   const completedRef = useRef(false)
 
   const activeStep = data.steps.find((step) => step.id === activeStepId) ?? data.steps[0]
 
   const selectStep = useCallback((stepId: string) => {
-    if (stepId === activeStepId) return
     const step = data.steps.find((item) => item.id === stepId)
     if (!step) return
-    setActiveStepId(stepId)
-    trackPathwayExpand(step.id, step.title)
 
-    if (stepId === lastStepId && !completedRef.current) {
+    // mark visited (always, even if clicking the active step)
+    setVisitedSteps((prev) => {
+      if (prev.has(stepId)) return prev
+      const next = new Set(prev)
+      next.add(stepId)
+      return next
+    })
+    session.markPathwayStepVisited(stepId)
+
+    // only change active step and track analytics for actual step changes
+    if (stepId !== activeStepId) {
+      setActiveStepId(stepId)
+      trackPathwayExpand(step.id, step.title)
+    }
+  }, [activeStepId, session])
+
+  // fire onComplete when all steps visited
+  useEffect(() => {
+    if (completedRef.current) return
+    if (visitedSteps.size === data.steps.length) {
       completedRef.current = true
       onComplete?.()
     }
-  }, [activeStepId, onComplete])
+  }, [visitedSteps.size, onComplete])
 
   const activeIndex = data.steps.findIndex((step) => step.id === activeStep.id)
   const totalHours = activeStep.details.headStart?.reduce((sum, p) => sum + p.hours, 0) ?? 0
@@ -59,7 +83,13 @@ export default function ScreenFour({ onComplete }: { onComplete?: () => void }) 
                 )}
               >
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--myb-navy)] text-[12px] font-[800] text-white">
-                  {index + 1}
+                  {visitedSteps.has(step.id) ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  ) : (
+                    index + 1
+                  )}
                 </div>
                 <div className="mt-3 min-h-[36px] text-[12px] font-[800] leading-[1.35] text-[var(--myb-navy)]">
                   {step.title}

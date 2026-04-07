@@ -28,7 +28,7 @@ interface ScreenConfig {
 }
 
 /** Suspense wrapper for the lazy-loaded employer map — local to this file. */
-function ScreenThreeWrapper() {
+function ScreenThreeWrapper({ onComplete }: { onComplete?: () => void }) {
   return (
     <Suspense
       fallback={
@@ -39,7 +39,7 @@ function ScreenThreeWrapper() {
         </div>
       }
     >
-      <ScreenThree />
+      <ScreenThree onComplete={onComplete} />
     </Suspense>
   )
 }
@@ -48,8 +48,8 @@ const SCREENS: ScreenConfig[] = [
   { key: 'videoSnippets', Component: ScreenVideo, gated: true, gateStyle: 'disabled' },
   { key: 'salaryHook', Component: ScreenSalary },
   { key: 'speedRun', Component: ScreenSpeedRun, gated: true, gateStyle: 'disabled' },
-  { key: 'taskRanking', Component: ScreenTaskRanking as ScreenComponent, gated: true },
-  { key: 'employerMap', Component: ScreenThreeWrapper },
+  { key: 'taskRanking', Component: ScreenTaskRanking },
+  { key: 'employerMap', Component: ScreenThreeWrapper, gated: true, gateStyle: 'disabled' },
   { key: 'careerPathway', Component: ScreenFour, gated: true, gateStyle: 'disabled' },
   { key: 'aiSorting', Component: ScreenAI, gated: true },
   { key: 'vrPrep', Component: ScreenSix },
@@ -74,11 +74,9 @@ function PreVRFlow() {
   const config = SCREENS[currentScreen]
 
   const sessionCompleted =
-    config.key === 'taskRanking'
-      ? session.rankingSubmitted ?? false
-      : config.key === 'aiSorting'
-        ? session.aiSortComplete ?? false
-        : false
+    config.key === 'aiSorting'
+      ? session.aiSortComplete ?? false
+      : false
 
   const isScreenComplete = !config.gated || sessionCompleted || !!completedScreens[config.key]
   const shouldHideNext = !isScreenComplete && config.gateStyle !== 'disabled'

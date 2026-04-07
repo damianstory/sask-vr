@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useState, type ReactNode } from 'react'
 
 interface AiSortResult {
   taskId: string
@@ -16,6 +16,8 @@ interface SessionState {
   rankingScore: number | null
   aiSortResults: AiSortResult[] | null
   aiSortComplete: boolean
+  visitedEmployers: string[]
+  visitedPathwaySteps: string[]
 }
 
 interface SessionContextValue extends SessionState {
@@ -26,6 +28,10 @@ interface SessionContextValue extends SessionState {
   setRankingScore: (score: number | null) => void
   setAiSortResults: (results: AiSortResult[] | null) => void
   setAiSortComplete: (complete: boolean) => void
+  visitedEmployers: string[]
+  markEmployerVisited: (id: string) => void
+  visitedPathwaySteps: string[]
+  markPathwayStepVisited: (id: string) => void
 }
 
 const SessionContext = createContext<SessionContextValue | null>(null)
@@ -38,6 +44,17 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [rankingScore, setRankingScore] = useState<number | null>(null)
   const [aiSortResults, setAiSortResults] = useState<AiSortResult[] | null>(null)
   const [aiSortComplete, setAiSortComplete] = useState(false)
+  const [visitedEmployers, setVisitedEmployers] = useState<string[]>([])
+
+  const markEmployerVisited = useCallback((id: string) => {
+    setVisitedEmployers(prev => prev.includes(id) ? prev : [...prev, id])
+  }, [])
+
+  const [visitedPathwaySteps, setVisitedPathwaySteps] = useState<string[]>([])
+
+  const markPathwayStepVisited = useCallback((id: string) => {
+    setVisitedPathwaySteps(prev => prev.includes(id) ? prev : [...prev, id])
+  }, [])
 
   return (
     <SessionContext.Provider
@@ -56,6 +73,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         setRankingScore,
         setAiSortResults,
         setAiSortComplete,
+        visitedEmployers,
+        markEmployerVisited,
+        visitedPathwaySteps,
+        markPathwayStepVisited,
       }}
     >
       {children}

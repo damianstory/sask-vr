@@ -13,6 +13,7 @@ type PreVRScreenShellProps = {
   bodyClassName?: string
   subtextClassName?: string
   headerSlot?: ReactNode
+  headerMetaSlot?: ReactNode
   children: ReactNode
 }
 
@@ -28,6 +29,7 @@ export default function PreVRScreenShell({
   bodyClassName,
   subtextClassName,
   headerSlot,
+  headerMetaSlot,
   children,
 }: PreVRScreenShellProps) {
   const isFit = mode === 'fit'
@@ -75,7 +77,7 @@ export default function PreVRScreenShell({
           <h2
             data-screen-heading
             className={cn(
-              'mt-4 text-[28px] font-[800] leading-[1.15] text-[var(--myb-navy)] md:text-[40px]',
+              'mt-4 text-[28px] font-[800] leading-[1.15] text-[var(--myb-navy)] outline-none md:text-[40px]',
               isSplit ? 'text-center md:text-left' : 'text-center',
             )}
           >
@@ -92,6 +94,7 @@ export default function PreVRScreenShell({
               {subtext}
             </p>
           )}
+          {headerMetaSlot}
           {headerSlot}
         </div>
 

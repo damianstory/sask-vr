@@ -5,6 +5,7 @@ import { content } from '@/content/config'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { trackEmployerTap } from '@/lib/analytics'
+import { useSession } from '@/context/SessionContext'
 import PreVRScreenShell from './PreVRScreenShell'
 
 const REGINA_CENTER: [number, number] = [-104.6189, 50.4452]
@@ -15,14 +16,43 @@ const data = content.employerMap
 
 type Employer = (typeof data.employers)[number]
 
-/* ── helpers ────────────────────────────────────────────────────── */
+/* ── marker ref type ───────────────────────────────────────────── */
 
-function updatePinAppearance(el: HTMLElement, isActive: boolean) {
-  el.style.transform = isActive ? 'scale(1.15)' : ''
-  el.style.boxShadow = isActive
+type MarkerRef = { button: HTMLButtonElement; icon: HTMLSpanElement }
+
+/* ── marker helpers ────────────────────────────────────────────── */
+
+const PIN_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`
+
+const CHECK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`
+
+function getMarkerIconSvg(isVisited: boolean): string {
+  return isVisited ? CHECK_SVG : PIN_SVG
+}
+
+function getMarkerAriaLabel(name: string, isVisited: boolean): string {
+  return isVisited ? `Viewed ${name}` : `View ${name}`
+}
+
+function applyMarkerVisualState(
+  ref: MarkerRef,
+  isVisited: boolean,
+  isActive: boolean,
+) {
+  // icon span: SVG swap
+  ref.icon.innerHTML = getMarkerIconSvg(isVisited)
+
+  // icon span: active state (scale + ring)
+  ref.icon.style.transform = isActive ? 'scale(1.1)' : ''
+  ref.icon.style.boxShadow = isActive
     ? '0 0 0 4px rgba(0, 102, 255, 0.3)'
-    : ''
-  el.style.transition = 'transform 200ms ease, box-shadow 200ms ease'
+    : isVisited
+      ? '0 0 0 2px rgba(0, 146, 255, 0.25)'
+      : ''
+
+  // button: aria-label
+  const name = ref.button.dataset.employerName ?? ''
+  ref.button.setAttribute('aria-label', getMarkerAriaLabel(name, isVisited))
 }
 
 /* ── shared inner content (no close button, no container) ─────── */
@@ -41,9 +71,6 @@ function EmployerCardContent({
           {employer.name.charAt(0)}
         </div>
         <div className="min-w-0">
-          <p className="text-[11px] font-[800] uppercase tracking-[0.22em] text-[var(--myb-primary-blue)]">
-            Featured Employer
-          </p>
           {employer.specialty && (
             <span className="mt-1 inline-flex rounded-[var(--radius-pill)] bg-[var(--myb-primary-blue)]/10 px-3 py-1 text-[11px] font-[800] uppercase tracking-[0.18em] text-[var(--myb-primary-blue)]">
               {employer.specialty}
@@ -128,33 +155,45 @@ function CloseButton({
 
 /* ── main component ──────────────────────────────────────────────── */
 
-export default function ScreenThree() {
+export default function ScreenThree({
+  onComplete,
+}: {
+  onComplete?: () => void
+}) {
+  const session = useSession()
+
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
-  const pinRefs = useRef<Map<string, HTMLElement>>(new Map())
+  const markerRefs = useRef<Map<string, MarkerRef>>(new Map())
   const desktopCloseRef = useRef<HTMLButtonElement>(null)
   const mobileCloseRef = useRef<HTMLButtonElement>(null)
   const lastPinRef = useRef<string | null>(null)
   const prevSelectedRef = useRef<string | null>(null)
   const wasKeyboardRef = useRef(false)
+  const completeFiredRef = useRef(false)
+
   const [selectedEmployer, setSelectedEmployer] = useState<string | null>(null)
+  const [visitedEmployers, setVisitedEmployers] = useState<Set<string>>(
+    () => new Set(session.visitedEmployers),
+  )
 
   const closeCard = useCallback(() => setSelectedEmployer(null), [])
 
-  /* ── pin highlight effect ─────────────────────────────────────── */
+  /* ── single reconciliation effect for all marker visuals ─────── */
   useEffect(() => {
-    // deactivate previous pin
-    if (prevSelectedRef.current) {
-      const prevEl = pinRefs.current.get(prevSelectedRef.current)
-      if (prevEl) updatePinAppearance(prevEl, false)
+    for (const [id, ref] of markerRefs.current) {
+      applyMarkerVisualState(ref, visitedEmployers.has(id), id === selectedEmployer)
     }
-    // activate new pin
-    if (selectedEmployer) {
-      const newEl = pinRefs.current.get(selectedEmployer)
-      if (newEl) updatePinAppearance(newEl, true)
+  }, [visitedEmployers, selectedEmployer])
+
+  /* ── onComplete guard ────────────────────────────────────────── */
+  useEffect(() => {
+    if (completeFiredRef.current) return
+    if (visitedEmployers.size === data.employers.length) {
+      completeFiredRef.current = true
+      onComplete?.()
     }
-    prevSelectedRef.current = selectedEmployer
-  }, [selectedEmployer])
+  }, [visitedEmployers.size, onComplete])
 
   /* ── focus management on open ─────────────────────────────────── */
   useEffect(() => {
@@ -163,18 +202,16 @@ export default function ScreenThree() {
     const isMobile = window.matchMedia('(max-width: 767.98px)').matches
 
     if (wasKeyboardRef.current || isMobile) {
-      // keyboard open or mobile: focus close button
       const closeRef = isMobile ? mobileCloseRef : desktopCloseRef
       closeRef.current?.focus()
     }
-    // mouse open on desktop: leave focus on pin (do nothing)
   }, [selectedEmployer])
 
   /* ── focus return on close ────────────────────────────────────── */
   useEffect(() => {
     if (!selectedEmployer && lastPinRef.current) {
-      const pin = pinRefs.current.get(lastPinRef.current)
-      if (pin) pin.focus()
+      const entry = markerRefs.current.get(lastPinRef.current)
+      if (entry) entry.button.focus()
       lastPinRef.current = null
     }
   }, [selectedEmployer])
@@ -194,7 +231,7 @@ export default function ScreenThree() {
     if (!selectedEmployer) return
 
     const isMobile = window.matchMedia('(max-width: 767.98px)').matches
-    if (!isMobile) return // don't attach on desktop
+    if (!isMobile) return
 
     let listening = false
     const rafId = requestAnimationFrame(() => {
@@ -234,9 +271,11 @@ export default function ScreenThree() {
     map.keyboard.disable()
 
     data.employers.forEach((employer) => {
+      const isVisited = visitedEmployers.has(employer.id)
+
+      // outer button — MapLibre marker root
       const el = document.createElement('button')
-      el.className =
-        'flex h-10 w-10 items-center justify-center rounded-full bg-[var(--myb-primary-blue)] text-white shadow-md transition-shadow hover:shadow-lg focus:outline-none focus:ring-[3px] focus:ring-[var(--myb-primary-blue)]'
+      el.type = 'button'
       el.style.border = 'none'
       el.style.cursor = 'pointer'
       el.style.padding = '0'
@@ -245,17 +284,47 @@ export default function ScreenThree() {
       el.style.display = 'flex'
       el.style.alignItems = 'center'
       el.style.justifyContent = 'center'
-      el.setAttribute('aria-label', `View ${employer.name}`)
+      el.style.borderRadius = '50%'
+      el.style.background = 'var(--myb-primary-blue)'
+      el.style.color = 'white'
+      el.style.width = '40px'
+      el.style.height = '40px'
+      el.style.boxShadow = '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)'
+      el.className = 'focus:outline-none focus:ring-[3px] focus:ring-[var(--myb-primary-blue)]'
+      el.dataset.employerName = employer.name
+      el.setAttribute('aria-label', getMarkerAriaLabel(employer.name, isVisited))
 
-      el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`
+      // inner icon span — all visual state changes happen here
+      const iconSpan = document.createElement('span')
+      iconSpan.style.display = 'flex'
+      iconSpan.style.alignItems = 'center'
+      iconSpan.style.justifyContent = 'center'
+      iconSpan.style.borderRadius = '50%'
+      iconSpan.style.transition = 'transform 200ms ease, box-shadow 200ms ease'
+      iconSpan.className = 'motion-reduce:!transition-none'
+      iconSpan.innerHTML = getMarkerIconSvg(isVisited)
 
-      pinRefs.current.set(employer.id, el)
+      if (isVisited) {
+        iconSpan.style.boxShadow = '0 0 0 2px rgba(0, 146, 255, 0.25)'
+      }
+
+      el.appendChild(iconSpan)
+      markerRefs.current.set(employer.id, { button: el, icon: iconSpan })
 
       el.addEventListener('click', (e) => {
         trackEmployerTap(employer.id, employer.name)
         wasKeyboardRef.current = e.detail === 0
         lastPinRef.current = employer.id
         setSelectedEmployer(employer.id)
+
+        // mark visited on open
+        setVisitedEmployers((prev) => {
+          if (prev.has(employer.id)) return prev
+          const next = new Set(prev)
+          next.add(employer.id)
+          return next
+        })
+        session.markEmployerVisited(employer.id)
       })
 
       new maplibregl.Marker({ element: el })
@@ -276,12 +345,25 @@ export default function ScreenThree() {
     return () => {
       map.remove()
       mapRef.current = null
+      markerRefs.current.clear()
+      prevSelectedRef.current = null
+      lastPinRef.current = null
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const employer = selectedEmployer
     ? data.employers.find((e) => e.id === selectedEmployer)
     : null
+
+  const allVisited = visitedEmployers.size >= data.employers.length
+
+  /* ── helper text for gating ──────────────────────────────────── */
+  const headerMeta = !allVisited ? (
+    <p className="mt-2 text-[13px] font-[300] leading-[1.75] text-[var(--myb-neutral-4)]">
+      View all 10 employers to continue.
+    </p>
+  ) : null
 
   /* ── desktop panel (rendered via headerSlot) ──────────────────── */
   const desktopPanel = employer ? (
@@ -316,6 +398,7 @@ export default function ScreenThree() {
           ? 'md:opacity-0 md:max-h-0 md:overflow-hidden md:transition-all md:duration-200 motion-reduce:md:transition-none'
           : 'md:opacity-100 md:max-h-24 md:transition-all md:duration-200 motion-reduce:md:transition-none'
       }
+      headerMetaSlot={headerMeta}
       headerSlot={desktopPanel}
     >
       <div className="relative h-full min-h-[420px] overflow-hidden rounded-[32px] border border-[color:rgba(217,223,234,0.8)] bg-white/90 p-3 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:min-h-0 md:flex-1 md:p-4">
