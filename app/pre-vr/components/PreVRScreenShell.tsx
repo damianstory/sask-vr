@@ -77,7 +77,7 @@ export default function PreVRScreenShell({
           <h2
             data-screen-heading
             className={cn(
-              'mt-4 text-[28px] font-[800] leading-[1.15] text-[var(--myb-navy)] outline-none md:text-[40px]',
+              'mt-4 whitespace-pre-line text-[28px] font-[800] leading-[1.15] text-[var(--myb-navy)] outline-none md:text-[40px]',
               isSplit ? 'text-center md:text-left' : 'text-center',
             )}
           >

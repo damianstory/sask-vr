@@ -247,10 +247,7 @@
     "videos": [
       { "id": "vid-framing", "title": "Framing a wall in under 60 seconds", "youtubeId": "dQw4w9WgXcQ" },
       { "id": "vid-concrete", "title": "Pouring a basement foundation", "youtubeId": "dQw4w9WgXcQ" },
-      { "id": "vid-finishing", "title": "Installing crown moulding like a pro", "youtubeId": "dQw4w9WgXcQ" },
-      { "id": "vid-tools", "title": "Every tool in a carpenter's belt explained", "youtubeId": "dQw4w9WgXcQ" },
-      { "id": "vid-roof", "title": "Roof truss installation on a Saskatchewan home", "youtubeId": "dQw4w9WgXcQ" },
-      { "id": "vid-dayinlife", "title": "A day in the life: Red Seal carpenter", "youtubeId": "dQw4w9WgXcQ" }
+      { "id": "vid-finishing", "title": "Installing crown moulding like a pro", "youtubeId": "dQw4w9WgXcQ" }
     ]
   },
   "speedRun": {
@@ -279,8 +276,8 @@
     }
   },
   "aiSorting": {
-    "heading": "AI can't build this",
-    "subtext": "Can a robot do a carpenter's job? Sort each task.",
+    "heading": "Who is better\nat each task?",
+    "subtext": "Can AI do a carpenter's job?",
     "punchline": "AI can crunch numbers and draft plans — but it can't swing a hammer, read a crooked wall, or build something you can walk through. Carpenters are irreplaceable.",
     "tasks": [
       {
@@ -332,15 +329,27 @@
   },
   "postVr": {
     "congratsHeading": "Nice work, explorer!",
-    "congratsSubtext": "You just experienced what it's like to be a carpenter. Here are some next steps.",
-    "checklistHeading": "Your next steps",
+    "congratsSubtext": "You just experienced what it's like to be a carpenter. Here are some next steps to keep the momentum going.",
+    "checklistHeading": "Your myBlueprint tasks",
     "checklist": [
-      { "id": "check-1", "label": "Talk to your teacher about PAA or shop classes for next year" },
-      { "id": "check-2", "label": "Ask your school counsellor about the Saskatchewan Youth Apprenticeship (SYA)" },
-      { "id": "check-3", "label": "Look up TASCAP or HCAP summer construction programs" },
-      { "id": "check-4", "label": "Open myBlueprint and explore the Carpentry career profile" },
-      { "id": "check-5", "label": "Ask a family member or friend if they know a carpenter you could talk to" },
-      { "id": "check-6", "label": "Check out Saskatchewan Polytechnic's carpentry program online" }
+      { "id": "check-1", "label": "Search for \"Carpenter\" in Work > Occupations and favourite the career. Read through the occupation profile to learn about daily tasks, required skills, and salary." },
+      { "id": "check-2", "label": "Complete the Compatibility Survey for Carpenter, found within the Do I Match? section of the occupation profile." },
+      { "id": "check-3", "label": "Create a new portfolio called Carpentry Exploration." },
+      { "id": "check-4", "label": "Add the Carpenter occupation to your Carpentry Exploration Portfolio and write a reflection talking about one new thing you learned today." },
+      { "id": "check-5", "label": "Set a goal related to your exploration today. For example: I want to talk to a carpenter about what they like most about their job this summer. Add that goal to your Carpentry Exploration Portfolio." },
+      { "id": "check-6", "label": "Review the \"I can\" statements on the next page and check off all that feel true for you." }
+    ],
+    "reflectionHeading": "I Can Statements",
+    "reflectionSubtext": "Check off the statements that feel true for you after today's experience.",
+    "reflections": [
+      { "id": "reflect-1", "statement": "I can describe what a carpenter does on a typical workday." },
+      { "id": "reflect-2", "statement": "I can name at least two different types of tasks involved in carpentry (e.g., framing, finishing, blueprint reading)." },
+      { "id": "reflect-3", "statement": "I can identify a company or organization in my region that employs carpenters." },
+      { "id": "reflect-4", "statement": "I can explain the steps I would need to take from high school to become a certified carpenter in Saskatchewan." },
+      { "id": "reflect-5", "statement": "I can name a high school course I could take that connects to a career in carpentry." },
+      { "id": "reflect-6", "statement": "I can describe something that surprised me about the VR carpentry experience." },
+      { "id": "reflect-7", "statement": "I can explain why carpentry is considered an in-demand career in Saskatchewan right now." },
+      { "id": "reflect-8", "statement": "I can identify one strength or interest of mine that connects to a career in carpentry." }
     ],
     "myblueprintLink": {
       "url": "https://www.myblueprint.ca",

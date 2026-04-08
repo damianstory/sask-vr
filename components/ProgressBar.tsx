@@ -3,13 +3,18 @@
 interface ProgressBarProps {
   current: number
   total: number
+  compact?: boolean
 }
 
-export default function ProgressBar({ current, total }: ProgressBarProps) {
+export default function ProgressBar({ current, total, compact = false }: ProgressBarProps) {
   return (
-    <div className="sticky top-0 z-30 px-4 pt-4">
-      <div className="mx-auto flex w-full max-w-[var(--max-content-width)] flex-col gap-3 rounded-[var(--radius-panel)] border border-[color:rgba(217,223,234,0.8)] bg-white/80 px-4 py-4 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:flex-row md:items-center md:justify-between md:px-6">
-        <div className="flex flex-col gap-1">
+    <div className={`sticky top-0 z-30 px-4 ${compact ? 'pt-2 md:pt-3' : 'pt-4'}`}>
+      <div
+        className={`mx-auto flex w-full max-w-[var(--max-content-width)] flex-col rounded-[var(--radius-panel)] border border-[color:rgba(217,223,234,0.8)] bg-white/80 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:flex-row md:items-center md:justify-between ${
+          compact ? 'gap-2 px-4 py-3 md:px-5 md:py-3' : 'gap-3 px-4 py-4 md:px-6'
+        }`}
+      >
+        <div className={`flex flex-col ${compact ? 'gap-0.5' : 'gap-1'}`}>
           <span className="text-[11px] font-[800] uppercase tracking-[0.24em] text-[var(--myb-primary-blue)]">
             Progress
           </span>
@@ -20,6 +25,7 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
         <div
           className="flex gap-2"
           role="progressbar"
+          aria-label={`Progress: ${current} of ${total}`}
           aria-valuenow={current}
           aria-valuemin={1}
           aria-valuemax={total}

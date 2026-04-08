@@ -46,7 +46,7 @@ function ScreenThreeWrapper({ onComplete }: { onComplete?: () => void }) {
 
 const SCREENS: ScreenConfig[] = [
   { key: 'videoSnippets', Component: ScreenVideo, gated: true, gateStyle: 'disabled' },
-  { key: 'salaryHook', Component: ScreenSalary },
+  { key: 'salaryHook', Component: ScreenSalary, gated: true, gateStyle: 'disabled' },
   { key: 'speedRun', Component: ScreenSpeedRun, gated: true, gateStyle: 'disabled' },
   { key: 'taskRanking', Component: ScreenTaskRanking },
   { key: 'employerMap', Component: ScreenThreeWrapper, gated: true, gateStyle: 'disabled' },

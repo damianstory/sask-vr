@@ -99,11 +99,6 @@ describe('analytics module', () => {
       expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'student_name_entered', undefined)
     })
 
-    it('trackTinyHouseDownload sends tiny_house_download with NO parameters', () => {
-      analytics.trackTinyHouseDownload()
-      expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'tiny_house_download', undefined)
-    })
-
     it('trackChecklistCheck sends checklist_check event with item_id and item_label', () => {
       analytics.trackChecklistCheck('item-1', 'Update myBlueprint')
       expect(mockSendGAEvent).toHaveBeenCalledWith('event', 'checklist_check', {

@@ -26,13 +26,17 @@ function getLabelTransform(position: number): string {
 
 type DetailPanel = 'pay' | 'market' | 'business'
 
-export default function ScreenSalary() {
+export default function ScreenSalary({ onComplete }: { onComplete?: () => void }) {
   const reduced = useReducedMotion()
   const [isVisible, setIsVisible] = useState(false)
   const [detailPanel, setDetailPanel] = useState<DetailPanel>('pay')
   const activePanelIndex = DETAIL_PANELS.findIndex((panel) => panel.id === detailPanel)
   const isFirstPanel = activePanelIndex === 0
   const isLastPanel = activePanelIndex === DETAIL_PANELS.length - 1
+
+  useEffect(() => {
+    if (detailPanel === 'business') onComplete?.()
+  }, [detailPanel, onComplete])
 
   useEffect(() => {
     if (reduced) {

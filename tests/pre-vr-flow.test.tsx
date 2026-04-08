@@ -7,66 +7,21 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
 }))
 
-vi.mock('maplibre-gl', () => {
-  const Map = vi.fn(function MockMap() {
-    return {
-      on: vi.fn(),
-      remove: vi.fn(),
-      addControl: vi.fn(),
-      fitBounds: vi.fn(),
-      scrollZoom: { disable: vi.fn() },
-      dragPan: { disable: vi.fn() },
-      doubleClickZoom: { disable: vi.fn() },
-      touchZoomRotate: { disable: vi.fn() },
-      keyboard: { disable: vi.fn() },
-    }
-  })
-  const Marker = vi.fn(function MockMarker() {
-    return {
-      setLngLat: vi.fn().mockReturnThis(),
-      addTo: vi.fn().mockReturnThis(),
-      setDOMContent: vi.fn().mockReturnThis(),
-      getElement: vi.fn(() => document.createElement('div')),
-    }
-  })
-  const LngLatBounds = vi.fn(function MockLngLatBounds() {
-    return { extend: vi.fn().mockReturnThis() }
-  })
-  return { default: { Map, Marker, LngLatBounds }, Map, Marker, LngLatBounds }
+// Mock ScreenThree (lazy-loaded employer map) — the real component uses
+// maplibre-gl which can't render in jsdom. Auto-fires onComplete so the
+// gated screen 5 can be navigated through in flow tests.
+vi.mock('@/app/pre-vr/components/ScreenThree', () => {
+  const React = require('react')
+  return {
+    default: function MockScreenThree({ onComplete }: { onComplete?: () => void }) {
+      React.useLayoutEffect(() => { onComplete?.() }, [onComplete])
+      return React.createElement('section', null,
+        React.createElement('h2', { 'data-screen-heading': '' }, 'Who hires carpenters near you?')
+      )
+    },
+  }
 })
 
-// Mock @dnd-kit for flow tests
-vi.mock('@dnd-kit/core', () => ({
-  DndContext: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  closestCenter: vi.fn(),
-  PointerSensor: vi.fn(),
-  KeyboardSensor: vi.fn(),
-  useSensor: vi.fn(),
-  useSensors: vi.fn(() => []),
-}))
-
-vi.mock('@dnd-kit/sortable', () => ({
-  SortableContext: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  verticalListSortingStrategy: {},
-  useSortable: () => ({
-    setNodeRef: vi.fn(),
-    attributes: {},
-    listeners: {},
-    transform: null,
-    transition: undefined,
-    isDragging: false,
-  }),
-  arrayMove: (arr: unknown[], from: number, to: number) => {
-    const result = [...arr]
-    const [item] = result.splice(from, 1)
-    result.splice(to, 0, item)
-    return result
-  },
-}))
-
-vi.mock('@dnd-kit/utilities', () => ({
-  CSS: { Transform: { toString: () => undefined } },
-}))
 
 import PreVrPage from '@/app/pre-vr/page'
 
@@ -103,10 +58,6 @@ function unlockScreenThree() {
   }
 }
 
-/** Submit the task ranking (click "Lock in my ranking") */
-function submitRanking() {
-  fireEvent.click(screen.getByRole('button', { name: /Lock in my ranking/i }))
-}
 
 /** Complete all 6 AI sort tasks by clicking the correct button and advancing timers */
 function completeAiSort() {
@@ -116,22 +67,24 @@ function completeAiSort() {
   }
 }
 
-/** Navigate from screen 1 to the taskRanking gate (screen 4) */
-function navigateToTaskRanking() {
-  unlockScreenOne()
-  clickNext(2) // screens 1→2→3
-  unlockScreenThree()
-  clickNext(1) // screen 3→4
+/** Click the last career pathway step to unlock screen 6 gate */
+function unlockScreenSix() {
+  fireEvent.click(screen.getByRole('button', { name: /Bachelor/i }))
 }
 
-/** Navigate from screen 1 to screen 7 (aiSorting), unlocking taskRanking gate along the way */
-function navigateToAiSorting() {
+/** Navigate from screen 1 to screen 7 (aiSorting).
+ *  Async because the lazy-loaded employer map (screen 5) resolves through
+ *  a Suspense boundary that requires an async act() tick. */
+async function navigateToAiSorting() {
   unlockScreenOne()
-  clickNext(2)    // reach screen 3 (speedRun)
+  clickNext(2)       // reach screen 3 (speedRun)
   unlockScreenThree()
-  clickNext(1)    // reach screen 4 (taskRanking)
-  submitRanking() // unlock gate
-  clickNext(3)    // screens 4→5→6→7
+  clickNext(1)       // screen 3→4 (infographic, ungated)
+  // Navigate to screen 5 and wait for the lazy Suspense boundary to resolve
+  await act(async () => { clickNext(1) })
+  clickNext(1)       // screen 5→6 (career pathway, gated disabled)
+  unlockScreenSix()  // click last step to unlock gate
+  clickNext(1)       // screen 6→7 (aiSorting)
 }
 
 describe('Pre-VR Flow - Screen Navigation (FLOW-01)', () => {
@@ -163,16 +116,12 @@ describe('Pre-VR Flow - Navigation Bounds (FLOW-02)', () => {
     expect(backButton).toBeDisabled()
   })
 
-  it('does not render Next button on last screen', () => {
+  it('does not render Next button on last screen', async () => {
     vi.useFakeTimers()
     render(<PreVrPage />)
 
-    // Navigate to screen 4 (taskRanking), submit to unlock
-    navigateToTaskRanking()
-    submitRanking()
-
     // Navigate to screen 7 (aiSorting), complete to unlock
-    clickNext(3)
+    await navigateToAiSorting()
     completeAiSort()
 
     // Navigate to screen 8 (last)
@@ -206,38 +155,10 @@ describe('Pre-VR Flow - Gating (FLOW-03)', () => {
     expect(screen.getByLabelText('Go to next screen')).toBeEnabled()
   })
 
-  it('hides Next on ranking screen until submit', () => {
-    render(<PreVrPage />)
-    navigateToTaskRanking()
-    expect(screen.getByText('4 of 8')).toBeInTheDocument()
-    // Next button should not be rendered (gated)
-    expect(screen.queryByLabelText('Go to next screen')).not.toBeInTheDocument()
-    // Submit ranking
-    submitRanking()
-    // Now Next should appear
-    expect(screen.getByLabelText('Go to next screen')).toBeInTheDocument()
-  })
-
-  it('shows reveal on revisit after ranking submit', () => {
-    render(<PreVrPage />)
-    navigateToTaskRanking()
-    submitRanking()
-    // Navigate forward then back
-    clickNext(1)
-    expect(screen.getByText('5 of 8')).toBeInTheDocument()
-    fireEvent.click(screen.getByLabelText('Go to previous screen'))
-    expect(screen.getByText('4 of 8')).toBeInTheDocument()
-    // Should show reveal, not ranking UI
-    expect(screen.getByText("Here's how your ranking compares")).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /Lock in my ranking/i })).not.toBeInTheDocument()
-    // Next button should still be available
-    expect(screen.getByLabelText('Go to next screen')).toBeInTheDocument()
-  })
-
-  it('hides Next on AI sorting screen until complete', () => {
+  it('hides Next on AI sorting screen until complete', async () => {
     vi.useFakeTimers()
     render(<PreVrPage />)
-    navigateToAiSorting()
+    await navigateToAiSorting()
     expect(screen.getByText('7 of 8')).toBeInTheDocument()
     // Next button should not be rendered (gated)
     expect(screen.queryByLabelText('Go to next screen')).not.toBeInTheDocument()
@@ -302,13 +223,13 @@ describe('Pre-VR Flow - Transitions (FLOW-04)', () => {
     expect(slideRight).not.toBeNull()
   })
 
-  it('focuses the employer map heading after lazy-loaded transition', async () => {
+  it('focuses the employer map heading after transition', async () => {
     render(<PreVrPage />)
-    // Navigate to screen 4, submit ranking to unlock
-    navigateToTaskRanking()
-    submitRanking()
-    // Navigate to screen 5 (employer map)
-    clickNext(1)
+    // Navigate to screen 5 (employer map) — screen 4 is ungated
+    unlockScreenOne()
+    clickNext(2)    // screens 1→2→3
+    unlockScreenThree()
+    clickNext(2)    // screens 3→4 (infographic)→5
 
     const screenFiveHeading = await screen.findByRole('heading', {
       level: 2,

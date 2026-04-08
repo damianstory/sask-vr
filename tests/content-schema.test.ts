@@ -44,6 +44,24 @@ describe('Content Schema', () => {
     expect(content.careerPathway.steps.length).toBeGreaterThan(0)
     expect(content.vrPrep.prompts.length).toBeGreaterThan(0)
     expect(content.postVr.checklist.length).toBeGreaterThan(0)
+    expect(content.postVr.reflections.length).toBeGreaterThan(0)
+  })
+
+  it('postVr has reflection copy and link metadata', () => {
+    expect(content.postVr.congratsHeading).toBeTruthy()
+    expect(content.postVr.congratsSubtext).toBeTruthy()
+    expect(content.postVr.checklistHeading).toBeTruthy()
+    expect(content.postVr.reflectionHeading).toBeTruthy()
+    expect(content.postVr.reflectionSubtext).toBeTruthy()
+    expect(content.postVr.myblueprintLink.url).toBeTruthy()
+    expect(content.postVr.myblueprintLink.label).toBeTruthy()
+  })
+
+  it('postVr reflections have ids and statements', () => {
+    for (const reflection of content.postVr.reflections) {
+      expect(reflection.id).toBeTruthy()
+      expect(reflection.statement).toBeTruthy()
+    }
   })
 
   it('salaryHook has numeric hourly and annual ranges', () => {
@@ -77,9 +95,9 @@ describe('Content Schema', () => {
     expect(weights).toEqual([10, 14, 14, 14, 16, 20])
   })
 
-  it('videoSnippets has exactly 6 videos with required fields', () => {
+  it('videoSnippets has videos with required fields', () => {
     const { videos } = content.videoSnippets
-    expect(videos).toHaveLength(6)
+    expect(videos.length).toBeGreaterThan(0)
     for (const video of videos) {
       expect(video.id).toBeTruthy()
       expect(video.title).toBeTruthy()

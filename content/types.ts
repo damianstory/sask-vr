@@ -126,6 +126,12 @@ export interface OccupationContent {
       id: string
       label: string
     }>
+    reflectionHeading: string
+    reflectionSubtext: string
+    reflections: Array<{
+      id: string
+      statement: string
+    }>
     myblueprintLink: {
       url: string
       label: string

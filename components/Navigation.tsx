@@ -7,6 +7,7 @@ interface NavigationProps {
   onPrev: () => void
   hideNext?: boolean
   disableNext?: boolean
+  compact?: boolean
 }
 
 export default function Navigation({
@@ -16,15 +17,28 @@ export default function Navigation({
   onPrev,
   hideNext,
   disableNext,
+  compact = false,
 }: NavigationProps) {
   return (
-    <div className="sticky bottom-0 z-30 mt-auto px-4 pb-[max(env(safe-area-inset-bottom),1rem)] pt-4">
-      <div className="mx-auto flex w-full max-w-[var(--max-content-width)] items-center justify-between rounded-[var(--radius-sheet)] border border-[color:rgba(217,223,234,0.8)] bg-white/85 px-4 py-4 shadow-[var(--shadow-nav)] backdrop-blur-[var(--glass-blur)] md:px-6">
+    <div
+      className={`sticky bottom-0 z-30 mt-auto px-4 ${
+        compact
+          ? 'pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-2 md:pt-3'
+          : 'pb-[max(env(safe-area-inset-bottom),1rem)] pt-4'
+      }`}
+    >
+      <div
+        className={`mx-auto flex w-full max-w-[var(--max-content-width)] items-center justify-between rounded-[var(--radius-sheet)] border border-[color:rgba(217,223,234,0.8)] bg-white/85 shadow-[var(--shadow-nav)] backdrop-blur-[var(--glass-blur)] ${
+          compact ? 'px-4 py-3 md:px-5 md:py-3' : 'px-4 py-4 md:px-6'
+        }`}
+      >
         <button
           type="button"
           onClick={onPrev}
           disabled={currentScreen === 1}
-          className={`flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-[var(--radius-input)] px-4 py-3 text-[15px] font-[800] uppercase tracking-[0.14em] transition-all duration-[var(--motion-medium)] focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)] ${
+          className={`flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-[var(--radius-input)] text-[15px] font-[800] uppercase tracking-[0.14em] transition-all duration-[var(--motion-medium)] focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)] ${
+            compact ? 'px-3 py-2.5 md:px-4 md:py-2.5' : 'px-4 py-3'
+          } ${
             currentScreen === 1
               ? 'cursor-not-allowed text-[var(--myb-neutral-3)]'
               : 'text-[var(--myb-navy)] hover:-translate-y-0.5'
@@ -50,7 +64,9 @@ export default function Navigation({
             type="button"
             onClick={onNext}
             disabled={disableNext}
-            className={`flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-[var(--radius-input)] px-5 py-3 text-[15px] font-[800] uppercase tracking-[0.14em] transition-all duration-[var(--motion-medium)] focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)] ${
+            className={`flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-[var(--radius-input)] text-[15px] font-[800] uppercase tracking-[0.14em] transition-all duration-[var(--motion-medium)] focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)] ${
+              compact ? 'px-4 py-2.5 md:px-5 md:py-2.5' : 'px-5 py-3'
+            } ${
               disableNext
                 ? 'cursor-not-allowed bg-[var(--myb-neutral-2)] text-[var(--myb-neutral-4)] shadow-none'
                 : 'text-white shadow-[var(--shadow-float)] hover:-translate-y-0.5'

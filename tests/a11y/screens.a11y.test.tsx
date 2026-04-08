@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
@@ -17,7 +18,6 @@ vi.mock('@/lib/analytics', () => ({
   trackRankingScore: vi.fn(),
   trackAISortAttempt: vi.fn(),
   trackAISortComplete: vi.fn(),
-  trackTinyHouseDownload: vi.fn(),
 }))
 
 // Mock content/config with minimal data for each screen
@@ -33,20 +33,6 @@ vi.mock('@/content/config', () => ({
         { value: '1,590', label: 'Job Openings by 2029', eyebrow: 'Opportunity' },
         { value: '23%', label: 'Retiring by 2034', eyebrow: 'Demand' },
         { value: '12.4%', label: 'Indigenous Workers in SK Construction', eyebrow: 'Representation' },
-      ],
-    },
-    taskRanking: {
-      heading: 'What sounds fun?',
-      subtext: 'Pick the tasks that interest you most.',
-      instruction: 'Drag to rank from most to least interesting',
-      reveal: { heading: "Here's how your ranking compares", subtext: 'See how your interests line up with actual job time.' },
-      tiles: [
-        { id: 'task-framing', title: 'Framing', description: 'Build the skeleton', emoji: '\u{1F528}', illustrationPath: '', weight: 20 },
-        { id: 'task-measuring', title: 'Measuring', description: 'Measure twice', emoji: '\u{1F4CF}', illustrationPath: '', weight: 14 },
-        { id: 'task-finishing', title: 'Finishing', description: 'Install trim', emoji: '\u{1FA9A}', illustrationPath: '', weight: 14 },
-        { id: 'task-concrete', title: 'Concrete', description: 'Pour foundations', emoji: '\u{1F9F1}', illustrationPath: '', weight: 16 },
-        { id: 'task-roofing', title: 'Roofing', description: 'Keep buildings protected', emoji: '\u{1F3E0}', illustrationPath: '', weight: 14 },
-        { id: 'task-renovation', title: 'Renovation', description: 'Transform spaces', emoji: '\u{1F527}', illustrationPath: '', weight: 10 },
       ],
     },
     careerPathway: {
@@ -72,14 +58,26 @@ vi.mock('@/content/config', () => ({
     postVr: {
       congratsHeading: 'Nice work!',
       congratsSubtext: 'You explored a day in the life of a carpenter.',
-      checklistHeading: 'What to do next',
+      checklistHeading: 'Your myBlueprint tasks',
       checklist: [
         { id: 'check-1', label: 'Talk to your teacher about trades' },
         { id: 'check-2', label: 'Visit the SaskPolytech website' },
         { id: 'check-3', label: 'Ask a family member about their job' },
         { id: 'check-4', label: 'Try building something at home' },
         { id: 'check-5', label: 'Research carpenter salaries' },
-        { id: 'check-6', label: 'Open myBlueprint' },
+        { id: 'check-6', label: 'Review the I can statements' },
+      ],
+      reflectionHeading: 'I Can Statements',
+      reflectionSubtext: 'Check off what feels true.',
+      reflections: [
+        { id: 'reflect-1', statement: 'I can describe a carpenter workday.' },
+        { id: 'reflect-2', statement: 'I can name two carpentry tasks.' },
+        { id: 'reflect-3', statement: 'I can identify a local employer.' },
+        { id: 'reflect-4', statement: 'I can explain the pathway.' },
+        { id: 'reflect-5', statement: 'I can name a relevant course.' },
+        { id: 'reflect-6', statement: 'I can describe a surprise from VR.' },
+        { id: 'reflect-7', statement: 'I can explain current demand.' },
+        { id: 'reflect-8', statement: 'I can name a related strength.' },
       ],
       myblueprintLink: {
         url: 'https://www.myblueprint.ca',
@@ -89,63 +87,21 @@ vi.mock('@/content/config', () => ({
   },
 }))
 
-// Mock SessionContext for ScreenTwo
-vi.mock('@/context/SessionContext', () => ({
-  SessionProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  useSession: () => ({
-    shuffledTileOrder: ['task-framing', 'task-measuring', 'task-finishing', 'task-concrete', 'task-roofing', 'task-renovation'],
-    setShuffledTileOrder: vi.fn(),
-    rankedTiles: [],
-    setRankedTiles: vi.fn(),
-    rankingSubmitted: false,
-    setRankingSubmitted: vi.fn(),
-    rankingScore: null,
-    setRankingScore: vi.fn(),
-  }),
-}))
-
 // Mock cn utility
 vi.mock('@/lib/utils', () => ({
   cn: (...args: unknown[]) => args.filter(Boolean).join(' '),
 }))
 
-// Mock @dnd-kit
-vi.mock('@dnd-kit/core', () => ({
-  DndContext: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  closestCenter: vi.fn(),
-  PointerSensor: vi.fn(),
-  KeyboardSensor: vi.fn(),
-  useSensor: vi.fn(),
-  useSensors: vi.fn(() => []),
+vi.mock('@/context/SessionContext', () => ({
+  SessionProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useSession: () => ({}),
 }))
 
-vi.mock('@dnd-kit/sortable', () => ({
-  SortableContext: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  verticalListSortingStrategy: {},
-  useSortable: () => ({
-    setNodeRef: vi.fn(),
-    attributes: {},
-    listeners: {},
-    transform: null,
-    transition: undefined,
-    isDragging: false,
-  }),
-  arrayMove: (arr: unknown[], from: number, to: number) => {
-    const result = [...arr]
-    const [item] = result.splice(from, 1)
-    result.splice(to, 0, item)
-    return result
-  },
-}))
-
-vi.mock('@dnd-kit/utilities', () => ({
-  CSS: { Transform: { toString: () => undefined } },
-}))
 
 // ── Imports (after mocks) ──────────────────────────────────────────────────
 
 import ScreenOne from '@/app/pre-vr/components/ScreenSalary'
-import ScreenTwo from '@/app/pre-vr/components/ScreenTaskRanking'
+import ScreenJobInfographic from '@/app/pre-vr/components/ScreenTaskRanking'
 import ScreenFour from '@/app/pre-vr/components/ScreenFour'
 import ScreenSix from '@/app/pre-vr/components/ScreenSix'
 import PostVRPage from '@/app/post-vr/page'
@@ -159,8 +115,8 @@ describe('Accessibility (axe-core)', () => {
     expect(results).toHaveNoViolations()
   })
 
-  it('ScreenTwo has no WCAG violations', async () => {
-    const { container } = render(<ScreenTwo />)
+  it('Job infographic screen has no WCAG violations', async () => {
+    const { container } = render(<ScreenJobInfographic />)
     const results = await axe(container)
     expect(results).toHaveNoViolations()
   })
@@ -182,18 +138,27 @@ describe('Accessibility (axe-core)', () => {
     const results = await axe(container)
     expect(results).toHaveNoViolations()
   })
+
+  it('PostVR reflection step has no WCAG violations', async () => {
+    const user = userEvent.setup()
+    const { container } = render(<PostVRPage />)
+
+    await user.click(screen.getByRole('checkbox', { name: /talk to your teacher about trades/i }))
+    await user.click(screen.getByRole('button', { name: /go to next screen/i }))
+
+    const results = await axe(container)
+    expect(results).toHaveNoViolations()
+  })
 })
 
 // ── ARIA attribute verification ────────────────────────────────────────────
 
 describe('ARIA attributes', () => {
-  it('ScreenTwo ranking items have accessible move buttons', () => {
-    render(<ScreenTwo />)
-    // Each sortable item should have up and down buttons with aria-labels
-    const moveUpButtons = screen.getAllByLabelText(/Move .+ up/)
-    const moveDownButtons = screen.getAllByLabelText(/Move .+ down/)
-    expect(moveUpButtons).toHaveLength(6)
-    expect(moveDownButtons).toHaveLength(6)
+  it('Job infographic image has descriptive alt text', () => {
+    render(<ScreenJobInfographic />)
+    const img = screen.getByRole('img', { name: /infographic showing carpenter job duties/i })
+    expect(img).toBeInTheDocument()
+    expect(img.getAttribute('alt')).not.toBe('')
   })
 
   it('ScreenFour step buttons have aria-expanded attribute', () => {
@@ -205,10 +170,24 @@ describe('ARIA attributes', () => {
     expect(collapsedButtons.length).toBeGreaterThanOrEqual(1)
   })
 
-  it('PostVR checklist items have role="checkbox" with aria-checked', () => {
+  it('PostVR checklist items on step 1 have role="checkbox" with aria-checked', () => {
     render(<PostVRPage />)
     const checkboxes = screen.getAllByRole('checkbox')
     expect(checkboxes.length).toBe(6)
+    checkboxes.forEach((checkbox) => {
+      expect(checkbox).toHaveAttribute('aria-checked', 'false')
+    })
+  })
+
+  it('PostVR reflection items on step 2 have role="checkbox" with aria-checked', async () => {
+    const user = userEvent.setup()
+    render(<PostVRPage />)
+
+    await user.click(screen.getByRole('checkbox', { name: /talk to your teacher about trades/i }))
+    await user.click(screen.getByRole('button', { name: /go to next screen/i }))
+
+    const checkboxes = screen.getAllByRole('checkbox')
+    expect(checkboxes.length).toBe(8)
     checkboxes.forEach((checkbox) => {
       expect(checkbox).toHaveAttribute('aria-checked', 'false')
     })

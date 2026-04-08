@@ -49,12 +49,9 @@ export default function ScreenSpeedRun({ onComplete }: { onComplete?: () => void
             <p className="text-[12px] font-[800] uppercase tracking-[0.2em] text-[var(--myb-primary-blue)]">
               Carpenter
             </p>
-            <div className="mt-5 flex flex-wrap items-baseline justify-between gap-4">
+            <div className="mt-5">
               <span className="text-[44px] font-[800] leading-none text-[var(--myb-navy)] md:text-[56px]">
                 Year {carpenterMilestone.year}
-              </span>
-              <span className="rounded-[var(--radius-pill)] bg-[var(--myb-light-blue-soft)] px-3 py-1 text-[13px] font-[800] text-[var(--myb-primary-blue)]">
-                Faster Earnings
               </span>
             </div>
             <p className="mt-6 max-w-3xl text-[22px] font-[800] leading-[1.35] text-[var(--myb-navy)] md:text-[28px]">

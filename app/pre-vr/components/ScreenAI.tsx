@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { content } from '@/content/config'
 import { useSession } from '@/context/SessionContext'
 import { trackAISortAttempt, trackAISortComplete } from '@/lib/analytics'
@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import PreVRScreenShell from './PreVRScreenShell'
 
 const data = content.aiSorting
+const FEEDBACK_DELAY_MS = 4400
 
 export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
   const {
@@ -17,17 +18,21 @@ export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
     setAiSortComplete,
   } = useSession()
 
-  const [feedback, setFeedback] = useState<{ correct: boolean } | null>(null)
+  const [feedback, setFeedback] = useState<{ correct: boolean; taskId: string } | null>(null)
   const [completedInSession, setCompletedInSession] = useState(false)
   const [buttonsDisabled, setButtonsDisabled] = useState(false)
   const [activeResultIndex, setActiveResultIndex] = useState(0)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
   const showResults = aiSortComplete || completedInSession
 
   const answeredIds = new Set(aiSortResults?.map((r) => r.taskId) ?? [])
   const remainingTasks = data.tasks.filter((t) => !answeredIds.has(t.id))
   const currentTask = remainingTasks[0]
+  const lockedTask = feedback ? data.tasks.find((t) => t.id === feedback.taskId) : null
+  const visibleTask = lockedTask ?? currentTask
 
   const handleAnswer = useCallback(
     (chosen: 'ai' | 'human') => {
@@ -40,7 +45,7 @@ export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
       ]
 
       setButtonsDisabled(true)
-      setFeedback({ correct })
+      setFeedback({ correct, taskId: currentTask.id })
       trackAISortAttempt(currentTask.id, chosen, correct)
       setAiSortResults(nextResults)
 
@@ -61,7 +66,7 @@ export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
         } else {
           setButtonsDisabled(false)
         }
-      }, 1200)
+      }, FEEDBACK_DELAY_MS)
     },
     [
       currentTask,
@@ -176,27 +181,16 @@ export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
       desktopLayout="split"
       bodyClassName="justify-center"
     >
-      <div className="mx-auto w-full max-w-md rounded-[var(--radius-panel)] border border-[var(--myb-neutral-2)] bg-white/90 p-6 text-center shadow-[var(--shadow-float)]">
+      <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-[var(--radius-panel)] border border-[var(--myb-neutral-2)] bg-white/90 p-6 text-center shadow-[var(--shadow-float)]">
         <p className="text-[13px] font-[300] text-[var(--myb-neutral-3)]">
           {progress + 1} of {data.tasks.length}
         </p>
 
-        {currentTask && (
+        {visibleTask && (
           <>
             <p className="mt-5 text-[18px] font-[300] leading-[1.7] text-[var(--myb-navy)]">
-              {currentTask.description}
+              {visibleTask.description}
             </p>
-
-            {feedback !== null && (
-              <p
-                className={cn(
-                  'mt-4 text-[14px] font-[800]',
-                  feedback.correct ? 'text-green-600' : 'text-red-500',
-                )}
-              >
-                {feedback.correct ? 'Correct!' : 'Not quite'}
-              </p>
-            )}
 
             <div className="mt-6 flex gap-3">
               <button
@@ -217,6 +211,38 @@ export default function ScreenAI({ onComplete }: { onComplete?: () => void }) {
               </button>
             </div>
           </>
+        )}
+
+        {feedback !== null && lockedTask && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center overflow-y-auto rounded-[var(--radius-panel)] bg-gradient-to-t from-white via-white/[0.98] to-white/80 p-6 text-center"
+          >
+            <span
+              className={cn(
+                'flex h-10 w-10 items-center justify-center rounded-full text-[20px] font-[800]',
+                feedback.correct ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500',
+              )}
+              aria-hidden="true"
+            >
+              {feedback.correct ? '\u2713' : '\u2717'}
+            </span>
+            <p
+              className={cn(
+                'mt-2 text-[18px] font-[800]',
+                feedback.correct ? 'text-green-600' : 'text-red-500',
+              )}
+            >
+              {feedback.correct ? 'Correct!' : 'Not quite'}
+            </p>
+            <p className="mt-1 text-[13px] font-[800] uppercase tracking-[0.12em] text-[var(--myb-primary-blue)]">
+              Answer: {lockedTask.correctAnswer === 'ai' ? 'AI' : 'Human'}
+            </p>
+            <p className="mt-3 text-[14px] font-[300] leading-[1.65] text-[var(--myb-neutral-4)]">
+              {lockedTask.explanation}
+            </p>
+          </div>
         )}
       </div>
     </PreVRScreenShell>

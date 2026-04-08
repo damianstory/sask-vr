@@ -18,22 +18,16 @@ export default function LandingPage() {
       </div>
 
       <div className="mx-auto flex w-full max-w-[var(--max-content-width)] flex-1 flex-col items-center justify-center">
-        <div className="mb-10 flex items-center gap-3 rounded-[var(--radius-panel)] border border-[color:rgba(217,223,234,0.8)] bg-white/80 px-5 py-3 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)]">
+        <div className="mb-10">
           <img
             src="/logos/myblueprint-logo.png"
             alt="myBlueprint logo"
-            className="h-8 w-auto shrink-0 md:h-10"
+            className="h-8 w-auto md:h-10"
           />
-          <span className="text-sm font-[800] uppercase tracking-[0.24em] text-[var(--myb-primary-blue)]">
-            Career Explorer
-          </span>
         </div>
 
         <div className="max-w-3xl text-center">
-          <p className="text-[12px] font-[800] uppercase tracking-[0.28em] text-[var(--myb-primary-blue)] md:text-[13px]">
-            The Kinetic Path
-          </p>
-          <h1 className="mt-4 text-center text-[28px] font-[800] leading-[1.1] text-[var(--myb-navy)] md:text-[40px]">
+          <h1 className="text-center text-[28px] font-[800] leading-[1.1] text-[var(--myb-navy)] md:text-[40px]">
             {content.meta.occupationTitle}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-[16px] font-[300] leading-[1.75] text-[var(--myb-neutral-5)] md:text-[20px] md:leading-[1.6]">

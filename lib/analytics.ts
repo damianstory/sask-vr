@@ -50,10 +50,6 @@ export function trackStudentNameEntered() {
   track('student_name_entered')
 }
 
-export function trackTinyHouseDownload() {
-  track('tiny_house_download')
-}
-
 export function trackChecklistCheck(itemId: string, itemLabel: string) {
   track('checklist_check', { item_id: itemId, item_label: itemLabel })
 }
