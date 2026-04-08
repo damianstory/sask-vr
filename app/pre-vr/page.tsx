@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, lazy, Suspense, type ComponentType } from 'react'
+import { useRouter } from 'next/navigation'
 import { SessionProvider, useSession } from '@/context/SessionContext'
 import ProgressBar from '@/components/ProgressBar'
 import Navigation from '@/components/Navigation'
@@ -65,6 +66,7 @@ const analyticsName = (key: string) => key.replace(/([A-Z])/g, '_$1').toLowerCas
 // ---------------------------------------------------------------------------
 
 function PreVRFlow() {
+  const router = useRouter()
   const [currentScreen, setCurrentScreen] = useState(0)
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward')
   const [isInitialMount, setIsInitialMount] = useState(true)
@@ -137,6 +139,10 @@ function PreVRFlow() {
     }
   }
 
+  const goHome = () => {
+    router.push('/')
+  }
+
   const ScreenComponent = config.Component
 
   return (
@@ -166,6 +172,11 @@ function PreVRFlow() {
         totalScreens={TOTAL_SCREENS}
         onNext={goNext}
         onPrev={goPrev}
+        terminalAction={{
+          label: 'Home',
+          ariaLabel: 'Return to home page',
+          onClick: goHome,
+        }}
         hideNext={shouldHideNext}
         disableNext={shouldDisableNext}
       />

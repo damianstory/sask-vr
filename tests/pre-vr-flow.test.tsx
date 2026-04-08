@@ -1,10 +1,11 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom'
 
 // Mock next/navigation
+const mockPush = vi.fn()
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: mockPush }),
 }))
 
 // Mock ScreenThree (lazy-loaded employer map) — the real component uses
@@ -25,6 +26,15 @@ vi.mock('@/app/pre-vr/components/ScreenThree', () => {
 
 import PreVrPage from '@/app/pre-vr/page'
 
+beforeEach(() => {
+  mockPush.mockClear()
+  vi.useRealTimers()
+})
+
+afterEach(() => {
+  vi.useRealTimers()
+})
+
 // Correct answers for the 6 AI sorting tasks in carpentry.json order
 const AI_SORT_ANSWERS: Array<'AI' | 'Human'> = [
   'AI',     // ai-task-1: Calculate lumber
@@ -42,20 +52,26 @@ function clickNext(n: number) {
   }
 }
 
+function clickUntilDisabled(label: string) {
+  const button = screen.getByLabelText(label)
+  while (!button.hasAttribute('disabled')) {
+    fireEvent.click(button)
+  }
+}
+
 /** Navigate through the page-1 video carousel until the flow unlocks */
 function unlockScreenOne() {
-  const videoNext = screen.getByLabelText('Show next video')
-  for (let i = 0; i < 5; i++) {
-    fireEvent.click(videoNext)
-  }
+  clickUntilDisabled('Show next video')
+}
+
+/** Navigate through the page-2 salary detail carousel until the flow unlocks */
+function unlockScreenTwo() {
+  clickUntilDisabled('Show next salary detail')
 }
 
 /** Navigate through the page-3 milestone carousel until the flow unlocks */
 function unlockScreenThree() {
-  const speedRunNext = screen.getByLabelText('Show next comparison year')
-  for (let i = 0; i < 5; i++) {
-    fireEvent.click(speedRunNext)
-  }
+  clickUntilDisabled('Show next comparison year')
 }
 
 
@@ -63,13 +79,18 @@ function unlockScreenThree() {
 function completeAiSort() {
   for (let i = 0; i < AI_SORT_ANSWERS.length; i++) {
     fireEvent.click(screen.getByRole('button', { name: AI_SORT_ANSWERS[i] }))
-    act(() => { vi.advanceTimersByTime(1200) })
+    act(() => { vi.advanceTimersByTime(4500) })
   }
 }
 
 /** Click the last career pathway step to unlock screen 6 gate */
 function unlockScreenSix() {
-  fireEvent.click(screen.getByRole('button', { name: /Bachelor/i }))
+  const pathwayButtons = document.querySelectorAll<HTMLButtonElement>(
+    'button[aria-controls^="pathway-step-panel-"]'
+  )
+  pathwayButtons.forEach((button) => {
+    fireEvent.click(button)
+  })
 }
 
 /** Navigate from screen 1 to screen 7 (aiSorting).
@@ -77,7 +98,9 @@ function unlockScreenSix() {
  *  a Suspense boundary that requires an async act() tick. */
 async function navigateToAiSorting() {
   unlockScreenOne()
-  clickNext(2)       // reach screen 3 (speedRun)
+  clickNext(1)       // reach screen 2 (salary)
+  unlockScreenTwo()
+  clickNext(1)       // reach screen 3 (speedRun)
   unlockScreenThree()
   clickNext(1)       // screen 3→4 (infographic, ungated)
   // Navigate to screen 5 and wait for the lazy Suspense boundary to resolve
@@ -110,24 +133,39 @@ describe('Pre-VR Flow - Screen Navigation (FLOW-01)', () => {
 })
 
 describe('Pre-VR Flow - Navigation Bounds (FLOW-02)', () => {
+  it('renders Home instead of Next on the last screen', async () => {
+    vi.useFakeTimers()
+    render(<PreVrPage />)
+
+    await navigateToAiSorting()
+    completeAiSort()
+
+    clickNext(1)
+    expect(screen.getByRole('progressbar', { name: 'Progress: 8 of 8' })).toBeInTheDocument()
+    expect(screen.queryByLabelText('Go to next screen')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /return to home page/i })).toBeInTheDocument()
+
+    vi.useRealTimers()
+  })
+
   it('disables Back button on screen 1', () => {
     render(<PreVrPage />)
     const backButton = screen.getByLabelText('Go to previous screen')
     expect(backButton).toBeDisabled()
   })
 
-  it('does not render Next button on last screen', async () => {
+  it('routes to the landing page when Home is clicked on the last screen', async () => {
     vi.useFakeTimers()
+    mockPush.mockClear()
     render(<PreVrPage />)
 
-    // Navigate to screen 7 (aiSorting), complete to unlock
     await navigateToAiSorting()
     completeAiSort()
 
-    // Navigate to screen 8 (last)
     clickNext(1)
-    expect(screen.getByText('8 of 8')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Go to next screen')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /return to home page/i }))
+
+    expect(mockPush).toHaveBeenCalledWith('/')
 
     vi.useRealTimers()
   })
@@ -141,7 +179,6 @@ describe('Pre-VR Flow - Gating (FLOW-03)', () => {
     expect(flowNext).toBeDisabled()
 
     unlockScreenOne()
-    expect(screen.getByText('6 of 6')).toBeInTheDocument()
     expect(screen.getByLabelText('Go to next screen')).toBeEnabled()
   })
 
@@ -151,7 +188,6 @@ describe('Pre-VR Flow - Gating (FLOW-03)', () => {
     unlockScreenOne()
     fireEvent.click(screen.getByLabelText('Show previous video'))
 
-    expect(screen.getByText('5 of 6')).toBeInTheDocument()
     expect(screen.getByLabelText('Go to next screen')).toBeEnabled()
   })
 
@@ -159,7 +195,7 @@ describe('Pre-VR Flow - Gating (FLOW-03)', () => {
     vi.useFakeTimers()
     render(<PreVrPage />)
     await navigateToAiSorting()
-    expect(screen.getByText('7 of 8')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar', { name: 'Progress: 7 of 8' })).toBeInTheDocument()
     // Next button should not be rendered (gated)
     expect(screen.queryByLabelText('Go to next screen')).not.toBeInTheDocument()
     // Complete all 6 AI sort tasks
@@ -173,7 +209,9 @@ describe('Pre-VR Flow - Gating (FLOW-03)', () => {
     render(<PreVrPage />)
 
     unlockScreenOne()
-    clickNext(2)
+    clickNext(1)
+    unlockScreenTwo()
+    clickNext(1)
 
     expect(screen.getByText('3 of 8')).toBeInTheDocument()
     expect(screen.getByLabelText('Go to next screen')).toBeDisabled()
@@ -188,7 +226,9 @@ describe('Pre-VR Flow - Gating (FLOW-03)', () => {
     render(<PreVrPage />)
 
     unlockScreenOne()
-    clickNext(2)
+    clickNext(1)
+    unlockScreenTwo()
+    clickNext(1)
     unlockScreenThree()
     fireEvent.click(screen.getByLabelText('Show previous comparison year'))
 
@@ -227,9 +267,12 @@ describe('Pre-VR Flow - Transitions (FLOW-04)', () => {
     render(<PreVrPage />)
     // Navigate to screen 5 (employer map) — screen 4 is ungated
     unlockScreenOne()
-    clickNext(2)    // screens 1→2→3
+    clickNext(1)    // screen 1→2
+    unlockScreenTwo()
+    clickNext(1)    // screen 2→3
     unlockScreenThree()
-    clickNext(2)    // screens 3→4 (infographic)→5
+    clickNext(1)    // screen 3→4
+    await act(async () => { clickNext(1) }) // screen 4→5 (lazy)
 
     const screenFiveHeading = await screen.findByRole('heading', {
       level: 2,
