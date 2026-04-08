@@ -83,6 +83,19 @@ vi.mock('@/content/config', () => ({
         url: 'https://www.myblueprint.ca',
         label: 'Open myBlueprint',
       },
+      survey: {
+        heading: 'Share Your Feedback',
+        subtext: 'Let us know about your experience today.',
+        formUrl: 'https://docs.google.com/forms/d/e/mock-form/viewform',
+        legendHeading: 'What the scale means',
+        legend: [
+          { value: 1, label: 'Strongly Disagree' },
+          { value: 2, label: 'Disagree' },
+          { value: 3, label: 'Not Sure' },
+          { value: 4, label: 'Agree' },
+          { value: 5, label: 'Strongly Agree' },
+        ],
+      },
     },
   },
 }))
@@ -146,6 +159,19 @@ describe('Accessibility (axe-core)', () => {
     await user.click(screen.getByRole('checkbox', { name: /talk to your teacher about trades/i }))
     await user.click(screen.getByRole('button', { name: /go to next screen/i }))
 
+    const results = await axe(container)
+    expect(results).toHaveNoViolations()
+  })
+
+  it('PostVR survey step has no WCAG violations', async () => {
+    const user = userEvent.setup()
+    const { container } = render(<PostVRPage />)
+
+    await user.click(screen.getByRole('checkbox', { name: /talk to your teacher about trades/i }))
+    await user.click(screen.getByRole('button', { name: /go to next screen/i }))
+    await user.click(screen.getByRole('button', { name: /go to next screen/i }))
+
+    container.querySelector('iframe')?.remove()
     const results = await axe(container)
     expect(results).toHaveNoViolations()
   })

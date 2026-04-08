@@ -136,5 +136,15 @@ export interface OccupationContent {
       url: string
       label: string
     }
+    survey: {
+      heading: string
+      subtext: string
+      formUrl: string
+      legendHeading: string
+      legend: Array<{
+        value: number
+        label: string
+      }>
+    }
   }
 }

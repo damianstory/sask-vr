@@ -354,6 +354,19 @@
     "myblueprintLink": {
       "url": "https://www.myblueprint.ca",
       "label": "Open myBlueprint"
+    },
+    "survey": {
+      "heading": "Share Your Feedback",
+      "subtext": "Let us know about your experience today.",
+      "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLSftz9V3h1NJocHyEpJrGYvFJYosUBtOqphXxfFNU-XflAnmCw/viewform",
+      "legendHeading": "What the scale means",
+      "legend": [
+        { "value": 1, "label": "Strongly Disagree" },
+        { "value": 2, "label": "Disagree" },
+        { "value": 3, "label": "Not Sure" },
+        { "value": 4, "label": "Agree" },
+        { "value": 5, "label": "Strongly Agree" }
+      ]
     }
   }
 }

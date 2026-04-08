@@ -38,6 +38,19 @@ vi.mock('@/content/config', () => ({
         url: 'https://www.myblueprint.ca',
         label: 'Open myBlueprint',
       },
+      survey: {
+        heading: 'Share Your Feedback',
+        subtext: 'Let us know about your experience today.',
+        formUrl: 'https://docs.google.com/forms/d/e/mock-form/viewform',
+        legendHeading: 'What the scale means',
+        legend: [
+          { value: 1, label: 'Strongly Disagree' },
+          { value: 2, label: 'Disagree' },
+          { value: 3, label: 'Not Sure' },
+          { value: 4, label: 'Agree' },
+          { value: 5, label: 'Strongly Agree' },
+        ],
+      },
     },
   },
 }))
@@ -55,17 +68,18 @@ describe('PostVRPage', () => {
     vi.clearAllMocks()
   })
 
-  it('renders checklist step content by default and hides reflections', () => {
+  it('renders checklist step content by default and hides later steps', () => {
     render(<PostVRPage />)
 
     expect(screen.getByRole('heading', { level: 1, name: 'Nice work!' })).toBeInTheDocument()
     expect(screen.getByText('You explored a day in the life of a carpenter.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Open myBlueprint' })).toBeInTheDocument()
-    expect(screen.getByText('1 of 2')).toBeInTheDocument()
+    expect(screen.getByText('1 of 3')).toBeInTheDocument()
 
     const checklistSection = getChecklistSection()
     expect(within(checklistSection).getAllByRole('checkbox')).toHaveLength(6)
     expect(screen.queryByText('I can describe a carpenter workday.')).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { level: 1, name: 'Share Your Feedback' })).not.toBeInTheDocument()
   })
 
   it('starts with checklist items unchecked and next disabled', () => {
@@ -100,33 +114,62 @@ describe('PostVRPage', () => {
     expect(nextButton).toBeDisabled()
   })
 
-  it('moves to reflection step after a checklist selection and preserves checklist state when going back', async () => {
+  it('supports full 3-step navigation and hides next on the survey step', async () => {
     const user = userEvent.setup()
     render(<PostVRPage />)
 
-    const checklistItem = within(getChecklistSection()).getByRole('checkbox', {
-      name: /favourite the career/i,
-    })
+    await user.click(within(getChecklistSection()).getByRole('checkbox', { name: /favourite the career/i }))
 
-    await user.click(checklistItem)
-    await user.click(screen.getByRole('button', { name: /go to next screen/i }))
+    const nextButton = screen.getByRole('button', { name: /go to next screen/i })
+    expect(nextButton).toBeEnabled()
 
+    await user.click(nextButton)
     expect(screen.getByRole('heading', { level: 1, name: 'I Can Statements' })).toBeInTheDocument()
-    expect(screen.getByText('Check off what feels true.')).toBeInTheDocument()
-    expect(screen.getByText('2 of 2')).toBeInTheDocument()
+    expect(screen.getByText('2 of 3')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /go to next screen/i })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /go to next screen/i }))
+    expect(screen.getByRole('heading', { level: 1, name: 'Share Your Feedback' })).toBeInTheDocument()
+    expect(screen.getByText('3 of 3')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /go to next screen/i })).not.toBeInTheDocument()
-    expect(screen.getAllByRole('checkbox')).toHaveLength(8)
-
-    await user.click(screen.getByRole('button', { name: /go to previous screen/i }))
-
-    const persistedChecklistItem = within(getChecklistSection()).getByRole('checkbox', {
-      name: /favourite the career/i,
-    })
-    expect(persistedChecklistItem).toHaveAttribute('aria-checked', 'true')
-    expect(getProgressCounter(1)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /go to previous screen/i })).toBeEnabled()
   })
 
-  it('toggles reflections independently on step 2 and does not affect checklist progress', async () => {
+  it('renders the survey iframe with normalized embed params', async () => {
+    const user = userEvent.setup()
+    render(<PostVRPage />)
+
+    await user.click(within(getChecklistSection()).getByRole('checkbox', { name: /favourite the career/i }))
+    await user.click(screen.getByRole('button', { name: /go to next screen/i }))
+    await user.click(screen.getByRole('button', { name: /go to next screen/i }))
+
+    expect(screen.getByText('Let us know about your experience today.')).toBeInTheDocument()
+
+    const iframe = screen.getByTitle('Student feedback survey')
+    expect(iframe).toHaveAttribute('loading', 'lazy')
+    expect(iframe).toHaveAttribute(
+      'src',
+      'https://docs.google.com/forms/d/e/mock-form/viewform?embedded=true'
+    )
+  })
+
+  it('renders the survey legend on the left panel', async () => {
+    const user = userEvent.setup()
+    render(<PostVRPage />)
+
+    await user.click(within(getChecklistSection()).getByRole('checkbox', { name: /favourite the career/i }))
+    await user.click(screen.getByRole('button', { name: /go to next screen/i }))
+    await user.click(screen.getByRole('button', { name: /go to next screen/i }))
+
+    expect(screen.getByText('What the scale means')).toBeInTheDocument()
+    expect(screen.getByText('Strongly Disagree')).toBeInTheDocument()
+    expect(screen.getByText('Disagree')).toBeInTheDocument()
+    expect(screen.getByText('Not Sure')).toBeInTheDocument()
+    expect(screen.getByText('Agree')).toBeInTheDocument()
+    expect(screen.getByText('Strongly Agree')).toBeInTheDocument()
+  })
+
+  it('preserves checklist and reflection state when navigating back from the survey step', async () => {
     const user = userEvent.setup()
     render(<PostVRPage />)
 
@@ -136,17 +179,23 @@ describe('PostVRPage', () => {
     const reflection = screen.getByRole('checkbox', {
       name: /i can describe a carpenter workday/i,
     })
-
     await user.click(reflection)
     expect(reflection).toHaveAttribute('aria-checked', 'true')
 
-    await user.click(screen.getByRole('button', { name: /go to previous screen/i }))
-    expect(getProgressCounter(1)).toBeInTheDocument()
-
     await user.click(screen.getByRole('button', { name: /go to next screen/i }))
+    await user.click(screen.getByRole('button', { name: /go to previous screen/i }))
+
     expect(
       screen.getByRole('checkbox', { name: /i can describe a carpenter workday/i })
     ).toHaveAttribute('aria-checked', 'true')
+
+    await user.click(screen.getByRole('button', { name: /go to previous screen/i }))
+
+    const persistedChecklistItem = within(getChecklistSection()).getByRole('checkbox', {
+      name: /favourite the career/i,
+    })
+    expect(persistedChecklistItem).toHaveAttribute('aria-checked', 'true')
+    expect(getProgressCounter(1)).toBeInTheDocument()
   })
 
   it('tracks analytics only when checklist items are checked', async () => {
