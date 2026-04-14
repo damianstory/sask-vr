@@ -6,6 +6,7 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { trackEmployerTap } from '@/lib/analytics'
 import { useSession } from '@/context/SessionContext'
+import { cn } from '@/lib/utils'
 import PreVRScreenShell from './PreVRScreenShell'
 
 const REGINA_CENTER: [number, number] = [-104.6189, 50.4452]
@@ -53,6 +54,26 @@ function applyMarkerVisualState(
   // button: aria-label
   const name = ref.button.dataset.employerName ?? ''
   ref.button.setAttribute('aria-label', getMarkerAriaLabel(name, isVisited))
+}
+
+/* ── select employer type ─────────────────────────────────────── */
+
+type SelectEmployer = (
+  employerId: string,
+  employerName: string,
+  triggerEl: HTMLElement | null,
+  isKeyboard?: boolean,
+) => void
+
+/* ── bounds helper (pure — no refs) ──────────────────────────── */
+
+function fitEmployerBoundsOnMap(map: maplibregl.Map, duration = 250) {
+  if (data.employers.length < 2) return
+  const bounds = new maplibregl.LngLatBounds()
+  data.employers.forEach((emp) => {
+    bounds.extend([emp.pinPosition.lng, emp.pinPosition.lat])
+  })
+  map.fitBounds(bounds, { padding: 60, maxZoom: 12, duration })
 }
 
 /* ── shared inner content (no close button, no container) ─────── */
@@ -167,17 +188,45 @@ export default function ScreenThree({
   const markerRefs = useRef<Map<string, MarkerRef>>(new Map())
   const desktopCloseRef = useRef<HTMLButtonElement>(null)
   const mobileCloseRef = useRef<HTMLButtonElement>(null)
-  const lastPinRef = useRef<string | null>(null)
-  const prevSelectedRef = useRef<string | null>(null)
+  const lastTriggerRef = useRef<HTMLElement | null>(null)
   const wasKeyboardRef = useRef(false)
   const completeFiredRef = useRef(false)
+  const selectEmployerRef = useRef<SelectEmployer | null>(null)
 
   const [selectedEmployer, setSelectedEmployer] = useState<string | null>(null)
   const [visitedEmployers, setVisitedEmployers] = useState<Set<string>>(
     () => new Set(session.visitedEmployers),
   )
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map')
 
   const closeCard = useCallback(() => setSelectedEmployer(null), [])
+
+  const selectEmployer = useCallback<SelectEmployer>(
+    (employerId, employerName, triggerEl, isKeyboard = false) => {
+      trackEmployerTap(employerId, employerName)
+      wasKeyboardRef.current = isKeyboard
+      lastTriggerRef.current = triggerEl
+      setSelectedEmployer(employerId)
+      setVisitedEmployers((prev) => {
+        if (prev.has(employerId)) return prev
+        const next = new Set(prev)
+        next.add(employerId)
+        return next
+      })
+      session.markEmployerVisited(employerId)
+    },
+    [session],
+  )
+
+  useEffect(() => {
+    selectEmployerRef.current = selectEmployer
+  }, [selectEmployer])
+
+  const handleResetMap = useCallback(() => {
+    const map = mapRef.current
+    if (!map) return
+    fitEmployerBoundsOnMap(map, 250)
+  }, [])
 
   /* ── single reconciliation effect for all marker visuals ─────── */
   useEffect(() => {
@@ -185,6 +234,13 @@ export default function ScreenThree({
       applyMarkerVisualState(ref, visitedEmployers.has(id), id === selectedEmployer)
     }
   }, [visitedEmployers, selectedEmployer])
+
+  /* ── disable map marker focus while list is active ───────────── */
+  useEffect(() => {
+    for (const [, ref] of markerRefs.current) {
+      ref.button.tabIndex = viewMode === 'map' ? 0 : -1
+    }
+  }, [viewMode])
 
   /* ── onComplete guard ────────────────────────────────────────── */
   useEffect(() => {
@@ -209,10 +265,11 @@ export default function ScreenThree({
 
   /* ── focus return on close ────────────────────────────────────── */
   useEffect(() => {
-    if (!selectedEmployer && lastPinRef.current) {
-      const entry = markerRefs.current.get(lastPinRef.current)
-      if (entry) entry.button.focus()
-      lastPinRef.current = null
+    if (!selectedEmployer && lastTriggerRef.current) {
+      if (lastTriggerRef.current.isConnected) {
+        lastTriggerRef.current.focus()
+      }
+      lastTriggerRef.current = null
     }
   }, [selectedEmployer])
 
@@ -260,6 +317,8 @@ export default function ScreenThree({
       style: TILE_STYLE,
       center: REGINA_CENTER,
       zoom: ZOOM_LEVEL,
+      minZoom: 9,
+      maxZoom: 15,
       interactive: false,
       attributionControl: false,
     })
@@ -312,19 +371,7 @@ export default function ScreenThree({
       markerRefs.current.set(employer.id, { button: el, icon: iconSpan })
 
       el.addEventListener('click', (e) => {
-        trackEmployerTap(employer.id, employer.name)
-        wasKeyboardRef.current = e.detail === 0
-        lastPinRef.current = employer.id
-        setSelectedEmployer(employer.id)
-
-        // mark visited on open
-        setVisitedEmployers((prev) => {
-          if (prev.has(employer.id)) return prev
-          const next = new Set(prev)
-          next.add(employer.id)
-          return next
-        })
-        session.markEmployerVisited(employer.id)
+        selectEmployerRef.current?.(employer.id, employer.name, el, e.detail === 0)
       })
 
       new maplibregl.Marker({ element: el })
@@ -332,22 +379,22 @@ export default function ScreenThree({
         .addTo(map)
     })
 
-    if (data.employers.length >= 2) {
-      const bounds = new maplibregl.LngLatBounds()
-      data.employers.forEach((emp) => {
-        bounds.extend([emp.pinPosition.lng, emp.pinPosition.lat])
-      })
-      map.fitBounds(bounds, { padding: 60, maxZoom: 12 })
-    }
-
     mapRef.current = map
+    fitEmployerBoundsOnMap(map, 0)
+
+    /* Map stays in normal flow — viewMode toggles never change its
+       dimensions. Only real container resizes (window resize, layout
+       shift) need a resize() call. */
+    const container = mapContainerRef.current!
+    const resizeObserver = new ResizeObserver(() => map.resize())
+    resizeObserver.observe(container)
 
     return () => {
+      resizeObserver.disconnect()
       map.remove()
       mapRef.current = null
       markerRefs.current.clear()
-      prevSelectedRef.current = null
-      lastPinRef.current = null
+      lastTriggerRef.current = null
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -380,7 +427,7 @@ export default function ScreenThree({
       </div>
       <hr className="my-4 border-[var(--myb-neutral-1)]" />
       <p className="text-center text-xs text-[var(--myb-neutral-3)]">
-        Tap another pin to explore more employers
+        Tap another employer to learn more
       </p>
     </aside>
   ) : null
@@ -401,16 +448,140 @@ export default function ScreenThree({
       headerMetaSlot={headerMeta}
       headerSlot={desktopPanel}
     >
-      <div className="relative h-full min-h-[420px] overflow-hidden rounded-[32px] border border-[color:rgba(217,223,234,0.8)] bg-white/90 p-3 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:min-h-0 md:flex-1 md:p-4">
-        <div className="pointer-events-none absolute left-5 top-5 z-10 rounded-[var(--radius-pill)] bg-white/92 px-4 py-2 shadow-[var(--shadow-float)]">
+      <div className="relative flex h-full min-h-[420px] flex-col overflow-hidden rounded-[32px] border border-[color:rgba(217,223,234,0.8)] bg-white/90 shadow-[var(--shadow-float)] backdrop-blur-[var(--glass-blur)] md:min-h-0 md:flex-1">
+        {/* ── toolbar: view toggle ───────────────────────────────── */}
+        <div className="flex items-center justify-between px-4 py-3">
           <span className="text-[12px] font-[800] uppercase tracking-[0.18em] text-[var(--myb-primary-blue)]">
-            Regina Employers
+            View as
           </span>
+          <div className="flex gap-1 rounded-[var(--radius-pill)] bg-[var(--myb-light-blue-soft)] p-1">
+            <button
+              type="button"
+              aria-pressed={viewMode === 'map'}
+              onClick={() => setViewMode('map')}
+              className={cn(
+                'min-h-[44px] rounded-[var(--radius-pill)] px-5 text-[13px] font-[700] uppercase tracking-[0.12em] transition-colors',
+                viewMode === 'map'
+                  ? 'bg-[var(--myb-primary-blue)] text-white shadow-sm'
+                  : 'text-[var(--myb-primary-blue)] hover:bg-white/60',
+              )}
+            >
+              Map
+            </button>
+            <button
+              type="button"
+              aria-pressed={viewMode === 'list'}
+              onClick={() => setViewMode('list')}
+              className={cn(
+                'min-h-[44px] rounded-[var(--radius-pill)] px-5 text-[13px] font-[700] uppercase tracking-[0.12em] transition-colors',
+                viewMode === 'list'
+                  ? 'bg-[var(--myb-primary-blue)] text-white shadow-sm'
+                  : 'text-[var(--myb-primary-blue)] hover:bg-white/60',
+              )}
+            >
+              List
+            </button>
+          </div>
         </div>
-        <div
-          ref={mapContainerRef}
-          className="h-full w-full overflow-hidden rounded-[28px] bg-[var(--myb-light-blue-soft)]"
-        />
+
+        {/* ── content area: map + list layers ────────────────────── */}
+        <div className="relative min-h-0 flex-1 overflow-hidden">
+          {/* map layer — always in normal flow so dimensions never change */}
+          <div
+            ref={mapContainerRef}
+            aria-hidden={viewMode !== 'map'}
+            className={cn(
+              'h-full w-full overflow-hidden bg-[var(--myb-light-blue-soft)]',
+              viewMode !== 'map' && 'pointer-events-none',
+            )}
+          />
+
+          {/* zoom controls — map view only */}
+          {viewMode === 'map' && (
+            <div className="absolute bottom-3 right-3 z-10 flex gap-1 rounded-[var(--radius-pill)] bg-white/92 p-1 shadow-[var(--shadow-float)] md:bottom-4 md:right-4">
+              <button
+                type="button"
+                aria-label="Zoom in"
+                onClick={() => mapRef.current?.zoomIn({ duration: 200 })}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--myb-primary-blue)] transition-colors hover:bg-[var(--myb-light-blue-soft)] focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)]"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+              </button>
+              <button
+                type="button"
+                aria-label="Zoom out"
+                onClick={() => mapRef.current?.zoomOut({ duration: 200 })}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--myb-primary-blue)] transition-colors hover:bg-[var(--myb-light-blue-soft)] focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)]"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg>
+              </button>
+              <button
+                type="button"
+                aria-label="Reset map view"
+                onClick={handleResetMap}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--myb-primary-blue)] transition-colors hover:bg-[var(--myb-light-blue-soft)] focus:outline-none focus:ring-[var(--focus-ring-width)] focus:ring-[var(--myb-primary-blue)] focus:ring-offset-[var(--focus-ring-offset)]"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              </button>
+            </div>
+          )}
+
+          {/* list view */}
+          {viewMode === 'list' && (
+            <div className="absolute inset-0 z-[5] flex flex-col gap-2 overflow-y-auto rounded-[28px] bg-[var(--myb-light-blue-soft)] p-4 pb-24">
+              <p className="mb-1 text-[13px] font-[700] text-[var(--myb-neutral-4)]">
+                {visitedEmployers.size} of {data.employers.length} viewed
+              </p>
+              {data.employers.map((emp) => {
+                const isVisited = visitedEmployers.has(emp.id)
+                const isActive = emp.id === selectedEmployer
+                return (
+                  <button
+                    key={emp.id}
+                    type="button"
+                    onClick={(e) => selectEmployer(emp.id, emp.name, e.currentTarget)}
+                    className={cn(
+                      'flex items-center gap-3 rounded-[var(--radius-card)] border px-4 py-3 text-left transition-colors',
+                      isActive
+                        ? 'border-[var(--myb-primary-blue)] bg-white shadow-[var(--shadow-float)]'
+                        : 'border-transparent bg-white/60 hover:bg-white/80',
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white',
+                        isVisited
+                          ? 'bg-[var(--myb-primary-blue)]'
+                          : 'bg-[var(--myb-neutral-3)]',
+                      )}
+                    >
+                      {isVisited ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                      ) : (
+                        <span className="text-[14px] font-[800]">{emp.name.charAt(0)}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[15px] font-[700] text-[var(--myb-navy)]">
+                        {emp.name}
+                      </p>
+                      {emp.specialty && (
+                        <p className="text-[12px] font-[300] text-[var(--myb-neutral-4)]">
+                          {emp.specialty}
+                        </p>
+                      )}
+                    </div>
+                    {isVisited && (
+                      <span className="shrink-0 text-[11px] font-[700] text-[var(--myb-primary-blue)]">
+                        Viewed
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
 
         {/* mobile bottom sheet */}
         {employer && (
